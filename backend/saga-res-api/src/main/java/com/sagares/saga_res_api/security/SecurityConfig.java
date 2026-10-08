@@ -54,6 +54,8 @@ public class SecurityConfig {
                                 "/api/availability/**"
                         )
                         .permitAll()
+                        .requestMatchers("/api/admin/**")
+                        .hasRole("ADMIN")
                         .anyRequest()
                         .authenticated()
                 )

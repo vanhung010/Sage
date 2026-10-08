@@ -9,4 +9,10 @@ import java.util.List;
 public interface CategoryRepository extends JpaRepository<Category, Long> {
 
     List<Category> findByActiveTrueOrderByDisplayOrderAscNameAsc();
+
+    List<Category> findAllByOrderByDisplayOrderAscNameAsc();
+
+    boolean existsByName(String name);
+
+    boolean existsByNameAndIdNot(String name, Long id);
 }

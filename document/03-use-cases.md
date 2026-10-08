@@ -20,49 +20,49 @@ Tài liệu mô tả cách người dùng và hệ thống tương tác để th
 
 ## 2. Tác nhân
 
-| Tác nhân | Mô tả |
-|---|---|
-| **Khách vãng lai** | Người chưa đăng nhập; xem thông tin, menu, giờ khả dụng |
-| **Khách hàng** | Người đã đăng nhập với vai trò CUSTOMER; kế thừa mọi quyền của khách vãng lai và là tác nhân duy nhất được tạo đơn món giao hàng |
-| **Nhân viên** | Vai trò STAFF; quản lý đơn đặt bàn và xem đơn món giao hàng ở chế độ chỉ đọc |
-| **Quản trị** | Vai trò ADMIN; kế thừa quyền của nhân viên, thêm quản lý menu, bàn, cấu hình, tài khoản, thống kê |
-| **Hệ thống** | Các tác vụ tự động: gửi email, chạy job định kỳ |
+| Tác nhân           | Mô tả                                                                                                                            |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
+| **Khách vãng lai** | Người chưa đăng nhập; xem thông tin, menu, giờ khả dụng                                                                          |
+| **Khách hàng**     | Người đã đăng nhập với vai trò CUSTOMER; kế thừa mọi quyền của khách vãng lai và là tác nhân duy nhất được tạo đơn món giao hàng |
+| **Nhân viên**      | Vai trò STAFF; quản lý đơn đặt bàn và xem đơn món giao hàng ở chế độ chỉ đọc                                                     |
+| **Quản trị**       | Vai trò ADMIN; kế thừa quyền của nhân viên, thêm quản lý menu, bàn, cấu hình, tài khoản, thống kê                                |
+| **Hệ thống**       | Các tác vụ tự động: gửi email, chạy job định kỳ                                                                                  |
 
 
 ## 3. Danh sách use case
 
-| Mã | Tên use case | Tác nhân | Ưu tiên | Yêu cầu liên quan |
-|---|---|---|---|---|
-| UC-01 | Đăng ký tài khoản | Khách vãng lai | MUST | FR-AUTH-01 |
-| UC-02 | Đăng nhập, sử dụng JWT và đăng xuất | Tất cả | MUST | FR-AUTH-02, 03, 10, 11, 12 |
-| UC-03 | Quản lý hồ sơ và mật khẩu | Khách hàng | SHOULD | FR-AUTH-04, 05, 06 |
-| UC-04 | Xem thông tin nhà hàng | Tất cả | MUST | FR-INFO-01 |
-| UC-05 | Xem, tìm kiếm và lọc menu | Tất cả | MUST | FR-MENU-01, 02, 03, 04 |
-| UC-06 | Tra cứu bàn trống và giờ khả dụng | Tất cả | MUST | FR-RSV-01, 02, 03 |
-| UC-07 | Đặt bàn | Khách hàng | MUST | FR-RSV-04, 05, 06, 07, 11 |
-| UC-08 | Xem đơn đặt bàn của tôi | Khách hàng | MUST | FR-RSV-08 |
-| UC-09 | Hủy đơn đặt bàn | Khách hàng | MUST | FR-RSV-09 |
-| UC-10 | Đổi lịch đơn đặt bàn | Khách hàng | SHOULD | FR-RSV-10 |
-| UC-11 | Xem và lọc danh sách đơn | Nhân viên | MUST | FR-ADM-01, 02 |
-| UC-12 | Duyệt hoặc từ chối đơn chờ duyệt | Nhân viên | MUST | FR-ADM-03 |
-| UC-13 | Đánh dấu khách đến, hoàn thành, không đến | Nhân viên | MUST | FR-ADM-04 |
-| UC-14 | Đặt bàn hộ khách | Nhân viên | SHOULD | FR-ADM-06 |
-| UC-15 | Hủy đơn thay khách | Nhân viên | SHOULD | FR-ADM-08 |
-| UC-16 | Chuyển đơn sang bàn khác | Nhân viên | SHOULD | FR-ADM-07 |
-| UC-17 | Gia hạn hoặc rút ngắn thời lượng | Nhân viên | SHOULD | FR-ADM-10 |
-| UC-18 | Xem lịch đặt bàn dạng timeline | Nhân viên | SHOULD | FR-ADM-05 |
-| UC-19 | Xem nhật ký thay đổi của đơn | Nhân viên | SHOULD | FR-ADM-09 |
-| UC-20 | Quản lý danh mục, món và nhãn | Quản trị | MUST | FR-MENU-05, 06, 07, 08 |
-| UC-21 | Quản lý khu vực và bàn | Quản trị | MUST | FR-TBL-01, 02, 03 |
-| UC-22 | Quản lý thông tin, giờ mở cửa, ngày đóng cửa | Quản trị | MUST | FR-INFO-02, 03 |
-| UC-23 | Quản lý tài khoản người dùng | Quản trị | SHOULD | FR-AUTH-08 |
-| UC-24 | Xem thống kê | Quản trị | SHOULD | FR-RPT-01, 02, 03 |
-| UC-25 | Gửi thông báo email | Hệ thống | SHOULD | FR-NTF-01, 02, 03 |
-| UC-26 | Tự động hủy đơn chờ duyệt quá hạn | Hệ thống | SHOULD | FR-SYS-01, BR-21 |
-| UC-35 | Đặt món giao hàng cơ bản | Khách hàng | MUST | FR-ORD-01, 02, 03, 04, 05 |
-| UC-36 | Xem danh sách và chi tiết đơn món giao hàng | Nhân viên, Quản trị | MUST | FR-ORD-06, 07 |
-| UC-37 | Xem lịch sử và chi tiết đơn món của tôi | Khách hàng | MUST | FR-ORD-08, 09 |
-| UC-38 | Hủy đơn món của tôi | Khách hàng | MUST | FR-ORD-10 |
+| Mã    | Tên use case                                 | Tác nhân            | Ưu tiên | Yêu cầu liên quan          |
+| ----- | -------------------------------------------- | ------------------- | ------- | -------------------------- |
+| UC-01 | Đăng ký tài khoản                            | Khách vãng lai      | MUST    | FR-AUTH-01                 |
+| UC-02 | Đăng nhập, sử dụng JWT và đăng xuất          | Tất cả              | MUST    | FR-AUTH-02, 03, 10, 11, 12 |
+| UC-03 | Quản lý hồ sơ và mật khẩu                    | Khách hàng          | SHOULD  | FR-AUTH-04, 05, 06         |
+| UC-04 | Xem thông tin nhà hàng                       | Tất cả              | MUST    | FR-INFO-01                 |
+| UC-05 | Xem, tìm kiếm và lọc menu                    | Tất cả              | MUST    | FR-MENU-01, 02, 03, 04     |
+| UC-06 | Tra cứu bàn trống và giờ khả dụng            | Tất cả              | MUST    | FR-RSV-01, 02, 03          |
+| UC-07 | Đặt bàn                                      | Khách hàng          | MUST    | FR-RSV-04, 05, 06, 07, 11  |
+| UC-08 | Xem đơn đặt bàn của tôi                      | Khách hàng          | MUST    | FR-RSV-08                  |
+| UC-09 | Hủy đơn đặt bàn                              | Khách hàng          | MUST    | FR-RSV-09                  |
+| UC-10 | Đổi lịch đơn đặt bàn                         | Khách hàng          | SHOULD  | FR-RSV-10                  |
+| UC-11 | Xem và lọc danh sách đơn                     | Nhân viên           | MUST    | FR-ADM-01, 02              |
+| UC-12 | Duyệt hoặc từ chối đơn chờ duyệt             | Nhân viên           | MUST    | FR-ADM-03                  |
+| UC-13 | Đánh dấu khách đến, hoàn thành, không đến    | Nhân viên           | MUST    | FR-ADM-04                  |
+| UC-14 | Đặt bàn hộ khách                             | Nhân viên           | SHOULD  | FR-ADM-06                  |
+| UC-15 | Hủy đơn thay khách                           | Nhân viên           | SHOULD  | FR-ADM-08                  |
+| UC-16 | Chuyển đơn sang bàn khác                     | Nhân viên           | SHOULD  | FR-ADM-07                  |
+| UC-17 | Gia hạn hoặc rút ngắn thời lượng             | Nhân viên           | SHOULD  | FR-ADM-10                  |
+| UC-18 | Xem lịch đặt bàn dạng timeline               | Nhân viên           | SHOULD  | FR-ADM-05                  |
+| UC-19 | Xem nhật ký thay đổi của đơn                 | Nhân viên           | SHOULD  | FR-ADM-09                  |
+| UC-20 | Quản lý danh mục, món và nhãn                | Quản trị            | MUST    | FR-MENU-05, 06, 07, 08     |
+| UC-21 | Quản lý khu vực và bàn                       | Quản trị            | MUST    | FR-TBL-01, 02, 03          |
+| UC-22 | Quản lý thông tin, giờ mở cửa, ngày đóng cửa | Quản trị            | MUST    | FR-INFO-02, 03             |
+| UC-23 | Quản lý tài khoản người dùng                 | Quản trị            | SHOULD  | FR-AUTH-08                 |
+| UC-24 | Xem thống kê                                 | Quản trị            | SHOULD  | FR-RPT-01, 02, 03          |
+| UC-25 | Gửi thông báo email                          | Hệ thống            | SHOULD  | FR-NTF-01, 02, 03          |
+| UC-26 | Tự động hủy đơn chờ duyệt quá hạn            | Hệ thống            | SHOULD  | FR-SYS-01, BR-21           |
+| UC-35 | Đặt món giao hàng cơ bản                     | Khách hàng          | MUST    | FR-ORD-01, 02, 03, 04, 05  |
+| UC-36 | Xem danh sách và chi tiết đơn món giao hàng  | Nhân viên, Quản trị | MUST    | FR-ORD-06, 07              |
+| UC-37 | Xem lịch sử và chi tiết đơn món của tôi      | Khách hàng          | MUST    | FR-ORD-08, 09              |
+| UC-38 | Hủy đơn món của tôi                          | Khách hàng          | MUST    | FR-ORD-10                  |
 
 Các use case ưu tiên COULD được liệt kê ở mục 5.3.
 
