@@ -11,5 +11,11 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
 
     List<Area> findByActiveTrueOrderByNameAsc();
 
+    List<Area> findAllByOrderByNameAsc();
+
+    boolean existsByName(String name);
+
+    boolean existsByNameAndIdNot(String name, Long id);
+
     Optional<Area> findByName(String name);
 }

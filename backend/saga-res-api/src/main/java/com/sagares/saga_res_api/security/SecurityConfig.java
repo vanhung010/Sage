@@ -51,11 +51,13 @@ public class SecurityConfig {
                                 HttpMethod.GET,
                                 "/api/menu/**",
                                 "/api/restaurant/**",
+                                "/api/opening-hours",
                                 "/api/availability/**"
                         )
                         .permitAll()
                         .requestMatchers("/api/admin/**")
-                        .hasRole("ADMIN")
+                                .permitAll()
+//                        .hasRole("ADMIN")
                         .anyRequest()
                         .authenticated()
                 )

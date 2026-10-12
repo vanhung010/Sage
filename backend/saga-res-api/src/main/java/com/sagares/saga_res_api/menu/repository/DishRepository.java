@@ -15,4 +15,6 @@ public interface DishRepository extends JpaRepository<Dish, Long> {
     );
 
     List<Dish> findByStatusOrderByDisplayOrderAscNameAsc(DishStatus status);
+
+    boolean existsByTags_Id(Long tagId);
 }

@@ -3,6 +3,7 @@ package com.sagares.saga_res_api.table.repository;
 
 import com.sagares.saga_res_api.table.entity.RestaurantTable;
 import jakarta.persistence.LockModeType;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +21,11 @@ public interface RestaurantTableRepository extends JpaRepository<RestaurantTable
     List<RestaurantTable> findByActiveTrueOrderByMaxCapacityAscCodeAsc();
 
     List<RestaurantTable> findByAreaIdAndActiveTrueOrderByMaxCapacityAscCodeAsc(Long areaId);
+
+    @EntityGraph(attributePaths = "area")
+    List<RestaurantTable> findAllByOrderByArea_NameAscCodeAsc();
+
+    boolean existsByCode(String code);
+
+    boolean existsByCodeAndIdNot(String code, Long id);
 }

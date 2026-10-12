@@ -7,10 +7,32 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+
+    @Query(value = """
+        SELECT r.id
+        FROM reservation r
+        WHERE r.status IN ('PENDING', 'CONFIRMED', 'ARRIVED')
+          AND r.end_time > CURRENT_TIMESTAMP
+          AND EXTRACT(DOW FROM r.start_time AT TIME ZONE 'Asia/Ho_Chi_Minh') = :dayOfWeek
+          AND (
+              :closed = true
+              OR CAST(r.start_time AT TIME ZONE 'Asia/Ho_Chi_Minh' AS time) < :openTime
+              OR CAST(r.end_time AT TIME ZONE 'Asia/Ho_Chi_Minh' AS time) > :closeTime
+              OR CAST(r.start_time AT TIME ZONE 'Asia/Ho_Chi_Minh' AS date)
+                  <> CAST(r.end_time AT TIME ZONE 'Asia/Ho_Chi_Minh' AS date)
+          )
+        ORDER BY r.start_time, r.id
+        """, nativeQuery = true)
+    List<Long> findIdsOutsideOpeningHours(
+            @Param("dayOfWeek") Short dayOfWeek,
+            @Param("openTime") LocalTime openTime,
+            @Param("closeTime") LocalTime closeTime,
+            @Param("closed") boolean closed);
 
     @Query(value = """
         SELECT r.*
