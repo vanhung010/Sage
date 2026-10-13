@@ -32,7 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(
         name = "Admin Restaurant Tables",
-        description = "Manage physical restaurant tables and capacity ranges. Despite the admin URL, the active SecurityConfig currently permits anonymous access."
+        description = "Manage physical restaurant tables and capacity ranges. Access is restricted to ADMIN."
 )
 public class AdminRestaurantTableController {
 
@@ -41,7 +41,7 @@ public class AdminRestaurantTableController {
     @GetMapping
     @Operation(
             summary = "List restaurant tables",
-            description = "Returns all tables, including inactive entries, ordered by area name and then table code. Access: anonymous under the active SecurityConfig."
+            description = "Returns all tables, including inactive entries, ordered by area name and then table code. Access: ADMIN."
     )
     @ApiResponse(responseCode = "200", description = "Restaurant tables returned", useReturnTypeSchema = true)
     public List<AdminRestaurantTableResponse> getTables() {
@@ -53,8 +53,7 @@ public class AdminRestaurantTableController {
             summary = "Create a restaurant table",
             description = """
                     Creates an active table in an existing active area. Its minimum and maximum capacities define which
-                    party sizes fit the table, and maximum capacity cannot be below minimum capacity. Access: anonymous
-                    under the active SecurityConfig.
+                    party sizes fit the table, and maximum capacity cannot be below minimum capacity. Access: ADMIN.
                     """
     )
     @ApiResponses({
@@ -84,7 +83,7 @@ public class AdminRestaurantTableController {
             description = """
                     Partially changes a table's code, area, or capacity range while holding the table row lock. A newly
                     selected area must exist and be active, and the resulting maximum capacity cannot be below the minimum.
-                    Access: anonymous under the active SecurityConfig.
+                    Access: ADMIN.
                     """
     )
     @ApiResponses({
@@ -112,7 +111,7 @@ public class AdminRestaurantTableController {
     @PatchMapping("/{id}/deactivate")
     @Operation(
             summary = "Deactivate a restaurant table",
-            description = "Marks a table inactive while retaining its record. The table row is locked during the update. Access: anonymous under the active SecurityConfig."
+            description = "Marks a table inactive while retaining its record. The table row is locked during the update. Access: ADMIN."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Restaurant table deactivated", useReturnTypeSchema = true),

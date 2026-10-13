@@ -2,7 +2,9 @@ package com.sagares.saga_res_api.common.service;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
+import com.sagares.saga_res_api.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,26 +32,40 @@ public class CloudinaryService {
                     result.get("public_id").toString()
             );
 
-        } catch (IOException e) {
-            throw new RuntimeException("Tải hình ảnh thất bại", e);
+        } catch (IOException | RuntimeException exception) {
+            throw new BusinessException(
+                    HttpStatus.BAD_GATEWAY,
+                    "IMAGE_UPLOAD_FAILED",
+                    "Tải hình ảnh thất bại."
+            );
         }
     }
 
     private void validateImage(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("Yêu cầu hình ảnh");
+            throw new BusinessException(
+                    HttpStatus.BAD_REQUEST,
+                    "INVALID_DISH_IMAGE",
+                    "File hình ảnh không được để trống."
+            );
         }
 
         String contentType = file.getContentType();
 
         if (contentType == null ||
                 !contentType.startsWith("image/")) {
-            throw new IllegalArgumentException("File phải là hình ảnh");
+            throw new BusinessException(
+                    HttpStatus.BAD_REQUEST,
+                    "INVALID_DISH_IMAGE",
+                    "File phải là hình ảnh."
+            );
         }
 
         if (file.getSize() > 5 * 1024 * 1024) {
-            throw new IllegalArgumentException(
-                    "Kích thước file phải nhỏ hơn 5MB"
+            throw new BusinessException(
+                    HttpStatus.BAD_REQUEST,
+                    "DISH_IMAGE_TOO_LARGE",
+                    "Kích thước file phải nhỏ hơn 5MB."
             );
         }
     }

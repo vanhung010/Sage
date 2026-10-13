@@ -1,0 +1,162 @@
+.sage-header {
+  width: 100%;
+  height: 80px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 16px 60px;
+
+  background-color: var(--color-surface);
+
+  border:
+    var(--border-default)
+    solid
+    var(--color-border);
+}
+
+/* =========================
+   LOGO
+   ========================= */
+
+.sage-header__logo-link {
+  width: 140px;
+  height: 48px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.sage-header__logo {
+  display: block;
+
+  width: auto;
+  height: 48px;
+
+  max-width: 140px;
+
+  object-fit: contain;
+}
+
+/* =========================
+   NAVIGATION
+   ========================= */
+
+.sage-header__navigation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: var(--space-8);
+}
+
+/* =========================
+   NAV ITEM
+   ========================= */
+
+.sage-header__nav-item {
+  height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: var(--space-2)
+    var(--space-3);
+
+  border-radius: var(--radius-control);
+
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+
+  color: var(--color-text-secondary);
+
+  white-space: nowrap;
+
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.sage-header__nav-item:hover {
+  background-color: var(--color-surface-alt);
+
+  color: var(--color-text-primary);
+}
+
+.sage-header__nav-item:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+/* =========================
+   GUEST ACTIONS
+   ========================= */
+
+.sage-header__actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: var(--space-3);
+
+  flex-shrink: 0;
+}
+
+/*
+   Login button trong Figma có border rất nhẹ.
+*/
+.sage-header__login-button {
+  color: var(--color-text-primary);
+}
+
+/* =========================
+   CUSTOMER ACTIONS
+   ========================= */
+
+.sage-header__customer-actions {
+  min-width: 227px;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  flex-shrink: 0;
+}
+
+/* =========================
+   AUTH PAGE
+   ========================= */
+
+.sage-header__back-home {
+  height: 40px;
+
+  display: inline-flex;
+  align-items: center;
+
+  padding-inline: var(--space-3);
+
+  border-radius: var(--radius-control);
+
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+
+  color: var(--color-text-secondary);
+
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.sage-header__back-home:hover {
+  background-color: var(--color-surface-alt);
+  color: var(--color-text-primary);
+}

@@ -32,7 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(
         name = "Admin Opening Hours",
-        description = "Manage weekly opening-hour configuration. Despite the admin URL, the active SecurityConfig currently permits anonymous access."
+        description = "Manage weekly opening-hour configuration. Access is restricted to ADMIN."
 )
 public class AdminOpeningHourController {
 
@@ -41,7 +41,7 @@ public class AdminOpeningHourController {
     @GetMapping
     @Operation(
             summary = "List opening-hour configuration",
-            description = "Returns every configured weekday entry sorted from Monday through Sunday. Access: anonymous under the active SecurityConfig."
+            description = "Returns every configured weekday entry sorted from Monday through Sunday. Access: ADMIN."
     )
     @ApiResponse(responseCode = "200", description = "Opening-hour configuration returned", useReturnTypeSchema = true)
     public List<AdminOpeningHourResponse> getOpeningHours() {
@@ -53,7 +53,7 @@ public class AdminOpeningHourController {
             summary = "Create a weekday opening-hour entry",
             description = """
                     Adds opening and closing times for a weekday that is not already configured. The server derives the
-                    numeric weekday key from dayOfWeek and creates the entry as open. Access: anonymous under the active SecurityConfig.
+                    numeric weekday key from dayOfWeek and creates the entry as open. Access: ADMIN.
                     """
     )
     @ApiResponses({
@@ -79,8 +79,7 @@ public class AdminOpeningHourController {
             description = """
                     Partially changes the local opening interval for an existing weekday. The optional dayOfWeek value
                     may echo the stored weekday but cannot change it. Existing reservations are not cancelled; the
-                    response lists active future reservation IDs that fall outside the new interval. Access: anonymous
-                    under the active SecurityConfig.
+                    response lists active future reservation IDs that fall outside the new interval. Access: ADMIN.
                     """
     )
     @ApiResponses({

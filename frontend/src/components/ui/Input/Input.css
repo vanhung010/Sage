@@ -1,0 +1,158 @@
+.sage-input {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: var(--space-2);
+
+  padding-inline: var(--space-control-padding-x);
+
+  background-color: var(--color-input-bg);
+
+  border: var(--border-default)
+    solid
+    var(--color-border);
+
+  border-radius: var(--radius-control);
+
+  transition:
+    border-color 150ms ease,
+    box-shadow 150ms ease,
+    background-color 150ms ease;
+}
+
+/* =========================
+   SIZE
+   ========================= */
+
+.sage-input--md {
+  height: var(--size-input-md);
+}
+
+.sage-input--lg {
+  height: var(--size-input-lg);
+}
+
+/* =========================
+   FIELD
+   ========================= */
+
+.sage-input__field {
+  flex: 1;
+
+  width: 100%;
+  min-width: 0;
+
+  padding: 0;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+
+  color: var(--color-text-primary);
+}
+
+.sage-input__field::placeholder {
+  color: var(--color-text-muted);
+}
+
+/* =========================
+   HOVER
+   ========================= */
+
+.sage-input:hover:not(.sage-input--disabled):not(
+    .sage-input--readonly
+  ) {
+  border-color: var(--color-border-strong);
+}
+
+/* =========================
+   FOCUS
+   ========================= */
+
+.sage-input:focus-within:not(
+    .sage-input--disabled
+  ) {
+  border-color: var(--color-primary);
+}
+
+/* =========================
+   ERROR
+   ========================= */
+
+.sage-input--error {
+  border-color: var(--color-error);
+}
+
+.sage-input--error:hover,
+.sage-input--error:focus-within {
+  border-color: var(--color-error);
+}
+
+.sage-input--error .sage-input__icon {
+  color: var(--color-error);
+}
+
+/* =========================
+   DISABLED
+   ========================= */
+
+.sage-input--disabled {
+  background-color: var(--color-input-disabled-bg);
+  border-color: var(--color-border-disabled);
+
+  cursor: not-allowed;
+}
+
+.sage-input--disabled .sage-input__field {
+  color: var(--color-text-disabled);
+
+  cursor: not-allowed;
+}
+
+.sage-input--disabled
+  .sage-input__field::placeholder {
+  color: var(--color-text-disabled);
+}
+
+.sage-input--disabled .sage-input__icon {
+  color: var(--color-text-disabled);
+}
+
+/* =========================
+   READ ONLY
+   ========================= */
+
+.sage-input--readonly {
+  background-color: var(--color-surface-alt);
+  border-color: var(--color-border);
+}
+
+/* =========================
+   ICON
+   ========================= */
+
+.sage-input__icon {
+  width: var(--size-icon-md);
+  height: var(--size-icon-md);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  color: var(--color-text-secondary);
+}
+
+.sage-input__icon > svg {
+  width: 100%;
+  height: 100%;
+}

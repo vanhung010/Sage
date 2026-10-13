@@ -32,7 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(
         name = "Admin Menu Categories",
-        description = "Manage menu category ordering and active state. Despite the admin URL, the active SecurityConfig currently permits anonymous access."
+        description = "Manage menu category ordering and active state. Access is restricted to ADMIN."
 )
 public class AdminMenuCategoryController {
 
@@ -41,7 +41,7 @@ public class AdminMenuCategoryController {
     @GetMapping
     @Operation(
             summary = "List menu categories",
-            description = "Returns every category, including inactive entries, ordered by displayOrder and then name. Access: anonymous under the active SecurityConfig."
+            description = "Returns every category, including inactive entries, ordered by displayOrder and then name. Access: ADMIN."
     )
     @ApiResponse(responseCode = "200", description = "Categories returned", useReturnTypeSchema = true)
     public List<AdminCategoryResponse> getCategories() {
@@ -52,7 +52,7 @@ public class AdminMenuCategoryController {
     @PostMapping
     @Operation(
             summary = "Create a menu category",
-            description = "Creates an active category after trimming and validating its unique name. Access: anonymous under the active SecurityConfig."
+            description = "Creates an active category after trimming and validating its unique name. Access: ADMIN."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Category created", useReturnTypeSchema = true),
@@ -78,7 +78,7 @@ public class AdminMenuCategoryController {
     @PatchMapping("/{id}")
     @Operation(
             summary = "Update a menu category",
-            description = "Partially updates a category's name, display order, or active state. At least one field is required. Access: anonymous under the active SecurityConfig."
+            description = "Partially updates a category's name, display order, or active state. At least one field is required. Access: ADMIN."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Category updated", useReturnTypeSchema = true),

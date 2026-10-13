@@ -33,7 +33,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(
         name = "Admin Menu Tags",
-        description = "Manage reusable dish tags. Despite the admin URL, the active SecurityConfig currently permits anonymous access."
+        description = "Manage reusable dish tags. Access is restricted to ADMIN."
 )
 public class AdminMenuTagController {
 
@@ -42,7 +42,7 @@ public class AdminMenuTagController {
     @GetMapping
     @Operation(
             summary = "List menu tags",
-            description = "Returns all menu tags ordered alphabetically by name. Access: anonymous under the active SecurityConfig."
+            description = "Returns all menu tags ordered alphabetically by name. Access: ADMIN."
     )
     @ApiResponse(responseCode = "200", description = "Tags returned", useReturnTypeSchema = true)
     public List<AdminTagResponse> getTags() {
@@ -52,7 +52,7 @@ public class AdminMenuTagController {
     @PostMapping
     @Operation(
             summary = "Create a menu tag",
-            description = "Creates a reusable dish tag after trimming and validating its unique name. Access: anonymous under the active SecurityConfig."
+            description = "Creates a reusable dish tag after trimming and validating its unique name. Access: ADMIN."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Tag created", useReturnTypeSchema = true),
@@ -76,7 +76,7 @@ public class AdminMenuTagController {
     @PatchMapping("/{id}")
     @Operation(
             summary = "Rename a menu tag",
-            description = "Changes a tag's name. The name field is required and remains unique after trimming. Access: anonymous under the active SecurityConfig."
+            description = "Changes a tag's name. The name field is required and remains unique after trimming. Access: ADMIN."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Tag updated", useReturnTypeSchema = true),
@@ -103,7 +103,7 @@ public class AdminMenuTagController {
     @DeleteMapping("/{id}")
     @Operation(
             summary = "Delete an unused menu tag",
-            description = "Permanently deletes a tag only when no dish references it. Access: anonymous under the active SecurityConfig."
+            description = "Permanently deletes a tag only when no dish references it. Access: ADMIN."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "204", description = "Tag deleted"),

@@ -1,0 +1,214 @@
+.sage-button {
+  border: none;
+  outline: none;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: var(--space-2);
+
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+
+  white-space: nowrap;
+
+  border-radius: var(--radius-control);
+
+  cursor: pointer;
+
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+/* =========================
+   SIZE
+   ========================= */
+
+.sage-button--sm {
+  height: var(--size-button-sm);
+  padding-inline: var(--space-3);
+}
+
+.sage-button--md {
+  height: var(--size-button-md);
+  padding-inline: var(--space-4);
+}
+
+.sage-button--lg {
+  height: var(--size-button-lg);
+  padding-inline: var(--space-5);
+}
+
+/* =========================
+   FULL WIDTH
+   ========================= */
+
+.sage-button--full-width {
+  width: 100%;
+}
+
+/* =========================
+   PRIMARY
+   ========================= */
+
+.sage-button--primary {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.sage-button--primary:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.sage-button--primary:active:not(:disabled) {
+  background-color: var(--color-primary-active);
+}
+
+/* =========================
+   SECONDARY
+   ========================= */
+
+.sage-button--secondary {
+  background-color: var(--color-secondary);
+  color: var(--color-on-secondary);
+}
+
+.sage-button--secondary:hover:not(:disabled) {
+  background-color: var(--color-secondary-hover);
+}
+
+.sage-button--secondary:active:not(:disabled) {
+  background-color: var(--color-secondary-active);
+}
+
+/* =========================
+   OUTLINE
+   ========================= */
+
+.sage-button--outline {
+  background-color: transparent;
+
+  color: var(--color-primary);
+
+  border: var(--border-default)
+    solid
+    var(--color-border-strong);
+}
+
+.sage-button--outline:hover:not(:disabled) {
+  background-color: var(--color-primary-light);
+}
+
+.sage-button--outline:active:not(:disabled) {
+  background-color: var(--color-surface-alt);
+}
+
+/* =========================
+   GHOST
+   ========================= */
+
+.sage-button--ghost {
+  background-color: transparent;
+  color: var(--color-text-primary);
+}
+
+.sage-button--ghost:hover:not(:disabled) {
+  background-color: var(--color-surface-alt);
+}
+
+.sage-button--ghost:active:not(:disabled) {
+  background-color: var(--color-primary-light);
+}
+
+/* =========================
+   DESTRUCTIVE
+   ========================= */
+
+.sage-button--destructive {
+  background-color: var(--color-error);
+  color: var(--color-on-primary);
+}
+
+.sage-button--destructive:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.sage-button--destructive:active:not(:disabled) {
+  background-color: var(--color-primary-active);
+}
+
+/* =========================
+   FOCUS
+   ========================= */
+
+.sage-button:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--color-surface),
+    0 0 0 4px var(--color-focus-ring);
+}
+
+/* =========================
+   DISABLED
+   ========================= */
+
+.sage-button:disabled {
+  cursor: not-allowed;
+}
+
+.sage-button--primary:disabled {
+  background-color: var(--color-primary-disabled);
+  color: var(--color-on-primary-disabled);
+}
+
+.sage-button--secondary:disabled,
+.sage-button--destructive:disabled {
+  opacity: 0.55;
+}
+
+.sage-button--outline:disabled,
+.sage-button--ghost:disabled {
+  color: var(--color-text-disabled);
+  border-color: var(--color-border-disabled);
+}
+
+/* =========================
+   ICON
+   ========================= */
+
+.sage-button__icon {
+  width: var(--size-icon-md);
+  height: var(--size-icon-md);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
+/* =========================
+   LOADING
+   ========================= */
+
+.sage-button__spinner {
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: var(--radius-full);
+
+  animation: sage-button-spin 0.7s linear infinite;
+}
+
+@keyframes sage-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

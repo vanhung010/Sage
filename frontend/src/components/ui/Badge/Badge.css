@@ -1,0 +1,97 @@
+.sage-badge {
+  height: 24px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: var(--space-2);
+
+  padding-inline: var(--space-2);
+
+  border-radius: var(--radius-full);
+
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 16px;
+
+  white-space: nowrap;
+}
+
+/* =========================
+   NEUTRAL
+   ========================= */
+
+.sage-badge--neutral {
+  background-color: var(
+    --color-status-completed-bg
+  );
+
+  color: var(--color-status-completed);
+}
+
+/* =========================
+   SUCCESS
+   ========================= */
+
+.sage-badge--success {
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
+}
+
+/* =========================
+   WARNING
+   ========================= */
+
+.sage-badge--warning {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning);
+}
+
+/* =========================
+   INFO
+   ========================= */
+
+.sage-badge--info {
+  background-color: var(--color-info-bg);
+  color: var(--color-info);
+}
+
+/* =========================
+   ERROR
+   ========================= */
+
+.sage-badge--error {
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+/* =========================
+   ICON
+   ========================= */
+
+.sage-badge__icon {
+  width: 14px;
+  height: 14px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+}
+
+.sage-badge__icon > svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* =========================
+   LABEL
+   ========================= */
+
+.sage-badge__label {
+  display: inline-flex;
+  align-items: center;
+}

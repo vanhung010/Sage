@@ -1,0 +1,281 @@
+.sage-select-container {
+  position: relative;
+
+  width: 100%;
+}
+
+/* =========================
+   SELECT CONTROL
+   ========================= */
+
+.sage-select {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: var(--space-2);
+
+  padding-inline: var(--space-control-padding-x);
+
+  background-color: var(--color-input-bg);
+
+  border:
+    var(--border-default)
+    solid
+    var(--color-border);
+
+  border-radius: var(--radius-control);
+
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+
+  text-align: left;
+
+  cursor: pointer;
+
+  outline: none;
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+/* =========================
+   SIZE
+   ========================= */
+
+.sage-select--md {
+  height: var(--size-input-md);
+}
+
+.sage-select--lg {
+  height: var(--size-input-lg);
+}
+
+/* =========================
+   TEXT
+   ========================= */
+
+.sage-select__placeholder,
+.sage-select__value {
+  flex: 1;
+
+  min-width: 0;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.sage-select__placeholder {
+  color: var(--color-text-muted);
+}
+
+.sage-select__value {
+  color: var(--color-text-primary);
+}
+
+/* =========================
+   ICON
+   ========================= */
+
+.sage-select__icon,
+.sage-select__chevron {
+  flex-shrink: 0;
+
+  color: var(--color-text-secondary);
+}
+
+.sage-select__icon {
+  width: var(--size-icon-md);
+  height: var(--size-icon-md);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sage-select__chevron {
+  transition: transform 150ms ease;
+}
+
+/* =========================
+   HOVER
+   ========================= */
+
+.sage-select:hover:not(:disabled) {
+  border-color: var(--color-border-strong);
+}
+
+/* =========================
+   FOCUS
+   ========================= */
+
+.sage-select:focus-visible:not(:disabled) {
+  border-color: var(--color-primary);
+
+  box-shadow:
+    0 0 0 2px var(--color-surface),
+    0 0 0 4px var(--color-focus-ring);
+}
+
+/* =========================
+   OPEN
+   ========================= */
+
+.sage-select--open {
+  background-color: var(--color-primary-light);
+
+  border:
+    var(--border-focus)
+    solid
+    var(--color-primary);
+}
+
+.sage-select--open .sage-select__chevron {
+  color: var(--color-primary);
+
+  transform: rotate(180deg);
+}
+
+/* =========================
+   ERROR
+   ========================= */
+
+.sage-select--error {
+  border-color: var(--color-error);
+}
+
+.sage-select--error:hover,
+.sage-select--error:focus-visible {
+  border-color: var(--color-error);
+}
+
+.sage-select--error .sage-select__chevron,
+.sage-select--error .sage-select__icon {
+  color: var(--color-error);
+}
+
+/* =========================
+   DISABLED
+   ========================= */
+
+.sage-select--disabled {
+  background-color: var(--color-input-disabled-bg);
+  border-color: var(--color-border-disabled);
+
+  cursor: not-allowed;
+}
+
+.sage-select--disabled
+  .sage-select__placeholder,
+.sage-select--disabled
+  .sage-select__value,
+.sage-select--disabled
+  .sage-select__chevron,
+.sage-select--disabled
+  .sage-select__icon {
+  color: var(--color-text-disabled);
+}
+
+/* =========================
+   DROPDOWN
+   ========================= */
+
+.sage-select__dropdown {
+  position: absolute;
+
+  top: calc(100% + var(--space-1));
+  left: 0;
+
+  z-index: 100;
+
+  width: 100%;
+
+  padding: var(--space-1);
+
+  background-color: var(--color-surface);
+
+  border:
+    var(--border-default)
+    solid
+    var(--color-border);
+
+  border-radius: var(--radius-control);
+
+  box-shadow:
+    0 8px 24px var(--color-shadow);
+
+  overflow: hidden;
+}
+
+/* =========================
+   OPTION
+   ========================= */
+
+.sage-select__option {
+  width: 100%;
+
+  min-height: 40px;
+
+  display: flex;
+  align-items: center;
+
+  padding-inline: var(--space-3);
+
+  border: none;
+  border-radius: var(--radius-md);
+
+  background-color: transparent;
+
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+
+  color: var(--color-text-primary);
+
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background-color 150ms ease,
+    color 150ms ease;
+}
+
+.sage-select__option:hover:not(:disabled) {
+  background-color: var(--color-surface-alt);
+}
+
+/* selected */
+.sage-select__option--selected {
+  background-color: var(--color-primary-light);
+
+  color: var(--color-primary);
+}
+
+/* selected hover */
+.sage-select__option--selected:hover:not(
+    :disabled
+  ) {
+  background-color: var(--color-primary-light);
+}
+
+/* focus */
+.sage-select__option:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: -2px;
+}
+
+/* disabled option */
+.sage-select__option:disabled {
+  color: var(--color-text-disabled);
+
+  cursor: not-allowed;
+}

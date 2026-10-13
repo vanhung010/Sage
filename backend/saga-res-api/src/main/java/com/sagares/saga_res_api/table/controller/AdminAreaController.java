@@ -32,7 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Tag(
         name = "Admin Areas",
-        description = "Manage restaurant seating areas. Despite the admin URL, the active SecurityConfig currently permits anonymous access."
+        description = "Manage restaurant seating areas. Access is restricted to ADMIN."
 )
 public class AdminAreaController {
 
@@ -41,7 +41,7 @@ public class AdminAreaController {
     @GetMapping
     @Operation(
             summary = "List restaurant areas",
-            description = "Returns all areas, including inactive entries, ordered by name. Access: anonymous under the active SecurityConfig."
+            description = "Returns all areas, including inactive entries, ordered by name. Access: ADMIN."
     )
     @ApiResponse(responseCode = "200", description = "Areas returned", useReturnTypeSchema = true)
     public List<AdminAreaResponse> getAreas() {
@@ -51,7 +51,7 @@ public class AdminAreaController {
     @PostMapping
     @Operation(
             summary = "Create a restaurant area",
-            description = "Creates an active seating area after trimming and validating its unique name. Access: anonymous under the active SecurityConfig."
+            description = "Creates an active seating area after trimming and validating its unique name. Access: ADMIN."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "Area created", useReturnTypeSchema = true),
@@ -76,7 +76,7 @@ public class AdminAreaController {
     @PatchMapping("/{id}")
     @Operation(
             summary = "Update a restaurant area",
-            description = "Partially changes an area's name or description. At least one field is required. Access: anonymous under the active SecurityConfig."
+            description = "Partially changes an area's name or description. At least one field is required. Access: ADMIN."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Area updated", useReturnTypeSchema = true),
@@ -103,7 +103,7 @@ public class AdminAreaController {
     @PatchMapping("/{id}/deactivate")
     @Operation(
             summary = "Deactivate a restaurant area",
-            description = "Marks an area inactive so tables cannot be created in or moved into it. The area is retained rather than deleted. Access: anonymous under the active SecurityConfig."
+            description = "Marks an area inactive so tables cannot be created in or moved into it. The area is retained rather than deleted. Access: ADMIN."
     )
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Area deactivated", useReturnTypeSchema = true),

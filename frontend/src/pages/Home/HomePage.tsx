@@ -1,0 +1,274 @@
+import { Header } from "../../components/layout/Header";
+import {
+  Footer,
+  type FooterRestaurantInfo,
+} from "../../components/layout/Footer";
+
+import "./HomePage.css";
+import { Button } from "../../components/ui/Button";
+import { DishCard } from "../../components/common/DishCard";
+import heroImage from "../../assets/background/background1.webp";
+
+import { Clock3, MapPin } from "lucide-react";
+
+import aboutImage from "../../assets/background/background2.avif";
+
+interface OpeningHour {
+  label: string;
+  time: string;
+}
+
+interface RestaurantInfo extends FooterRestaurantInfo {
+  aboutDescription: string;
+  openingHours: OpeningHour[];
+}
+
+const mockRestaurantInfo: RestaurantInfo = {
+  description:
+    "Món ăn ngon hơn khi được sẻ chia cùng những người thân yêu.",
+
+  aboutDescription:
+    "Sage là nhà hàng hiện đại mang cảm hứng từ sự giao thoa giữa ẩm thực đương đại và những giá trị gần gũi, quen thuộc. Chúng tôi hướng đến những bữa ăn được chuẩn bị chỉn chu trong một không gian ấm cúng, nơi món ăn, cuộc trò chuyện và những khoảnh khắc đáng nhớ cùng được sẻ chia.",
+
+  address:
+    "123 Nguyễn Thị Minh Khai, Quận 1, TP. Hồ Chí Minh",
+
+  phone: "028 3822 1234",
+
+  email: "hello@sage.vn",
+
+  openingHours: [
+    {
+      label: "Thứ 2 – Thứ 6",
+      time: "11:00 – 22:00",
+    },
+    {
+      label: "Thứ 7 – Chủ nhật",
+      time: "10:00 – 23:00",
+    },
+  ],
+};
+
+const mockFeaturedDishes = [
+  {
+    id: 1,
+    name: "Cá hồi nướng thảo mộc",
+    description:
+      "Cá hồi tươi nướng cùng thảo mộc, dùng kèm rau củ và sốt chanh leo.",
+    price: 320000,
+    badge: "Bán chạy",
+  },
+  {
+    id: 2,
+    name: "Bò áp chảo sốt tiêu xanh",
+    description:
+      "Thăn bò áp chảo mềm, dùng cùng rau củ theo mùa và sốt tiêu xanh.",
+    price: 380000,
+    badge: "Bán chạy",
+  },
+  {
+    id: 3,
+    name: "Ức vịt sốt cam",
+    description:
+      "Ức vịt áp chảo ăn kèm rau củ nướng và sốt cam thanh nhẹ.",
+    price: 295000,
+    badge: "Bán chạy",
+  },
+];
+
+export function HomePage() {
+    return (
+        <div className="home-page">
+            <Header 
+            variant="guest"
+            onLogin={() => {
+                console.log("Đăng nhập")
+            }}
+            onRegister={() => {
+                console.log("Đăng kí")
+            }}
+            />
+
+            <main className="home-page__main">
+               <section className="home-hero">
+                <div className="container home-hero__container">
+                    <div className="home-hero__content">
+                    <p className="home-hero__eyebrow">
+                          Nhà hàng hiện đại • Đặt bàn trực tuyến
+                    </p>
+                     <h1 className="home-hero__title">
+                        Một bữa ăn đáng nhớ, bắt đầu từ một
+                         chiếc bàn được giữ sẵn.
+                    </h1>
+                     <p className="home-hero__description">
+                    Sage mang đến trải nghiệm ẩm thực
+                        hiện đại trong không gian ấm cúng,
+                        nơi những món ăn tinh tế và những
+                        khoảnh khắc ý nghĩa được sẻ chia
+                        trọn vẹn.
+                    </p>
+                    <div className="home-hero__actions">
+                        <Button 
+                        variant="primary"
+                        size="lg"
+                        onClick={() => {
+                            console.log("Đặt bàn")
+                        }}>
+                            Đặt bàn ngay
+                        </Button>
+
+                        <Button
+                        variant="outline"
+                        size="lg"
+                        onClick={() => {
+                            console.log("Xem thực đơn")
+                        }}
+                        >
+                            Xem thực đơn
+                        </Button>
+                    </div>
+
+
+
+
+
+                    </div>
+
+                    <div className = "home-hero__media">
+                        <img 
+                        src= {heroImage}
+                        alt="Không gian nhà hàng Sage"
+                        className="home-hero__image"></img>
+                    </div>
+                </div>
+               </section>
+
+               <section className="home-featured">
+  <div className="container home-featured__container">
+    <div className="home-featured__header">
+      <div className="home-featured__title-group">
+        <p className="home-featured__eyebrow">
+          THỰC ĐƠN NỔI BẬT
+        </p>
+
+        <h2 className="home-featured__title">
+          Món nổi bật tại Sage
+        </h2>
+      </div>
+
+      <button
+        type="button"
+        className="home-featured__view-all"
+        onClick={() => {
+          console.log("Xem toàn bộ thực đơn");
+        }}
+      >
+        Xem toàn bộ thực đơn →
+      </button>
+    </div>
+
+    <div className="home-featured__grid">
+      {mockFeaturedDishes.map((dish) => (
+        <DishCard
+          key={dish.id}
+          name={dish.name}
+          description={dish.description}
+          price={dish.price}
+          badge={dish.badge}
+          onAdd={() => {
+            console.log("Thêm món:", dish.name);
+          }}
+          onClick={() => {
+            console.log("Xem món:", dish.id);
+          }}
+        />
+      ))}
+    </div>
+  </div>
+</section>
+
+<section className="home-about">
+  <div className="container home-about__container">
+    <div className="home-about__media">
+      <img
+        src={aboutImage}
+        alt="Không gian nhà hàng Sage"
+        className="home-about__image"
+      />
+    </div>
+
+    <div className="home-about__content">
+      <div className="home-about__heading">
+        <p className="home-about__eyebrow">
+          VỀ CHÚNG TÔI
+        </p>
+
+        <h2 className="home-about__title">
+          Về Sage
+        </h2>
+      </div>
+
+      <p className="home-about__description">
+        {mockRestaurantInfo.aboutDescription}
+      </p>
+
+      <div className="home-about__info">
+        <div className="home-about__info-card">
+          <div className="home-about__info-header">
+            <Clock3
+              size={20}
+              strokeWidth={1.8}
+              aria-hidden="true"
+            />
+
+            <h3>Giờ mở cửa</h3>
+          </div>
+
+          <div className="home-about__opening-hours">
+            {mockRestaurantInfo.openingHours.map((item) => (
+              <div
+                key={item.label}
+                className="home-about__opening-row"
+              >
+                <span>{item.label}</span>
+                <span>{item.time}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="home-about__info-card">
+          <div className="home-about__info-header">
+            <MapPin
+              size={20}
+              strokeWidth={1.8}
+              aria-hidden="true"
+            />
+
+            <h3>Địa chỉ & liên hệ</h3>
+          </div>
+
+          <div className="home-about__contact">
+            <p>
+              {mockRestaurantInfo.address}
+            </p>
+
+            <a href={`tel:${mockRestaurantInfo.phone}`}>
+              {mockRestaurantInfo.phone}
+            </a>
+
+            <a href={`mailto:${mockRestaurantInfo.email}`}>
+              {mockRestaurantInfo.email}
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+            </main>
+
+            <Footer restaurantInfo={mockRestaurantInfo}></Footer>
+        </div>
+    )
+}

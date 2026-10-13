@@ -1,0 +1,165 @@
+:root {
+  /* =========================
+     COLORS
+     ========================= */
+
+  /* Primary */
+  --color-primary: #b5533c;
+  --color-primary-hover: #8f3f2d;
+  --color-primary-active: #7a3526;
+  --color-primary-light: #f3ded2;
+  --color-primary-disabled: #d9c7ac;
+  --color-on-primary: #ffffff;
+  --color-on-primary-disabled: #6b5d4f;
+
+  /* Secondary */
+  --color-secondary: #3e4c3b;
+  --color-secondary-hover: #2e3a2c;
+  --color-secondary-active: #273125;
+  --color-secondary-light: #6e7f68;
+  --color-on-secondary: #ffffff;
+
+  /* Background / Surface */
+  --color-bg: #fff8f0;
+  --color-surface: #ffffff;
+  --color-surface-alt: #f5eee3;
+
+  /* Inputs */
+  --color-input-bg: #fffcf7;
+  --color-input-disabled-bg: #f5eee3;
+
+  /* Border */
+  --color-border: #e8dcc9;
+  --color-border-strong: #d9c7ac;
+  --color-border-disabled: #efe7db;
+
+  /* Text */
+  --color-text-primary: #33291f;
+  --color-text-secondary: #6b5d4f;
+  --color-text-muted: #a69c8e;
+  --color-text-disabled: #c9c1b4;
+  --color-text-on-dark: #fff8f0;
+
+  /* Feedback */
+  --color-success: #3e4c3b;
+  --color-success-bg: #e4ebdf;
+
+  --color-warning: #8f5e12;
+  --color-warning-icon: #d9a441;
+  --color-warning-bg: #fbeed0;
+
+  --color-error: #a64438;
+  --color-error-bg: #f5dfda;
+
+  --color-info: #3f6478;
+  --color-info-bg: #e1ebf0;
+
+  /* Focus */
+  --color-focus-ring: #4f7c94;
+
+  /* Overlay / Shadow */
+  --color-overlay: rgba(51, 41, 31, 0.55);
+  --color-shadow: rgba(51, 41, 31, 0.12);
+
+
+  --color-status-completed-bg: #efe7db;
+--color-status-completed: #6b5d4f;
+  /* =========================
+     SPACING
+     Base = 4px
+     ========================= */
+
+  --space-0: 0;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-20: 80px;
+
+  /* Semantic spacing */
+  --space-control-padding-x: 16px;
+  --space-control-padding-y: 8px;
+  --space-form-gap: 16px;
+
+  --space-card-padding-mobile: 16px;
+  --space-card-padding-desktop: 24px;
+
+  --space-page-gutter-mobile: 16px;
+  --space-page-gutter-desktop: 32px;
+
+  --space-section-gap-mobile: 24px;
+  --space-section-gap-desktop: 48px;
+
+  /* =========================
+     RADIUS
+     ========================= */
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-full: 9999px;
+
+  /* Semantic radius */
+  --radius-control: 8px;
+  --radius-card: 12px;
+  --radius-modal: 12px;
+  --radius-image: 16px;
+  --radius-hero: 24px;
+  --radius-pill: 9999px;
+
+  /* =========================
+     BORDER
+     ========================= */
+
+  --border-none: 0;
+  --border-default: 1px;
+  --border-focus: 2px;
+  --border-accent: 4px;
+
+  /* =========================
+     COMPONENT SIZES
+     ========================= */
+
+  --size-button-sm: 32px;
+  --size-button-md: 40px;
+  --size-button-lg: 48px;
+  --size-button-xl: 56px;
+
+  --size-input-sm: 32px;
+  --size-input-md: 40px;
+  --size-input-lg: 48px;
+
+  --size-icon-button-sm: 32px;
+  --size-icon-button-md: 40px;
+  --size-icon-button-lg: 48px;
+
+  --size-touch-target-min: 44px;
+
+  /* Icons */
+  --size-icon-xs: 12px;
+  --size-icon-sm: 16px;
+  --size-icon-md: 20px;
+  --size-icon-lg: 24px;
+  --size-icon-xl: 32px;
+  --size-icon-2xl: 40px;
+
+  /* =========================
+     LAYOUT
+     ========================= */
+
+  --size-content-max: 1200px;
+
+  --size-sidebar: 240px;
+  --size-sidebar-collapsed: 72px;
+
+  --size-header-mobile: 56px;
+  --size-header-desktop: 64px;
+}

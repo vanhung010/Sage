@@ -1,0 +1,177 @@
+/* =========================
+   USER MENU
+   ========================= */
+
+.sage-user-menu {
+  position: relative;
+
+  display: inline-flex;
+}
+
+/* =========================
+   TRIGGER
+   ========================= */
+
+.sage-user-menu-trigger {
+  height: var(--size-button-md);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: var(--space-2);
+
+  padding-inline: var(--space-3);
+
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+
+  background-color: transparent;
+
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+
+  color: var(--color-text-primary);
+
+  cursor: pointer;
+
+  outline: none;
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.sage-user-menu-trigger:hover {
+  background-color: var(--color-surface-alt);
+}
+
+.sage-user-menu-trigger:focus-visible {
+  border-color: var(--color-focus-ring);
+
+  box-shadow:
+    0 0 0 2px var(--color-surface),
+    0 0 0 4px var(--color-focus-ring);
+}
+
+.sage-user-menu-trigger--open {
+  background-color: var(--color-surface-alt);
+}
+
+.sage-user-menu-trigger__icon {
+  flex-shrink: 0;
+
+  color: var(--color-text-secondary);
+
+  transition: transform 150ms ease;
+}
+
+.sage-user-menu-trigger--open
+  .sage-user-menu-trigger__icon {
+  transform: rotate(180deg);
+}
+
+/* =========================
+   DROPDOWN
+   ========================= */
+
+.sage-user-menu__dropdown {
+  position: absolute;
+
+  top: calc(100% + var(--space-2));
+  right: 0;
+
+  z-index: 100;
+
+  width: 180px;
+
+  padding: var(--space-2);
+
+  background-color: var(--color-surface);
+
+  border:
+    var(--border-default)
+    solid
+    var(--color-border);
+
+  border-radius: var(--radius-lg);
+
+  box-shadow:
+    0 8px 24px var(--color-shadow);
+}
+
+/* =========================
+   MENU ITEM
+   ========================= */
+
+.sage-user-menu-item {
+  width: 100%;
+  min-height: 40px;
+
+  display: flex;
+  align-items: center;
+
+  padding-inline: var(--space-3);
+
+  border: none;
+  border-radius: var(--radius-control);
+
+  background-color: transparent;
+
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+
+  color: var(--color-text-primary);
+
+  text-align: left;
+
+  cursor: pointer;
+
+  outline: none;
+
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.sage-user-menu-item:hover {
+  background-color: var(--color-surface-alt);
+}
+
+.sage-user-menu-item:focus-visible {
+  box-shadow:
+    inset 0 0 0 2px
+    var(--color-focus-ring);
+}
+
+/* =========================
+   DANGER
+   ========================= */
+
+.sage-user-menu-item--danger {
+  color: var(--color-error);
+}
+
+.sage-user-menu-item--danger:hover {
+  background-color: var(--color-error-bg);
+  color: var(--color-error);
+}
+
+/* =========================
+   DIVIDER
+   ========================= */
+
+.sage-user-menu__divider {
+  height: 1px;
+
+  margin-block: var(--space-1);
+
+  background-color: var(--color-border);
+}

@@ -1,0 +1,62 @@
+.sage-form-field {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  gap: var(--space-1);
+}
+
+/* =========================
+   LABEL
+   ========================= */
+
+.sage-form-field__label-row {
+  display: flex;
+  align-items: center;
+
+  gap: 2px;
+}
+
+.sage-form-field__label {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+
+  color: var(--color-text-primary);
+}
+
+.sage-form-field__required {
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+
+  color: var(--color-error);
+}
+
+/* =========================
+   SUPPORTING TEXT
+   ========================= */
+
+.sage-form-field__supporting-text {
+  margin: 0;
+
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+
+  color: var(--color-text-secondary);
+}
+
+/* =========================
+   ERROR
+   ========================= */
+
+.sage-form-field--error
+  .sage-form-field__supporting-text {
+  color: var(--color-error);
+}
