@@ -1,24 +1,27 @@
+import { Link, useNavigate } from "react-router-dom";
+import { Clock3, MapPin } from "lucide-react";
+
 import { Header } from "../../components/layout/Header";
 import {
   Footer,
   type FooterRestaurantInfo,
 } from "../../components/layout/Footer";
 
-import "./HomePage.css";
 import { Button } from "../../components/ui/Button";
 import { DishCard } from "../../components/common/DishCard";
+
 import heroImage from "../../assets/background/background1.webp";
-
-import { Clock3, MapPin } from "lucide-react";
-
 import aboutImage from "../../assets/background/background2.avif";
+
+import "./HomePage.css";
 
 interface OpeningHour {
   label: string;
   time: string;
 }
 
-interface RestaurantInfo extends FooterRestaurantInfo {
+interface RestaurantInfo
+  extends FooterRestaurantInfo {
   aboutDescription: string;
   openingHours: OpeningHour[];
 }
@@ -77,198 +80,230 @@ const mockFeaturedDishes = [
 ];
 
 export function HomePage() {
-    return (
-        <div className="home-page">
-            <Header 
-            variant="guest"
-            onLogin={() => {
-                console.log("Đăng nhập")
-            }}
-            onRegister={() => {
-                console.log("Đăng kí")
-            }}
-            />
+  const navigate = useNavigate();
 
-            <main className="home-page__main">
-               <section className="home-hero">
-                <div className="container home-hero__container">
-                    <div className="home-hero__content">
-                    <p className="home-hero__eyebrow">
-                          Nhà hàng hiện đại • Đặt bàn trực tuyến
-                    </p>
-                     <h1 className="home-hero__title">
-                        Một bữa ăn đáng nhớ, bắt đầu từ một
-                         chiếc bàn được giữ sẵn.
-                    </h1>
-                     <p className="home-hero__description">
-                    Sage mang đến trải nghiệm ẩm thực
-                        hiện đại trong không gian ấm cúng,
-                        nơi những món ăn tinh tế và những
-                        khoảnh khắc ý nghĩa được sẻ chia
-                        trọn vẹn.
-                    </p>
-                    <div className="home-hero__actions">
-                        <Button 
-                        variant="primary"
-                        size="lg"
-                        onClick={() => {
-                            console.log("Đặt bàn")
-                        }}>
-                            Đặt bàn ngay
-                        </Button>
+  return (
+    <div className="home-page">
+      <Header variant="guest" />
 
-                        <Button
-                        variant="outline"
-                        size="lg"
-                        onClick={() => {
-                            console.log("Xem thực đơn")
-                        }}
+      <main className="home-page__main">
+        {/* HERO */}
+        <section className="home-hero">
+          <div className="container home-hero__container">
+            <div className="home-hero__content">
+              <p className="home-hero__eyebrow">
+                Nhà hàng hiện đại • Đặt bàn trực tuyến
+              </p>
+
+              <h1 className="home-hero__title">
+                Một bữa ăn đáng nhớ, bắt đầu từ một
+                chiếc bàn được giữ sẵn.
+              </h1>
+
+              <p className="home-hero__description">
+                Sage mang đến trải nghiệm ẩm thực
+                hiện đại trong không gian ấm cúng,
+                nơi những món ăn tinh tế và những
+                khoảnh khắc ý nghĩa được sẻ chia
+                trọn vẹn.
+              </p>
+
+              <div className="home-hero__actions">
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={() =>
+                    navigate("/reservation")
+                  }
+                >
+                  Đặt bàn ngay
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="lg"
+                  onClick={() =>
+                    navigate("/menu")
+                  }
+                >
+                  Xem thực đơn
+                </Button>
+              </div>
+            </div>
+
+            <div className="home-hero__media">
+              <img
+                src={heroImage}
+                alt="Không gian nhà hàng Sage"
+                className="home-hero__image"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* FEATURED MENU */}
+        <section className="home-featured">
+          <div className="container home-featured__container">
+            <div className="home-featured__header">
+              <div className="home-featured__title-group">
+                <p className="home-featured__eyebrow">
+                  THỰC ĐƠN NỔI BẬT
+                </p>
+
+                <h2 className="home-featured__title">
+                  Món nổi bật tại Sage
+                </h2>
+              </div>
+
+              <Link
+                to="/menu"
+                className="home-featured__view-all"
+              >
+                Xem toàn bộ thực đơn →
+              </Link>
+            </div>
+
+            <div className="home-featured__grid">
+              {mockFeaturedDishes.map(
+                (dish) => (
+                  <DishCard
+                    key={dish.id}
+                    name={dish.name}
+                    description={
+                      dish.description
+                    }
+                    price={dish.price}
+                    badge={dish.badge}
+                    onAdd={() => {
+                      console.log(
+                        "Thêm món:",
+                        dish.name,
+                      );
+                    }}
+                    onClick={() => {
+                      console.log(
+                        "Xem món:",
+                        dish.id,
+                      );
+                    }}
+                  />
+                ),
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* ABOUT */}
+        <section
+          id="about"
+          className="home-about"
+        >
+          <div className="container home-about__container">
+            <div className="home-about__media">
+              <img
+                src={aboutImage}
+                alt="Không gian nhà hàng Sage"
+                className="home-about__image"
+              />
+            </div>
+
+            <div className="home-about__content">
+              <div className="home-about__heading">
+                <p className="home-about__eyebrow">
+                  VỀ CHÚNG TÔI
+                </p>
+
+                <h2 className="home-about__title">
+                  Về Sage
+                </h2>
+              </div>
+
+              <p className="home-about__description">
+                {
+                  mockRestaurantInfo.aboutDescription
+                }
+              </p>
+
+              <div className="home-about__info">
+                {/* Opening Hours */}
+                <div className="home-about__info-card">
+                  <div className="home-about__info-header">
+                    <Clock3
+                      size={20}
+                      strokeWidth={1.8}
+                      aria-hidden="true"
+                    />
+
+                    <h3>Giờ mở cửa</h3>
+                  </div>
+
+                  <div className="home-about__opening-hours">
+                    {mockRestaurantInfo.openingHours.map(
+                      (item) => (
+                        <div
+                          key={item.label}
+                          className="home-about__opening-row"
                         >
-                            Xem thực đơn
-                        </Button>
-                    </div>
+                          <span>
+                            {item.label}
+                          </span>
 
-
-
-
-
-                    </div>
-
-                    <div className = "home-hero__media">
-                        <img 
-                        src= {heroImage}
-                        alt="Không gian nhà hàng Sage"
-                        className="home-hero__image"></img>
-                    </div>
+                          <span>
+                            {item.time}
+                          </span>
+                        </div>
+                      ),
+                    )}
+                  </div>
                 </div>
-               </section>
 
-               <section className="home-featured">
-  <div className="container home-featured__container">
-    <div className="home-featured__header">
-      <div className="home-featured__title-group">
-        <p className="home-featured__eyebrow">
-          THỰC ĐƠN NỔI BẬT
-        </p>
+                {/* Contact */}
+                <div className="home-about__info-card">
+                  <div className="home-about__info-header">
+                    <MapPin
+                      size={20}
+                      strokeWidth={1.8}
+                      aria-hidden="true"
+                    />
 
-        <h2 className="home-featured__title">
-          Món nổi bật tại Sage
-        </h2>
-      </div>
+                    <h3>
+                      Địa chỉ & liên hệ
+                    </h3>
+                  </div>
 
-      <button
-        type="button"
-        className="home-featured__view-all"
-        onClick={() => {
-          console.log("Xem toàn bộ thực đơn");
-        }}
-      >
-        Xem toàn bộ thực đơn →
-      </button>
-    </div>
+                  <div className="home-about__contact">
+                    <p>
+                      {
+                        mockRestaurantInfo.address
+                      }
+                    </p>
 
-    <div className="home-featured__grid">
-      {mockFeaturedDishes.map((dish) => (
-        <DishCard
-          key={dish.id}
-          name={dish.name}
-          description={dish.description}
-          price={dish.price}
-          badge={dish.badge}
-          onAdd={() => {
-            console.log("Thêm món:", dish.name);
-          }}
-          onClick={() => {
-            console.log("Xem món:", dish.id);
-          }}
-        />
-      ))}
-    </div>
-  </div>
-</section>
+                    <a
+                      href={`tel:${mockRestaurantInfo.phone}`}
+                    >
+                      {
+                        mockRestaurantInfo.phone
+                      }
+                    </a>
 
-<section className="home-about">
-  <div className="container home-about__container">
-    <div className="home-about__media">
-      <img
-        src={aboutImage}
-        alt="Không gian nhà hàng Sage"
-        className="home-about__image"
+                    <a
+                      href={`mailto:${mockRestaurantInfo.email}`}
+                    >
+                      {
+                        mockRestaurantInfo.email
+                      }
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <Footer
+        restaurantInfo={mockRestaurantInfo}
       />
     </div>
-
-    <div className="home-about__content">
-      <div className="home-about__heading">
-        <p className="home-about__eyebrow">
-          VỀ CHÚNG TÔI
-        </p>
-
-        <h2 className="home-about__title">
-          Về Sage
-        </h2>
-      </div>
-
-      <p className="home-about__description">
-        {mockRestaurantInfo.aboutDescription}
-      </p>
-
-      <div className="home-about__info">
-        <div className="home-about__info-card">
-          <div className="home-about__info-header">
-            <Clock3
-              size={20}
-              strokeWidth={1.8}
-              aria-hidden="true"
-            />
-
-            <h3>Giờ mở cửa</h3>
-          </div>
-
-          <div className="home-about__opening-hours">
-            {mockRestaurantInfo.openingHours.map((item) => (
-              <div
-                key={item.label}
-                className="home-about__opening-row"
-              >
-                <span>{item.label}</span>
-                <span>{item.time}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="home-about__info-card">
-          <div className="home-about__info-header">
-            <MapPin
-              size={20}
-              strokeWidth={1.8}
-              aria-hidden="true"
-            />
-
-            <h3>Địa chỉ & liên hệ</h3>
-          </div>
-
-          <div className="home-about__contact">
-            <p>
-              {mockRestaurantInfo.address}
-            </p>
-
-            <a href={`tel:${mockRestaurantInfo.phone}`}>
-              {mockRestaurantInfo.phone}
-            </a>
-
-            <a href={`mailto:${mockRestaurantInfo.email}`}>
-              {mockRestaurantInfo.email}
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-            </main>
-
-            <Footer restaurantInfo={mockRestaurantInfo}></Footer>
-        </div>
-    )
+  );
 }

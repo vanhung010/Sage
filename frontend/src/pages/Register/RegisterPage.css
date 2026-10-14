@@ -1,0 +1,271 @@
+.register-page {
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  background-color: var(--color-bg);
+}
+
+/* =========================
+   MAIN
+   ========================= */
+
+.register-page__main {
+  width: 100%;
+
+  flex: 1;
+
+  background-color: var(--color-bg);
+}
+
+/* =========================
+   CONTAINER
+   ========================= */
+
+.register-page__container {
+  width: 100%;
+  min-height: calc(
+    100vh - var(--size-header-desktop)
+  );
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  padding:
+    64px
+    60px
+    80px;
+}
+
+/* =========================
+   CARD
+   ========================= */
+
+.register-page__card {
+  width: 100%;
+  max-width: 560px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: var(--space-6);
+
+  padding: var(--space-8);
+
+  background-color:
+    var(--color-surface);
+
+  border:
+    var(--border-default)
+    solid
+    var(--color-border);
+
+  border-radius:
+    var(--radius-xl);
+}
+
+/* =========================
+   HEADING
+   ========================= */
+
+.register-page__heading {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: var(--space-2);
+
+  text-align: center;
+}
+
+.register-page__eyebrow {
+  margin: 0;
+
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+
+  color: var(--color-primary);
+}
+
+.register-page__title {
+  margin: 0;
+
+  font-family: var(--font-body);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 40px;
+
+  color:
+    var(--color-text-primary);
+}
+
+.register-page__description {
+  margin: 0;
+
+  font-family: var(--font-body);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+
+  color:
+    var(--color-text-secondary);
+}
+
+/* =========================
+   FORM
+   ========================= */
+
+.register-page__form {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: var(--space-4);
+}
+
+/* =========================
+   PASSWORD TOGGLE
+   ========================= */
+
+.register-page__password-toggle {
+  width: 20px;
+  height: 20px;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+  background: transparent;
+
+  color:
+    var(--color-text-secondary);
+
+  cursor: pointer;
+
+  outline: none;
+}
+
+.register-page__password-toggle:hover {
+  color:
+    var(--color-text-primary);
+}
+
+.register-page__password-toggle:focus-visible {
+  border-radius: var(--radius-sm);
+
+  outline:
+    2px
+    solid
+    var(--color-focus-ring);
+
+  outline-offset: 2px;
+}
+
+/* =========================
+   ACTION
+   ========================= */
+
+.register-page__action {
+  width: 100%;
+
+  padding-top: var(--space-2);
+}
+
+/* =========================
+   LOGIN PROMPT
+   ========================= */
+
+.register-page__login {
+  width: 100%;
+
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+
+  gap: var(--space-2);
+
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.register-page__login span {
+  color:
+    var(--color-text-secondary);
+}
+
+.register-page__login a {
+  font-weight: 500;
+
+  color:
+    var(--color-primary);
+
+  text-decoration: none;
+}
+
+.register-page__login a:hover {
+  color:
+    var(--color-primary-hover);
+}
+
+/* =========================
+   TABLET
+   ========================= */
+
+@media (max-width: 1024px) {
+  .register-page__container {
+    padding:
+      48px
+      32px
+      64px;
+  }
+}
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 600px) {
+  .register-page__container {
+    min-height:
+      calc(
+        100vh -
+        var(--size-header-mobile)
+      );
+
+    padding:
+      32px
+      16px
+      48px;
+  }
+
+  .register-page__card {
+    padding:
+      var(--space-6)
+      var(--space-4);
+
+    border-radius:
+      var(--radius-lg);
+  }
+
+  .register-page__title {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .register-page__description {
+    font-size: 14px;
+    line-height: 20px;
+  }
+}

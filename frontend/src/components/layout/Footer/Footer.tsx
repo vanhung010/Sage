@@ -4,6 +4,8 @@ import {
   Phone,
 } from "lucide-react";
 
+import { Link } from "react-router-dom";
+
 import sageLogo from "../../../assets/logo/sage-logo-dark.svg";
 
 import "./Footer.css";
@@ -23,19 +25,19 @@ interface FooterProps {
 const navigationItems = [
   {
     label: "Trang chủ",
-    href: "/",
+    to: "/",
   },
   {
     label: "Thực đơn",
-    href: "/menu",
+    to: "/menu",
   },
   {
     label: "Đặt bàn",
-    href: "/reservation",
+    to: "/reservation",
   },
   {
     label: "Về Sage",
-    href: "/#about",
+    to: "/#about",
   },
 ];
 
@@ -55,8 +57,8 @@ export function Footer({
       <div className="sage-footer__content">
         {/* Brand */}
         <div className="sage-footer__brand">
-          <a
-            href="/"
+          <Link
+            to="/"
             className="sage-footer__logo-link"
             aria-label="Sage - Trang chủ"
           >
@@ -65,7 +67,7 @@ export function Footer({
               alt="Sage"
               className="sage-footer__logo"
             />
-          </a>
+          </Link>
 
           <p className="sage-footer__description">
             {restaurantInfo.description}
@@ -83,13 +85,13 @@ export function Footer({
             aria-label="Điều hướng cuối trang"
           >
             {navigationItems.map((item) => (
-              <a
-                key={item.href}
-                href={item.href}
+              <Link
+                key={item.to}
+                to={item.to}
                 className="sage-footer__link"
               >
                 {item.label}
-              </a>
+              </Link>
             ))}
           </nav>
         </div>

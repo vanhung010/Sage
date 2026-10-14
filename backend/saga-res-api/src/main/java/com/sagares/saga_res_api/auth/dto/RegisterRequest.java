@@ -28,6 +28,8 @@ public record RegisterRequest(
         )
         String password,
 
+
+
         @Schema(description = "Customer's full name. Must be non-blank.", example = "Nguyen Van A")
         @NotBlank
         String fullName,

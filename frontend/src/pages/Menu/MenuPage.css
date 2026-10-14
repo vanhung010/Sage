@@ -1,0 +1,267 @@
+.menu-page {
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  flex-direction: column;
+
+  background-color: var(--color-surface);
+}
+
+.menu-page__main {
+  width: 100%;
+
+  flex: 1;
+}
+
+/* =========================
+   PAGE HEADER
+   ========================= */
+
+.menu-page__header {
+  width: 100%;
+
+  padding-block: 64px;
+
+  background-color:
+    var(--color-surface-alt);
+}
+
+.menu-page__header-content {
+  max-width: 600px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: var(--space-3);
+}
+
+/* =========================
+   EYEBROW
+   ========================= */
+
+.menu-page__eyebrow {
+  margin: 0;
+
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+
+  color: var(--color-primary);
+}
+
+/* =========================
+   TITLE
+   ========================= */
+
+.menu-page__title {
+  margin: 0;
+
+  font-family: var(--font-body);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 40px;
+
+  color:
+    var(--color-text-primary);
+}
+
+/* =========================
+   DESCRIPTION
+   ========================= */
+
+.menu-page__description {
+  margin: 0;
+
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 28px;
+
+  color:
+    var(--color-text-secondary);
+}
+
+/* =========================
+   CONTENT
+   ========================= */
+
+.menu-page__content {
+  width: 100%;
+
+  padding-block: 64px;
+
+  background-color:
+    var(--color-surface);
+}
+
+.menu-page__container {
+  display: flex;
+  flex-direction: column;
+
+  gap: var(--space-6);
+}
+
+/* =========================
+   CONTROLS
+   ========================= */
+
+.menu-page__controls {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: var(--space-6);
+}
+
+/* =========================
+   CATEGORY
+   ========================= */
+
+.menu-page__categories {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+
+  gap: var(--space-2);
+
+  overflow-x: auto;
+
+  scrollbar-width: none;
+}
+
+.menu-page__categories::-webkit-scrollbar {
+  display: none;
+}
+
+/* =========================
+   SEARCH + FILTER
+   ========================= */
+
+.menu-page__filters {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    200px
+    200px;
+
+  gap: var(--space-4);
+}
+
+/* =========================
+   DISH GRID
+   ========================= */
+
+.menu-page__dish-grid {
+  width: 100%;
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 380px));
+
+  justify-content: space-between;
+
+  column-gap: var(--space-6);
+  row-gap: var(--space-6);
+}
+
+/* =========================
+   PAGINATION
+   ========================= */
+
+.menu-page__pagination {
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding-top: var(--space-2);
+}
+
+/* =========================
+   TABLET
+   ========================= */
+
+@media (max-width: 1024px) {
+  .menu-page__header {
+    padding-block: 48px;
+  }
+
+  .menu-page__content {
+    padding-block: 48px;
+  }
+
+  .menu-page__filters {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .menu-page__filters > :first-child {
+    grid-column: 1 / -1;
+  }
+
+  .menu-page__dish-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap: var(--space-6);
+  }
+
+  .menu-page__dish-grid
+    .sage-dish-card {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 768px) {
+  .menu-page__header {
+    padding-block: 40px;
+  }
+
+  .menu-page__content {
+    padding-block: 40px;
+  }
+
+  .menu-page__title {
+    font-size: 28px;
+    line-height: 36px;
+  }
+
+  .menu-page__description {
+    font-size: 16px;
+    line-height: 24px;
+  }
+
+  .menu-page__filters {
+    grid-template-columns: 1fr;
+  }
+
+  .menu-page__filters > :first-child {
+    grid-column: auto;
+  }
+
+  .menu-page__dish-grid {
+    grid-template-columns: 1fr;
+
+    gap: var(--space-5);
+  }
+
+  .menu-page__dish-grid
+    .sage-dish-card {
+    width: 100%;
+    max-width: none;
+  }
+}

@@ -1,3 +1,9 @@
+import {
+  Link,
+  NavLink,
+  useNavigate,
+} from "react-router-dom";
+
 import { Button } from "../../ui/Button";
 import { UserMenu } from "../../common/UserMenu";
 
@@ -12,60 +18,40 @@ export type HeaderVariant =
 
 interface HeaderProps {
   variant?: HeaderVariant;
-
   userName?: string;
-
-  onLogin?: () => void;
-  onRegister?: () => void;
-
-  onProfile?: () => void;
-  onReservations?: () => void;
-  onOrders?: () => void;
-  onChangePassword?: () => void;
-  onLogout?: () => void;
-
   className?: string;
 }
 
 const navItems = [
   {
     label: "Trang chủ",
-    href: "/",
+    to: "/",
   },
   {
     label: "Thực đơn",
-    href: "/menu",
+    to: "/menu",
   },
   {
     label: "Đặt bàn",
-    href: "/reservation",
+    to: "/reservation",
   },
   {
     label: "Đặt món ăn",
-    href: "/order",
+    to: "/order",
   },
   {
     label: "Về Sage",
-    href: "/#about",
+    to: "/#about",
   },
 ];
 
 export function Header({
   variant = "guest",
-
   userName = "Khách hàng",
-
-  onLogin,
-  onRegister,
-
-  onProfile,
-  onReservations,
-  onOrders,
-  onChangePassword,
-  onLogout,
-
   className = "",
 }: HeaderProps) {
+  const navigate = useNavigate();
+
   const classes = [
     "sage-header",
     className,
@@ -73,10 +59,39 @@ export function Header({
     .filter(Boolean)
     .join(" ");
 
+  function handleProfile() {
+    navigate("/profile");
+  }
+
+  function handleReservations() {
+    navigate("/reservations");
+  }
+
+  function handleOrders() {
+    navigate("/orders");
+  }
+
+  function handleChangePassword() {
+    navigate("/change-password");
+  }
+
+  function handleLogout() {
+    /*
+      Tạm thời chỉ chuyển về login.
+
+      Sau này khi có AuthContext:
+      logout();
+      navigate("/login");
+    */
+
+    navigate("/login");
+  }
+
   return (
     <header className={classes}>
-      <a
-        href="/"
+      {/* Logo */}
+      <Link
+        to="/"
         className="sage-header__logo-link"
         aria-label="Sage - Trang chủ"
       >
@@ -85,32 +100,46 @@ export function Header({
           src={sageLogo}
           alt="Sage"
         />
-      </a>
+      </Link>
 
+      {/* Main Navigation */}
       {variant !== "auth" && (
         <nav
           className="sage-header__navigation"
           aria-label="Điều hướng chính"
         >
           {navItems.map((item) => (
-            <a
-              key={item.href}
-              href={item.href}
-              className="sage-header__nav-item"
+            <NavLink
+              key={item.to}
+              to={item.to}
+              end={item.to === "/"}
+              className={({ isActive }) =>
+                [
+                  "sage-header__nav-item",
+                  isActive
+                    ? "sage-header__nav-item--active"
+                    : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")
+              }
             >
               {item.label}
-            </a>
+            </NavLink>
           ))}
         </nav>
       )}
 
+      {/* Guest */}
       {variant === "guest" && (
         <div className="sage-header__actions">
           <Button
             variant="outline"
             size="md"
-            onClick={onLogin}
             className="sage-header__login-button"
+            onClick={() => {
+              navigate("/login");
+            }}
           >
             Đăng nhập
           </Button>
@@ -118,33 +147,37 @@ export function Header({
           <Button
             variant="primary"
             size="md"
-            onClick={onRegister}
+            onClick={() => {
+              navigate("/register");
+            }}
           >
             Đăng kí
           </Button>
         </div>
       )}
 
+      {/* Customer */}
       {variant === "customer" && (
         <div className="sage-header__customer-actions">
           <UserMenu
             userName={userName}
-            onProfile={onProfile}
-            onReservations={onReservations}
-            onOrders={onOrders}
-            onChangePassword={onChangePassword}
-            onLogout={onLogout}
+            onProfile={handleProfile}
+            onReservations={handleReservations}
+            onOrders={handleOrders}
+            onChangePassword={handleChangePassword}
+            onLogout={handleLogout}
           />
         </div>
       )}
 
+      {/* Auth */}
       {variant === "auth" && (
-        <a
-          href="/"
+        <Link
+          to="/"
           className="sage-header__back-home"
         >
           Về trang chủ
-        </a>
+        </Link>
       )}
     </header>
   );

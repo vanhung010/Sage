@@ -34,7 +34,7 @@ public class AuthService {
                     "Email đã được đăng kí"
             );
         }
-
+        
         Account account = new Account();
         account.setEmail(email);
         account.setPasswordHash(
