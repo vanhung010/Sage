@@ -42,6 +42,7 @@ public class JwtService {
     }
 
     public String generateAccessToken(Account account) {
+        //Thời gian hiện tại và hết han
         Instant now = Instant.now();
         Instant expiresAt = now.plus(properties.accessTokenTtl());
 
