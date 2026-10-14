@@ -54,21 +54,15 @@ public class AuthService {
         //parse email
         String email = normalizeEmail(request.email());
         //Tìm tài khoản nếu không có ném lỗi
-//        Account account = accountRepository.findByEmail(email)
-//                .orElseThrow(this::invalidCredentials);
-
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new UnauthorizedException("Email không đúng"));
+                .orElseThrow(this::invalidCredentials);
 
         if (account.isLocked()) {
-            throw new UnauthorizedException("Tài khoản đã bị khóa");
+            throw invalidCredentials();
         }
 
-        if (!passwordEncoder.matches(
-                request.password(),
-                account.getPasswordHash()
-        )) {
-            throw new UnauthorizedException("Mật khẩu không đúng");
+        if (!passwordEncoder.matches(request.password(), account.getPasswordHash())) {
+         throw invalidCredentials();
         }
 
         String token = jwtService.generateAccessToken(account);

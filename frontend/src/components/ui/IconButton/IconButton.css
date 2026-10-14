@@ -1,0 +1,207 @@
+.sage-icon-button {
+  flex-shrink: 0;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+  border-radius: var(--radius-control);
+
+  font-family: inherit;
+
+  cursor: pointer;
+
+  outline: none;
+
+  transition:
+    background-color 150ms ease,
+    border-color 150ms ease,
+    color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+/* =========================
+   ICON
+   ========================= */
+
+.sage-icon-button__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sage-icon-button__icon svg {
+  display: block;
+}
+
+/* =========================
+   SIZE
+   ========================= */
+
+.sage-icon-button--sm {
+  width: var(--size-icon-button-sm);
+  height: var(--size-icon-button-sm);
+}
+
+.sage-icon-button--sm
+  .sage-icon-button__icon svg {
+  width: var(--size-icon-sm);
+  height: var(--size-icon-sm);
+}
+
+.sage-icon-button--md {
+  width: var(--size-icon-button-md);
+  height: var(--size-icon-button-md);
+}
+
+.sage-icon-button--md
+  .sage-icon-button__icon svg {
+  width: var(--size-icon-md);
+  height: var(--size-icon-md);
+}
+
+.sage-icon-button--lg {
+  width: var(--size-icon-button-lg);
+  height: var(--size-icon-button-lg);
+}
+
+.sage-icon-button--lg
+  .sage-icon-button__icon svg {
+  width: var(--size-icon-lg);
+  height: var(--size-icon-lg);
+}
+
+/* =========================
+   PRIMARY
+   ========================= */
+
+.sage-icon-button--primary {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.sage-icon-button--primary:hover:not(:disabled) {
+  background-color:
+    var(--color-primary-hover);
+}
+
+.sage-icon-button--primary:active:not(:disabled) {
+  background-color:
+    var(--color-primary-active);
+}
+
+/* =========================
+   SECONDARY
+   ========================= */
+
+.sage-icon-button--secondary {
+  background-color:
+    var(--color-secondary);
+
+  color:
+    var(--color-on-secondary);
+}
+
+.sage-icon-button--secondary:hover:not(:disabled) {
+  background-color:
+    var(--color-secondary-hover);
+}
+
+.sage-icon-button--secondary:active:not(:disabled) {
+  background-color:
+    var(--color-secondary-active);
+}
+
+/* =========================
+   OUTLINE
+   ========================= */
+
+.sage-icon-button--outline {
+  background-color:
+    var(--color-surface);
+
+  color:
+    var(--color-primary);
+
+  border:
+    var(--border-default)
+    solid
+    var(--color-border-strong);
+}
+
+.sage-icon-button--outline:hover:not(:disabled) {
+  background-color:
+    var(--color-surface-alt);
+}
+
+.sage-icon-button--outline:active:not(:disabled) {
+  background-color:
+    var(--color-primary-light);
+}
+
+/* =========================
+   GHOST
+   ========================= */
+
+.sage-icon-button--ghost {
+  background-color: transparent;
+
+  color:
+    var(--color-text-secondary);
+}
+
+.sage-icon-button--ghost:hover:not(:disabled) {
+  background-color:
+    var(--color-surface-alt);
+
+  color:
+    var(--color-text-primary);
+}
+
+.sage-icon-button--ghost:active:not(:disabled) {
+  background-color:
+    var(--color-primary-light);
+}
+
+/* =========================
+   DESTRUCTIVE
+   ========================= */
+
+.sage-icon-button--destructive {
+  background-color:
+    var(--color-error-bg);
+
+  color:
+    var(--color-error);
+}
+
+.sage-icon-button--destructive:hover:not(:disabled) {
+  background-color:
+    var(--color-error);
+
+  color:
+    var(--color-on-primary);
+}
+
+/* =========================
+   FOCUS
+   ========================= */
+
+.sage-icon-button:focus-visible {
+  box-shadow:
+    0 0 0 2px var(--color-surface),
+    0 0 0 4px var(--color-focus-ring);
+}
+
+/* =========================
+   DISABLED
+   ========================= */
+
+.sage-icon-button:disabled {
+  cursor: not-allowed;
+
+  opacity: 0.5;
+}
