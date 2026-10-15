@@ -59,4 +59,64 @@ public interface DishRepository extends JpaRepository<Dish, Long> {
             where d.id = :id
             """)
     Optional<Dish> findAdminDetailById(@Param("id") Long id);
+
+    @Query(value = """
+            select d.id
+            from Dish d
+            where d.status <> :hiddenStatus
+              and (:searchPattern is null or lower(d.name) like :searchPattern escape '\\')
+              and (:categoryId is null or d.category.id = :categoryId)
+              and (:minPrice is null or d.price >= :minPrice)
+              and (:maxPrice is null or d.price <= :maxPrice)
+              and (:tagId is null or exists (
+                  select t.id from Dish tagged join tagged.tags t
+                  where tagged.id = d.id and t.id = :tagId
+              ))
+            """,
+            countQuery = """
+            select count(d)
+            from Dish d
+            where d.status <> :hiddenStatus
+              and (:searchPattern is null or lower(d.name) like :searchPattern escape '\\')
+              and (:categoryId is null or d.category.id = :categoryId)
+              and (:minPrice is null or d.price >= :minPrice)
+              and (:maxPrice is null or d.price <= :maxPrice)
+              and (:tagId is null or exists (
+                  select t.id from Dish tagged join tagged.tags t
+                  where tagged.id = d.id and t.id = :tagId
+              ))
+            """)
+    Page<Long> findPublicDishIds(
+            @Param("hiddenStatus") DishStatus hiddenStatus,
+            @Param("searchPattern") String searchPattern,
+            @Param("categoryId") Long categoryId,
+            @Param("minPrice") Integer minPrice,
+            @Param("maxPrice") Integer maxPrice,
+            @Param("tagId") Long tagId,
+            Pageable pageable
+    );
+
+    @Query("""
+            select distinct d
+            from Dish d
+            join fetch d.category
+            left join fetch d.tags
+            where d.id in :ids and d.status <> :hiddenStatus
+            """)
+    List<Dish> findAllPublicDetailsByIdIn(
+            @Param("ids") Collection<Long> ids,
+            @Param("hiddenStatus") DishStatus hiddenStatus
+    );
+
+    @Query("""
+            select distinct d
+            from Dish d
+            join fetch d.category
+            left join fetch d.tags
+            where d.id = :id and d.status <> :hiddenStatus
+            """)
+    Optional<Dish> findPublicDetailById(
+            @Param("id") Long id,
+            @Param("hiddenStatus") DishStatus hiddenStatus
+    );
 }

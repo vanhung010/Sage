@@ -4,6 +4,8 @@ import {
   useNavigate,
 } from "react-router-dom";
 
+import { useAuth } from "../../../auth/AuthContext";
+
 import { Button } from "../../ui/Button";
 import { UserMenu } from "../../common/UserMenu";
 
@@ -46,11 +48,23 @@ const navItems = [
 ];
 
 export function Header({
-  variant = "guest",
-  userName = "Khách hàng",
+  variant: requestedVariant = "guest",
+  userName: fallbackUserName = "Khách hàng",
   className = "",
 }: HeaderProps) {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  // Trang login/register giữ giao diện auth.
+  // Các trang khác hiển thị theo trạng thái đăng nhập thực tế.
+  const variant: HeaderVariant =
+    requestedVariant === "auth"
+      ? "auth"
+      : user
+        ? "customer"
+        : "guest";
+
+  const userName = user?.fullName?.trim() || fallbackUserName;
 
   const classes = [
     "sage-header",
@@ -76,15 +90,8 @@ export function Header({
   }
 
   function handleLogout() {
-    /*
-      Tạm thời chỉ chuyển về login.
-
-      Sau này khi có AuthContext:
-      logout();
-      navigate("/login");
-    */
-
-    navigate("/login");
+    logout();
+    navigate("/login", { replace: true });
   }
 
   return (
@@ -134,6 +141,7 @@ export function Header({
       {variant === "guest" && (
         <div className="sage-header__actions">
           <Button
+            type="button"
             variant="outline"
             size="md"
             className="sage-header__login-button"
@@ -145,13 +153,14 @@ export function Header({
           </Button>
 
           <Button
+            type="button"
             variant="primary"
             size="md"
             onClick={() => {
               navigate("/register");
             }}
           >
-            Đăng kí
+            Đăng ký
           </Button>
         </div>
       )}

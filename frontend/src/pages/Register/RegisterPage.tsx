@@ -8,7 +8,9 @@ import { Button } from "../../components/ui/Button";
 
 import "./RegisterPage.css";
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { authApi } from "../../api/auth.api";
+import { getApiError } from "../../api/error";
 
 interface RegisterForm {
   fullName: string;
@@ -37,6 +39,11 @@ const initialForm: RegisterForm = {
 };
 
 export function RegisterPage() {
+
+  const navigate = useNavigate();
+
+  const [formError, setFormError] = useState("");
+
   const [form, setForm] =
     useState<RegisterForm>(initialForm);
 
@@ -148,29 +155,35 @@ export function RegisterPage() {
     );
   }
 
-  function handleSubmit(
+  async function handleSubmit(
     event: React.FormEvent<HTMLFormElement>,
   ) {
     event.preventDefault();
 
-    const isValid = validateForm();
+    if(loading) return;
 
-    if (!isValid) {
-      return;
+    setFormError("");
+
+    if(!validateForm()) return
+
+    try {
+      setLoading(true);
+      await authApi.register({
+        fullName: form.fullName.trim(),
+         email: form.email.trim(),
+        phone: form.phone.trim(),
+        password: form.password,
+      })
+
+       navigate("/login", { replace: true }); 
+  }
+   catch (error) {
+    setFormError(getApiError(error).message);
     }
-
-    /*
-      Chưa nối API.
-      Sau này gọi register API ở đây.
-    */
-
-    setLoading(true);
-
-    console.log("Register data:", form);
-
+    finally {
     setLoading(false);
   }
-
+  }
   return (
     <div className="register-page">
       <Header variant="auth" />
@@ -402,6 +415,11 @@ export function RegisterPage() {
               {/* Submit */}
 
               <div className="register-page__action">
+                {formError && (
+                <p role="alert" aria-live="polite">
+                  {formError}
+                </p>
+              )}
                 <Button
                   type="submit"
                   variant="primary"

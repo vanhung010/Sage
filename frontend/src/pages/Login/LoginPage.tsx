@@ -12,7 +12,9 @@ import { Header } from "../../components/layout/Header";
 import { FormField } from "../../components/ui/FormField";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../../auth/AuthContext";
+import { getApiError } from "../../api/error";
 import "./LoginPage.css";
 
 interface LoginForm {
@@ -33,6 +35,10 @@ const initialForm: LoginForm = {
 };
 
 export function LoginPage() {
+
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
   const [form, setForm] =
     useState<LoginForm>(initialForm);
 
@@ -45,8 +51,7 @@ export function LoginPage() {
   const [showPassword, setShowPassword] =
     useState(false);
 
-  const [loading, setLoading] =
-    useState(false);
+  const [loading, setLoading] = useState(false);
 
   function handleChange(
     field: LoginField,
@@ -109,59 +114,27 @@ export function LoginPage() {
     );
   }
 
-  async function handleSubmit(
-    event: FormEvent<HTMLFormElement>,
-  ) {
+  async function handleSubmit(event: FormEvent<HTMLFormElement>,) {
     event.preventDefault();
+    //Đã đăng nhập
+    if (loading) return;
 
     setFormError("");
 
-    const isValid = validateForm();
+    //Nếu lỗi prompt
+    if (!validateForm()) return;
 
-    if (!isValid) {
-      return;
-    }
+  try {
+    setLoading(true);
 
-    try {
-      setLoading(true);
+    await login({ email: form.email.trim(), password: form.password,});
 
-      /*
-        Sau này gọi API ở đây.
-
-        Ví dụ tư duy:
-
-        const response = await authApi.login({
-          email: form.email,
-          password: form.password,
-        });
-
-        lưu access token
-        lưu user
-        redirect theo role
-      */
-
-      console.log("Login:", form);
-
-    } catch (error) {
-      /*
-        Sau này kiểm tra status API.
-
-        Nếu 401:
-        setFormError(
-          "Email hoặc mật khẩu không đúng."
-        );
-
-        Nếu lỗi khác:
-        setFormError(
-          "Không thể đăng nhập. Vui lòng thử lại."
-        );
-      */
-
-      console.error(error);
-
-    } finally {
-      setLoading(false);
-    }
+    navigate("/", { replace: true });
+  } catch (error) {
+    setFormError(getApiError(error).message);
+  } finally {
+    setLoading(false);
+  }
   }
 
   return (

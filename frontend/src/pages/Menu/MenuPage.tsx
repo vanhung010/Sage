@@ -1,4 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+import { menuApi } from "../../api/menu.api";
+import { getApiError } from "../../api";
+import type { DishSummary } from "../../types/menu";
+import type { PriceRange } from "../../types/menu";
 import { Search } from "lucide-react";
 
 import { Header } from "../../components/layout/Header";
@@ -25,14 +31,6 @@ interface Category {
   name: string;
 }
 
-interface DishPreview {
-  id: number;
-  name: string;
-  description: string;
-  price: number;
-  badge?: string;
-  imageUrl?: string;
-}
 
 /* =========================
    MOCK DATA
@@ -80,18 +78,11 @@ const mockCategories: Category[] = [
 ];
 
 const priceOptions = [
-  {
-    value: "under-200",
-    label: "Dưới 200.000₫",
-  },
-  {
-    value: "200-400",
-    label: "200.000₫ - 400.000₫",
-  },
-  {
-    value: "over-400",
-    label: "Trên 400.000₫",
-  },
+  { value: "", label: "Tất cả khoảng giá" },
+  { value: "UNDER_100K", label: "Dưới 100.000₫" },
+  { value: "FROM_100K_TO_200K", label: "100.000₫ - 200.000₫" },
+  { value: "FROM_200K_TO_300K", label: "200.000₫ - 300.000₫" },
+  { value: "OVER_300K", label: "Trên 300.000₫" },
 ];
 
 const tagOptions = [
@@ -105,43 +96,94 @@ const tagOptions = [
   },
 ];
 
-/*
-  Figma đang dùng cùng một DishCard làm placeholder.
-  Tạo 9 phần tử để test grid 3 x 3.
-*/
-const mockDishes: DishPreview[] = Array.from(
-  { length: 9 },
-  (_, index) => ({
-    id: index + 1,
-    name: "Cá hồi nướng thảo mộc",
-    description:
-      "Cá hồi tươi nướng cùng thảo mộc, dùng kèm rau củ và sốt chanh leo.",
-    price: 320000,
-    badge: "Bán chạy",
-  }),
-);
 
 /* =========================
    PAGE
    ========================= */
 
 export function MenuPage() {
-  const [selectedCategory, setSelectedCategory] =
-    useState("all");
 
-  const [searchKeyword, setSearchKeyword] =
-    useState("");
+  const navigate = useNavigate();
 
-  const [priceRange, setPriceRange] =
-    useState("");
+  const [dishes, setDishes] = useState<DishSummary[]>([]);
 
-  const [selectedTag, setSelectedTag] =
-    useState("");
+  const [totalPages, setTotalPages] = useState(0);
 
-  const [currentPage, setCurrentPage] =
-    useState(1);
+  const [loading, setLoading] = useState(false);
 
-  const totalPages = 8;
+  const [error, setError] = useState("");
+
+  const [searchKeyword, setSearchKeyword] = useState("");
+
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+   const [currentPage, setCurrentPage] = useState(1);
+
+   const [priceRange, setPriceRange] = useState<PriceRange | "">("");
+    const [selectedCategoryId, setSelectedCategoryId] = useState<number | null>(null);
+    const [selectedTagId, setSelectedTagId] = useState<number | null>(null);
+
+  //explain
+  useEffect(() => {
+    //explain
+    const timer = window.setTimeout(() => {setDebouncedSearch(searchKeyword.trim())}, 300);
+
+    return () => window.clearTimeout(timer);
+  }, [searchKeyword]);
+
+  useEffect(() => {
+    //explain
+    const controller = new AbortController();
+
+    async function loadDishes() {
+      setLoading(true);
+      setError("");
+
+      //call api
+      try {
+        const result = await menuApi.listDishes({
+          page: currentPage -1,
+          search: debouncedSearch || undefined,
+          categoryId: selectedCategoryId ?? undefined,
+          tagId: selectedTagId ?? undefined,
+          priceRange: priceRange || undefined
+        }, 
+      controller.signal);
+
+        if (!controller.signal.aborted) {
+          setDishes(result.content);
+          setTotalPages(result.totalPages);
+        }
+      }
+
+      catch(cause) {
+        if(!controller.signal.aborted) {
+          setError(getApiError(cause).message);
+          setDishes([]);
+        }
+      }
+
+      finally {
+        if(!controller.signal.aborted){
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadDishes();
+
+    return () => controller.abort();
+
+  }, [currentPage, debouncedSearch, selectedCategoryId, selectedTagId, priceRange]);
+
+
+  const [selectedCategory, setSelectedCategory] = useState("all");
+
+  const [selectedTag, setSelectedTag] = useState("");
+
+ 
+
+ 
 
   return (
     <div className="menu-page">
@@ -218,16 +260,16 @@ export function MenuPage() {
                   }}
                 />
 
-                <Select
-                  size="lg"
-                  value={priceRange}
-                  placeholder="Khoảng giá"
-                  options={priceOptions}
-                  onValueChange={(value) => {
-                    setPriceRange(value);
-                    setCurrentPage(1);
-                  }}
-                />
+               <Select
+                size="lg"
+                value={priceRange}
+                placeholder="Khoảng giá"
+                options={priceOptions}
+                onValueChange={(value) => {
+                  setPriceRange(value as PriceRange | "");
+                  setCurrentPage(1);
+                }}
+              />
 
                 <Select
                   size="lg"
@@ -245,49 +287,57 @@ export function MenuPage() {
             {/* =====================
                 DISH GRID
                 ===================== */}
+             
+                {loading && <p role="status">Đang tải món ăn...</p>}
+                {error && <p role="alert">{error}</p>}
 
-            <div className="menu-page__dish-grid">
-              {mockDishes.map((dish) => (
-                <DishCard
-                  key={dish.id}
-                  name={dish.name}
-                  description={dish.description}
-                  price={dish.price}
-                  imageUrl={dish.imageUrl}
-                  badge={dish.badge}
-                  onAdd={() => {
-                    console.log(
-                      "Thêm món:",
-                      dish.id,
-                    );
-                  }}
-                  onClick={() => {
-                    console.log(
-                      "Xem chi tiết:",
-                      dish.id,
-                    );
-                  }}
-                />
-              ))}
-            </div>
+                {!loading && !error && dishes.length === 0 && (
+                  <p>Không tìm thấy món ăn phù hợp.</p>
+                )}
 
+                {!loading && !error && dishes.length > 0 && (
+                  <div className="menu-page__dish-grid">
+                    {dishes.map((dish) => (
+                      <DishCard
+                        key={dish.id}
+                        name={dish.name}
+                        description={dish.description ?? ""}
+                        price={dish.price}
+                        imageUrl={dish.imageUrl ?? undefined}
+                        badge={
+                          dish.status === "SOLD_OUT"
+                            ? "Hết món"
+                            : dish.tags?.[0]?.name
+                        }
+                        onClick={() => navigate(`/menu/${dish.id}`)}
+                        onAdd={
+                          dish.status === "SOLD_OUT"
+                            ? undefined
+                            : () => {
+                                // Nối giỏ hàng sau
+                              }
+                        }
+                      />
+                    ))}
+                  </div>
+                )}
+                              
             {/* =====================
                 PAGINATION
                 ===================== */}
 
             <div className="menu-page__pagination">
+             {!loading && !error && totalPages > 1 && (
               <Pagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={(page) => {
-                  setCurrentPage(page);
-
-                  window.scrollTo({
-                    top: 0,
-                    behavior: "smooth",
-                  });
-                }}
-              />
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page) => {
+                setCurrentPage(page);
+                window.scrollTo({top: 0, behavior: "smooth"})
+              }}
+              >
+              </Pagination>
+             )}
             </div>
           </div>
         </section>

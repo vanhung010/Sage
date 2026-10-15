@@ -2472,7 +2472,7 @@ paths:
       - Menu
       summary: Browse, search and filter public dishes
       operationId: listPublicDishes
-      x-sage-status: planned
+      x-sage-status: implemented
       x-sage-roles:
       - ANONYMOUS
       - CUSTOMER
@@ -2483,7 +2483,7 @@ paths:
       - doc:BR-40/41/43
       - figma:Menu search/filter/pagination
       x-sage-priority: MUST
-      description: HIDDEN dishes must be excluded. SOLD_OUT may be returned so the UI can show the dish as unavailable.
+      description: HIDDEN dishes must be excluded before count and pagination. SOLD_OUT may be returned. Search is trimmed and wildcard characters are treated literally. Category active state does not affect dish visibility because that rule is not specified.
       security: []
       parameters:
       - name: page
@@ -2514,6 +2514,7 @@ paths:
         schema:
           type: integer
           format: int64
+          minimum: 1
       - name: minPrice
         in: query
         required: false
@@ -2532,6 +2533,7 @@ paths:
         schema:
           type: integer
           format: int64
+          minimum: 1
       responses:
         '200':
           description: Paginated dishes.
@@ -2546,7 +2548,7 @@ paths:
       - Menu
       summary: Get public dish detail
       operationId: getPublicDish
-      x-sage-status: planned
+      x-sage-status: implemented
       x-sage-roles:
       - ANONYMOUS
       - CUSTOMER
@@ -2557,7 +2559,7 @@ paths:
       - doc:BR-41
       - figma:Dish Detail
       x-sage-priority: MUST
-      description: If the dish is HIDDEN, the public API should behave as not found.
+      description: If the dish is HIDDEN, the public API returns the same DISH_NOT_FOUND response as for a nonexistent dish.
       security: []
       parameters:
       - name: id
@@ -2574,6 +2576,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DishDetail'
+        '400': *id001
         '404': *id005
   /api/admin/restaurant:
     patch:
