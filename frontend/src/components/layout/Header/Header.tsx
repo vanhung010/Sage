@@ -1,6 +1,6 @@
 import {
   Link,
-  NavLink,
+  useLocation,
   useNavigate,
 } from "react-router-dom";
 
@@ -18,42 +18,72 @@ export type HeaderVariant =
   | "customer"
   | "auth";
 
+export type HeaderActiveItem =
+  | "home"
+  | "menu"
+  | "reservation"
+  | "order"
+  | "about";
+
 interface HeaderProps {
   variant?: HeaderVariant;
+  /** Omit to match the current URL; use null to clear the selection. */
+  active?: HeaderActiveItem | null;
   userName?: string;
   className?: string;
 }
 
 const navItems = [
   {
+    id: "home",
     label: "Trang chủ",
     to: "/",
   },
   {
+    id: "menu",
     label: "Thực đơn",
     to: "/menu",
   },
   {
+    id: "reservation",
     label: "Đặt bàn",
     to: "/reservation",
   },
   {
+    id: "order",
     label: "Đặt món ăn",
     to: "/order",
   },
   {
+    id: "about",
     label: "Về Sage",
     to: "/#about",
   },
-];
+] as const;
 
 export function Header({
   variant: requestedVariant = "guest",
+  active,
   userName: fallbackUserName = "Khách hàng",
   className = "",
 }: HeaderProps) {
   const navigate = useNavigate();
+  const { pathname, hash } = useLocation();
   const { user, logout } = useAuth();
+
+  const activeItem = active !== undefined
+    ? active
+    : navItems.find((item) => {
+        if (item.id === "about") {
+          return pathname === "/" && hash === "#about";
+        }
+
+        if (item.id === "home") {
+          return pathname === "/" && hash !== "#about";
+        }
+
+        return pathname === item.to || pathname.startsWith(`${item.to}/`);
+      })?.id;
 
   // Trang login/register giữ giao diện auth.
   // Các trang khác hiển thị theo trạng thái đăng nhập thực tế.
@@ -116,14 +146,14 @@ export function Header({
           aria-label="Điều hướng chính"
         >
           {navItems.map((item) => (
-            <NavLink
+            <Link
               key={item.to}
               to={item.to}
-              end={item.to === "/"}
-              className={({ isActive }) =>
+              aria-current={activeItem === item.id ? "page" : undefined}
+              className={
                 [
                   "sage-header__nav-item",
-                  isActive
+                  activeItem === item.id
                     ? "sage-header__nav-item--active"
                     : "",
                 ]
@@ -132,7 +162,7 @@ export function Header({
               }
             >
               {item.label}
-            </NavLink>
+            </Link>
           ))}
         </nav>
       )}

@@ -112,7 +112,7 @@ export function HomePage() {
 
   return (
     <div className="home-page">
-      <Header variant="guest" />
+      <Header variant="guest" active="home" />
 
       <main className="home-page__main">
         {/* HERO */}
@@ -211,12 +211,7 @@ export function HomePage() {
                         dish.name,
                       );
                     }}
-                    onClick={() => {
-                      console.log(
-                        "Xem món:",
-                        dish.id,
-                      );
-                    }}
+                   onClick={() => navigate(`/menu/${dish.id}`)}
                   />
                 ),
               )}

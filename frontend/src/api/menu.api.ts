@@ -1,7 +1,7 @@
 import { apiClient } from "./client";
 import type { PageResponse } from "../types/api";
 import type {
-    
+    DishDetail,
     DishFilters,
     DishSummary,
     Category,
@@ -29,8 +29,19 @@ export const menuApi = {
         const response = await apiClient.get<Tag[]>("/api/menu/tags", {
             signal: signal
         })
-        console.log(response)
+      
         return response.data;
-    }
+    },
+            async getDish(
+        id: string,
+        signal?: AbortSignal,
+        ): Promise<DishDetail> {
+        const response = await apiClient.get<DishDetail>(
+            `/api/menu/dishes/${encodeURIComponent(id)}`,
+            { signal },
+        );
+
+        return response.data;
+        },
 
 }

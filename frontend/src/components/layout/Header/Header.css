@@ -59,6 +59,7 @@
    ========================= */
 
 .sage-header__nav-item {
+  position: relative;
   height: 40px;
 
   display: inline-flex;
@@ -88,6 +89,15 @@
   background-color: var(--color-surface-alt);
 
   color: var(--color-text-primary);
+}
+
+.sage-header__nav-item--active::after {
+  content: "";
+  position: absolute;
+  inset-inline: var(--space-3);
+  bottom: 7px;
+  height: 2px;
+  background-color: var(--color-primary);
 }
 
 .sage-header__nav-item:focus-visible {

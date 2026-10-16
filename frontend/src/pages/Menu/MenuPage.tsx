@@ -219,7 +219,7 @@ export function MenuPage() {
 
   return (
     <div className="menu-page">
-      <Header variant="guest" />
+      <Header variant="guest" active = "menu" />
 
       <main className="menu-page__main">
         {/* =====================
