@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { menuApi } from "../../api/menu.api";
 import { getApiError } from "../../api";
-import type { DishSummary } from "../../types/menu";
+import type { DishSummary, Category, Tag } from "../../types/menu";
 import type { PriceRange } from "../../types/menu";
 import { Search } from "lucide-react";
 
@@ -26,11 +26,6 @@ import "./MenuPage.css";
    TYPES
    ========================= */
 
-interface Category {
-  id: string;
-  name: string;
-}
-
 
 /* =========================
    MOCK DATA
@@ -50,32 +45,7 @@ const mockRestaurantInfo: FooterRestaurantInfo = {
   Các tên category này hiện chỉ dùng để test.
   Sau này lấy từ API.
 */
-const mockCategories: Category[] = [
-  {
-    id: "all",
-    name: "Tất cả",
-  },
-  {
-    id: "starter",
-    name: "Khai vị",
-  },
-  {
-    id: "main",
-    name: "Món chính",
-  },
-  {
-    id: "vegetarian",
-    name: "Món chay",
-  },
-  {
-    id: "dessert",
-    name: "Tráng miệng",
-  },
-  {
-    id: "drink",
-    name: "Đồ uống",
-  },
-];
+
 
 const priceOptions = [
   { value: "", label: "Tất cả khoảng giá" },
@@ -85,16 +55,16 @@ const priceOptions = [
   { value: "OVER_300K", label: "Trên 300.000₫" },
 ];
 
-const tagOptions = [
-  {
-    value: "best-seller",
-    label: "Bán chạy",
-  },
-  {
-    value: "new",
-    label: "Món mới",
-  },
-];
+// const tagOptions = [
+//   {
+//     value: "best-seller",
+//     label: "Bán chạy",
+//   },
+//   {
+//     value: "new",
+//     label: "Món mới",
+//   },
+// ];
 
 
 /* =========================
@@ -106,6 +76,10 @@ export function MenuPage() {
   const navigate = useNavigate();
 
   const [dishes, setDishes] = useState<DishSummary[]>([]);
+
+  const [categories, setCategories] = useState<Category[]>([])
+
+  const [tags, setTags] = useState<Tag[]>([]);
 
   const [totalPages, setTotalPages] = useState(0);
 
@@ -132,13 +106,12 @@ export function MenuPage() {
   }, [searchKeyword]);
 
   useEffect(() => {
-    //explain
+    
     const controller = new AbortController();
 
     async function loadDishes() {
       setLoading(true);
       setError("");
-
       //call api
       try {
         const result = await menuApi.listDishes({
@@ -168,8 +141,61 @@ export function MenuPage() {
           setLoading(false);
         }
       }
+
     }
 
+    async function loadCatogories(){
+      setLoading(true);
+      setError("");
+      try{
+        const controller = new AbortController();
+
+        const result = await menuApi.listCatories(controller.signal);
+          if (!controller.signal.aborted) {
+          setCategories(result)
+          
+        }
+      }
+      catch(err){
+        if(!controller.signal.aborted) {
+                  setError(getApiError(err).message);
+                  setCategories([]);
+                }
+      }
+      finally {
+      if(!controller.signal.aborted){
+                setLoading(false);
+              }
+      }
+    }
+
+    async function loadTags(){
+      setLoading(true);
+      setError("");
+      try{
+        const controller = new AbortController();
+
+        const result = await menuApi.listTags(controller.signal);
+          if (!controller.signal.aborted) {
+          setTags(result)
+          
+        }
+      }
+      catch(err){
+        if(!controller.signal.aborted) {
+                  setError(getApiError(err).message);
+                  setTags([]);
+                }
+      }
+      finally {
+      if(!controller.signal.aborted){
+                setLoading(false);
+              }
+      }
+    }
+
+    void loadTags();
+    void loadCatogories();
     void loadDishes();
 
     return () => controller.abort();
@@ -181,8 +207,14 @@ export function MenuPage() {
 
   const [selectedTag, setSelectedTag] = useState("");
 
- 
-
+  
+  const tagOptions = [
+    { value: "", label: "Tất cả nhãn" },
+    ...tags.map((tag) => ({
+      value: String(tag.id),
+      label: tag.name,
+    })),
+  ];
  
 
   return (
@@ -227,14 +259,14 @@ export function MenuPage() {
                 className="menu-page__categories"
                 aria-label="Danh mục món ăn"
               >
-                {mockCategories.map((category) => (
+                {categories.map((category) => (
                   <MenuCategoryTab
                     key={category.id}
                     active={
-                      selectedCategory === category.id
+                      selectedCategoryId === category.id
                     }
                     onClick={() => {
-                      setSelectedCategory(category.id);
+                      setSelectedCategoryId(category.id);
                       setCurrentPage(1);
                     }}
                   >
@@ -273,12 +305,12 @@ export function MenuPage() {
 
                 <Select
                   size="lg"
-                  value={selectedTag}
+                  value={selectedTagId === null ? "" : String(selectedTagId)}
                   placeholder="Nhãn"
                   options={tagOptions}
                   onValueChange={(value) => {
-                    setSelectedTag(value);
-                    setCurrentPage(1);
+                   setSelectedTagId(value === "" ? null : Number(value));
+                   setCurrentPage(1);
                   }}
                 />
               </div>

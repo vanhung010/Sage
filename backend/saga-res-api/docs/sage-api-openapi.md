@@ -71,7 +71,7 @@ It is not assumed to be a persisted `food_order.total_amount` column.
 
 ## 3. Endpoint inventory
 
-### 3.1 Implemented operations (22)
+### 3.1 Implemented operations (24)
 
 | Method | Path | Priority | Roles | Summary |
 |---|---|---|---|---|
@@ -79,6 +79,8 @@ It is not assumed to be a persisted `food_order.total_amount` column.
 | `POST` | `/api/auth/login` | MUST | ANONYMOUS, CUSTOMER, STAFF, ADMIN | Log in and issue a JWT access token |
 | `GET` | `/api/auth/me` | MUST | CUSTOMER, STAFF, ADMIN | Get the current authenticated account |
 | `GET` | `/api/opening-hours` | MUST | ANONYMOUS, CUSTOMER, STAFF, ADMIN | Get public weekly opening hours |
+| `GET` | `/api/menu/categories` | MUST | ANONYMOUS, CUSTOMER, STAFF, ADMIN | List active public menu categories |
+| `GET` | `/api/menu/tags` | SHOULD | ANONYMOUS, CUSTOMER, STAFF, ADMIN | List tags available for public menu filtering |
 | `GET` | `/api/admin/opening-hours` | MUST | ADMIN | List opening hours for administration |
 | `POST` | `/api/admin/opening-hours` | MUST | ADMIN | Create an opening-hour row |
 | `PATCH` | `/api/admin/opening-hours/{id}` | MUST | ADMIN | Update an opening-hour row |
@@ -98,14 +100,12 @@ It is not assumed to be a persisted `food_order.total_amount` column.
 | `PATCH` | `/api/admin/tables/{id}` | MUST | ADMIN | Update a restaurant table |
 | `PATCH` | `/api/admin/tables/{id}/deactivate` | MUST | ADMIN | Deactivate a restaurant table |
 
-### 3.2 Planned operations (51)
+### 3.2 Planned operations (49)
 
 | Method   | Path                                                     | Priority | Roles                             | Summary                                              |
 | -------- | -------------------------------------------------------- | -------- | --------------------------------- | ---------------------------------------------------- |
 | `GET`    | `/api/restaurant`                                        | MUST     | ANONYMOUS, CUSTOMER, STAFF, ADMIN | Get public restaurant information                    |
 | `GET`    | `/api/areas`                                             | MUST     | ANONYMOUS, CUSTOMER, STAFF, ADMIN | List active areas for reservation selection          |
-| `GET`    | `/api/menu/categories`                                   | MUST     | ANONYMOUS, CUSTOMER, STAFF, ADMIN | List active public menu categories                   |
-| `GET`    | `/api/menu/tags`                                         | SHOULD   | ANONYMOUS, CUSTOMER, STAFF, ADMIN | List tags available for public menu filtering        |
 | `GET`    | `/api/menu/dishes`                                       | MUST     | ANONYMOUS, CUSTOMER, STAFF, ADMIN | Browse, search and filter public dishes              |
 | `GET`    | `/api/menu/dishes/{id}`                                  | MUST     | ANONYMOUS, CUSTOMER, STAFF, ADMIN | Get public dish detail                               |
 | `PATCH`  | `/api/admin/restaurant`                                  | MUST     | ADMIN                             | Update restaurant information                        |
@@ -744,6 +744,8 @@ components:
           - 'null'
     PublicCategory:
       type: object
+      description: PublicDishCategoryResponse; only id, name and displayOrder are exposed.
+      additionalProperties: false
       required:
       - id
       - name
@@ -758,6 +760,8 @@ components:
           type: integer
     PublicTag:
       type: object
+      description: PublicDishTagResponse; only id and name are exposed.
+      additionalProperties: false
       required:
       - id
       - name
@@ -2420,52 +2424,80 @@ paths:
       - Menu
       summary: List active public menu categories
       operationId: listPublicCategories
-      x-sage-status: planned
+      x-sage-status: implemented
       x-sage-roles:
       - ANONYMOUS
       - CUSTOMER
       - STAFF
       - ADMIN
       x-sage-source:
+      - code:PublicMenuCategoryController
+      - code:PublicMenuCategoryService
       - doc:FR-MENU-01
       - figma:Menu category tabs
       x-sage-priority: MUST
+      description: Returns only categories with active=true, ordered by displayOrder ascending and then name ascending.
+        Each item contains only id, name and displayOrder; active is not exposed. Returns [] when no active categories exist.
       security: []
       responses:
         '200':
-          description: Active categories.
+          description: Active categories in display order, or an empty array.
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/PublicCategory'
+              examples:
+                activeCategories:
+                  value:
+                  - id: 2
+                    name: Khai vị
+                    displayOrder: 1
+                  - id: 5
+                    name: Món chính
+                    displayOrder: 2
+                noActiveCategories:
+                  value: []
   /api/menu/tags:
     get:
       tags:
       - Menu
       summary: List tags available for public menu filtering
       operationId: listPublicTags
-      x-sage-status: planned
+      x-sage-status: implemented
       x-sage-roles:
       - ANONYMOUS
       - CUSTOMER
       - STAFF
       - ADMIN
       x-sage-source:
+      - code:PublicMenuTagController
+      - code:PublicMenuTagService
       - doc:FR-MENU-04
       - figma:Menu tag filter
       x-sage-priority: SHOULD
+      description: Returns all existing tags ordered by name ascending, including tags not assigned to dishes.
+        Tags have no active property. Each item contains only id and name. Returns [] when no tags exist.
       security: []
       responses:
         '200':
-          description: Tags.
+          description: Tags ordered by name, or an empty array.
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/PublicTag'
+              examples:
+                tags:
+                  value:
+                  - id: 1
+                    name: Bán chạy
+                  - id: 2
+                    name: Món mới
+                noTags:
+                  value: []
   /api/menu/dishes:
     get:
       tags:

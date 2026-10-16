@@ -4,6 +4,18 @@ export type PriceRange =
   | "FROM_100K_TO_200K"
   | "FROM_200K_TO_300K"
   | "OVER_300K";
+
+export interface Category {
+    id: number;
+    name: string;
+    displayOrder: number;
+}
+
+export interface Tag {
+    id: number;
+    name: string;
+}
+
 export interface DishSummary {
     id: number;
     name: string;
@@ -11,15 +23,8 @@ export interface DishSummary {
     status: DishStatus;
     imageUrl: string | null;
     description: string | null;
-    category: {
-        id: number;
-        name: string;
-        displayOrder: number;
-    };
-    tags: {
-        id: number;
-        name: string;
-    }[] | null;
+    category: Category;
+    tags: Tag[] | null;
 }
 
 export interface DishDetail extends DishSummary {

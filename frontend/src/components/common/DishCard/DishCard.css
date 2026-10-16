@@ -39,8 +39,8 @@
   height: 100%;
 
   display: block;
-
-  object-fit: cover;
+border-radius: var(--radius-xl);
+  object-fit: contain;
 }
 
 /* =========================
