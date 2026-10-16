@@ -10,6 +10,14 @@ import {
 import { Button } from "../../components/ui/Button";
 import { DishCard } from "../../components/common/DishCard";
 
+import { useState, useEffect } from "react";
+
+import { menuApi } from "../../api/menu.api";
+import { getApiError } from "../../api";
+
+
+import type { DishSummary } from "../../types/menu";
+
 import heroImage from "../../assets/background/background1.webp";
 import aboutImage from "../../assets/background/background2.avif";
 
@@ -25,6 +33,8 @@ interface RestaurantInfo
   aboutDescription: string;
   openingHours: OpeningHour[];
 }
+
+
 
 const mockRestaurantInfo: RestaurantInfo = {
   description:
@@ -52,35 +62,53 @@ const mockRestaurantInfo: RestaurantInfo = {
   ],
 };
 
-const mockFeaturedDishes = [
-  {
-    id: 1,
-    name: "Cá hồi nướng thảo mộc",
-    description:
-      "Cá hồi tươi nướng cùng thảo mộc, dùng kèm rau củ và sốt chanh leo.",
-    price: 320000,
-    badge: "Bán chạy",
-  },
-  {
-    id: 2,
-    name: "Bò áp chảo sốt tiêu xanh",
-    description:
-      "Thăn bò áp chảo mềm, dùng cùng rau củ theo mùa và sốt tiêu xanh.",
-    price: 380000,
-    badge: "Bán chạy",
-  },
-  {
-    id: 3,
-    name: "Ức vịt sốt cam",
-    description:
-      "Ức vịt áp chảo ăn kèm rau củ nướng và sốt cam thanh nhẹ.",
-    price: 295000,
-    badge: "Bán chạy",
-  },
-];
 
 export function HomePage() {
   const navigate = useNavigate();
+
+  //danh sách dishes
+  const [dishes, setDishes] = useState<DishSummary[]>([]);
+  //Lỗi
+  const [error, setError] = useState("");
+  
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+
+    const controller = new AbortController();
+    async function loadDishes(){
+      setError("");
+      setLoading(true);
+
+      try{
+        //Gọi api
+        const response = await menuApi.listDishes({size : 3}, controller.signal)
+        
+        if(!controller.signal.aborted) {
+           setDishes(response.content);
+        }
+      }
+
+      catch(err){
+           if(!controller.signal.aborted) {
+          setError(getApiError(err).message);
+          setDishes([]);
+        }
+      }
+
+      finally{
+      if(!controller.signal.aborted){
+                setLoading(false);
+              }
+      }
+
+    }
+
+    void loadDishes();
+
+    return () => controller.abort();
+
+  },[])
 
   return (
     <div className="home-page">
@@ -164,16 +192,19 @@ export function HomePage() {
             </div>
 
             <div className="home-featured__grid">
-              {mockFeaturedDishes.map(
+              {dishes.map(
                 (dish) => (
                   <DishCard
                     key={dish.id}
                     name={dish.name}
-                    description={
-                      dish.description
-                    }
+                    description={dish.description ?? ""}
+                    imageUrl={dish.imageUrl ?? undefined}
                     price={dish.price}
-                    badge={dish.badge}
+                    badge={
+                          dish.status === "SOLD_OUT"
+                            ? "Hết món"
+                            : dish.tags?.[0]?.name
+                        }
                     onAdd={() => {
                       console.log(
                         "Thêm món:",
