@@ -30,8 +30,8 @@
   flex-shrink: 0;
 
   overflow: hidden;
-
-  background-color: var(--color-surface-alt);
+  
+  background-color: var(--color-bg);
 }
 
 .sage-dish-card__image {
@@ -39,8 +39,9 @@
   height: 100%;
 
   display: block;
-border-radius: var(--radius-xl);
-  object-fit: contain;
+  box-sizing: border-box;
+
+  object-fit: cover;
 }
 
 /* =========================
