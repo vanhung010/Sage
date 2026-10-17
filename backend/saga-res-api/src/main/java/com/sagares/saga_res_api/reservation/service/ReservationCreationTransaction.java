@@ -201,7 +201,7 @@ public class ReservationCreationTransaction {
                     window
             );
 
-            reservationRepository.saveAndFlush(reservation);
+            reservation = reservationRepository.saveAndFlush(reservation);
 
             saveCreatedLog(reservation, customer);
 

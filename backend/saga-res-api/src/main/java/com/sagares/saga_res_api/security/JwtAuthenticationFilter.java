@@ -32,42 +32,83 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final RestAuthenticationEntryPoint authenticationEntryPoint;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
+
         String header = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (header == null || !header.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
-        //Lấy token
+
         String token = header.substring(7);
+
         try {
-            JwtService.JwtClaims claims = jwtService.parseAndValidate(token);
+            JwtService.JwtClaims claims =
+                    jwtService.parseAndValidate(token);
+
             Account account = accountRepository
                     .findById(claims.accountId())
-                    .orElseThrow(() -> new BadCredentialsException("Invalid token"));
+                    .orElseThrow(() ->
+                            new BadCredentialsException("Invalid token")
+                    );
+
             if (account.isLocked()) {
-                throw new BadCredentialsException("Invalid token");
+                throw new BadCredentialsException("Account locked");
             }
+
             if (account.getRole() != claims.role()) {
                 throw new BadCredentialsException("Stale token");
             }
-            //Tạo object đại diện cho user đang đăng nhập
-            AuthenticatedUser principal = new AuthenticatedUser(account.getId(), account.getRole());
-            //Tạo quyền/role cho user
-            GrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + account.getRole().name());
-            //Tạo object Authentication cho Spring Security.
-            UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(principal, null, List.of(authority));
 
-            authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-            //Lưu authentication vào SecurityContextHolder
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            AuthenticatedUser principal = new AuthenticatedUser(
+                    account.getId(),
+                    account.getRole()
+            );
 
-            filterChain.doFilter(request, response);
+            GrantedAuthority authority = new SimpleGrantedAuthority(
+                    "ROLE_" + account.getRole().name()
+            );
 
-        } catch (JwtException | IllegalArgumentException | AuthenticationException e) {
+            UsernamePasswordAuthenticationToken authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            principal,
+                            null,
+                            List.of(authority)
+                    );
+
+            authentication.setDetails(
+                    new WebAuthenticationDetailsSource()
+                            .buildDetails(request)
+            );
+
+            SecurityContextHolder.getContext()
+                    .setAuthentication(authentication);
+
+        } catch (
+                JwtException
+                | IllegalArgumentException
+                | AuthenticationException exception
+        ) {
             SecurityContextHolder.clearContext();
-            authenticationEntryPoint.commence(request, response, new BadCredentialsException("Invalid access token", e));
+
+            authenticationEntryPoint.commence(
+                    request,
+                    response,
+                    new BadCredentialsException(
+                            "Invalid access token",
+                            exception
+                    )
+            );
+
+            return;
         }
+
+        // Đặt ngoài try/catch JWT để lỗi tạo đơn được xử lý đúng.
+        filterChain.doFilter(request, response);
     }
 }

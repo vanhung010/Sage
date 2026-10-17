@@ -87,9 +87,7 @@ public class Reservation {
     @Column(name = "reminder_sent_at")
     private Instant reminderSentAt;
 
-    @Version
-    @Column(nullable = false)
-    private Long version = 0L;
+    
 
     @CreatedDate
     @Column(name = "created_at", nullable = false, updatable = false)
