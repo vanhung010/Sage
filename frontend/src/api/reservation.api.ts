@@ -1,5 +1,14 @@
 import { apiClient } from "./client";
 
+export type ReservationStatus =
+  | "PENDING"
+  | "CONFIRMED"
+  | "ARRIVED"
+  | "COMPLETED"
+  | "NO_SHOW"
+  | "CANCELLED"
+  | "REJECTED";
+
 export interface AvailabilitySlot {
   startTime: string;
   endTime: string;
@@ -32,9 +41,20 @@ export interface CreateReservationRequest {
 export interface ReservationResponse {
   id: number;
   code: string;
-  status: "PENDING" | "CONFIRMED";
+  partySize: number;
   startTime: string;
   endTime: string;
+  status: ReservationStatus;
+  requestedArea: {
+    id: number;
+    name: string;
+    description: string | null;
+  } | null;
+  specialNote: string | null;
+  rescheduleCount: number;
+  rejectionReason: string | null;
+  cancellationReason: string | null;
+  createdAt: string;
 }
 
 export const reservationApi = {

@@ -282,8 +282,14 @@ export function ReservationPage({
         specialNote: form.specialNote.trim() || null,
       });
 
-      setCreatedReservation(result);
       sessionStorage.removeItem(DRAFT_KEY);
+
+      navigate("/reservation/success", {
+        replace: true,
+        state: {
+          reservation: result,
+        },
+      });
     } catch (error) {
       const apiError = getApiError(error);
 
