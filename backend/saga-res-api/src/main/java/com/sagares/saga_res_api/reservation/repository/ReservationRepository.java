@@ -44,17 +44,53 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
         @Param("dayStart") Instant dayStart,
         @Param("dayEnd") Instant dayEnd
     );
+    // Chỉ PENDING và CONFIRMED được tính vào giới hạn đơn đang hoạt động.
+    @Query(value = """
+        SELECT COUNT(*)
+        FROM reservation r
+        WHERE r.customer_id = :customerId
+          AND r.status IN ('PENDING', 'CONFIRMED')
+        """, nativeQuery = true)
+    long countActiveByCustomer(
+            @Param("customerId") Long customerId
+    );
 
-//    @Query("""
-//        select count(r)
-//        from Reservation r
-//        where r.customer.id = :customerId
-//          and r.status in (
-//              com.sagares.reservation.entity.ReservationStatus.PENDING,
-//              com.sagares.reservation.entity.ReservationStatus.CONFIRMED
-//          )
-//        """)
-//    long countActiveByCustomer(@Param("customerId") Long customerId);
+    // Kiểm tra thời gian chiếm bàn, gồm cả thời gian dọn bàn.
+// COMPLETED vẫn có thể chặn bàn nếu buffer chưa kết thúc.
+    @Query(value = """
+        SELECT EXISTS (
+            SELECT 1
+            FROM reservation r
+            WHERE r.table_id = :tableId
+              AND r.status IN (
+                  'PENDING', 'CONFIRMED', 'ARRIVED', 'COMPLETED'
+              )
+              AND r.occupied_range
+                  && tstzrange(:startTime, :occupiedEnd, '[)')
+        )
+        """, nativeQuery = true)
+    boolean existsTableOverlap(
+            @Param("tableId") Long tableId,
+            @Param("startTime") Instant startTime,
+            @Param("occupiedEnd") Instant occupiedEnd
+    );
+
+    // Kiểm tra khách đã có đơn trùng khoảng thời gian đang muốn đặt chưa.
+    @Query(value = """
+        SELECT EXISTS (
+            SELECT 1
+            FROM reservation r
+            WHERE r.customer_id = :customerId
+              AND r.status IN ('PENDING', 'CONFIRMED', 'ARRIVED')
+              AND r.reservation_range
+                  && tstzrange(:startTime, :endTime, '[)')
+        )
+        """, nativeQuery = true)
+    boolean existsCustomerOverlap(
+            @Param("customerId") Long customerId,
+            @Param("startTime") Instant startTime,
+            @Param("endTime") Instant endTime
+    );
 
     Optional<Reservation> findByCode(String code);
 }

@@ -28,4 +28,23 @@ public interface RestaurantTableRepository extends JpaRepository<RestaurantTable
     boolean existsByCode(String code);
 
     boolean existsByCodeAndIdNot(String code, Long id);
+
+    // Ưu tiên bàn có sức chứa nhỏ nhất nhưng vẫn phù hợp.
+// code giúp thứ tự chọn ổn định khi nhiều bàn có cùng sức chứa.
+//
+// Chỉ lấy ID trước. Khi chuẩn bị đặt, service sẽ khóa và đọc lại bàn.
+    @Query("""
+        select t.id
+        from RestaurantTable t
+        where t.active = true
+          and t.minCapacity <= :partySize
+          and t.maxCapacity >= :partySize
+          and (:areaId is null or t.area.id = :areaId)
+        order by t.maxCapacity asc, t.code asc
+        """)
+    List<Long> findCandidateIds(
+            @Param("partySize") short partySize,
+            @Param("areaId") Long areaId
+    );
+
 }

@@ -12,7 +12,7 @@ import { Header } from "../../components/layout/Header";
 import { FormField } from "../../components/ui/FormField";
 import { Input } from "../../components/ui/Input";
 import { Button } from "../../components/ui/Button";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../auth/AuthContext";
 import { getApiError } from "../../api/error";
 import "./LoginPage.css";
@@ -38,6 +38,8 @@ export function LoginPage() {
 
   const navigate = useNavigate();
   const { login } = useAuth();
+
+  const location = useLocation();
 
   const [form, setForm] =
     useState<LoginForm>(initialForm);
@@ -129,7 +131,10 @@ export function LoginPage() {
 
     await login({ email: form.email.trim(), password: form.password,});
 
-    navigate("/", { replace: true });
+    const returnTo = (location.state as { returnTo?: string } | null)?.returnTo;
+    navigate(returnTo === "/reservation" ? returnTo : "/", {
+    replace: true,
+});
   } catch (error) {
     setFormError(getApiError(error).message);
   } finally {

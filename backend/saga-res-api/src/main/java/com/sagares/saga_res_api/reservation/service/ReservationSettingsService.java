@@ -39,7 +39,9 @@ public class ReservationSettingsService {
             //Thời lượng dùng bàn ngắn nhất khách được chọn.
             int minDurationMinutes,
             //Thời lượng dùng bàn dài nhất khách được chọn.
-            int maxDurationMinutes
+            int maxDurationMinutes,
+            // Số đơn PENDING hoặc CONFIRMED tối đa của một khách.
+            int maxActiveReservationsPerCustomer
     ) {
     }
 
@@ -58,7 +60,8 @@ public class ReservationSettingsService {
                 readInt(values, "auto_confirm_threshold"),
                 readInt(values, "time_slot_step_minutes"),
                 readInt(values, "min_duration_minutes"),
-                readInt(values, "max_duration_minutes")
+                readInt(values, "max_duration_minutes"),
+                readInt(values, "max_active_reservations_per_customer")
         );
 
         validate(settings);
@@ -135,6 +138,18 @@ public class ReservationSettingsService {
                     "Thời lượng phải nằm trong 60–180 phút "
                             + "và chia hết cho bước thời gian"
             );
+        }
+
+        if (settings.maxActiveReservationsPerCustomer() < 1) {
+            throw invalidConfig(
+                    "max_active_reservations_per_customer phải lớn hơn 0"
+            );
+        }
+
+// Entity và database đang lưu buffer bằng Short/SMALLINT.
+// Kiểm tra trước để tránh tràn số khi ép int sang short.
+        if (settings.bufferMinutes() > Short.MAX_VALUE) {
+            throw invalidConfig("buffer_minutes vượt quá giới hạn lưu trữ");
         }
     }
 

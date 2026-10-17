@@ -1,0 +1,105 @@
+.date-input {
+  width: 100%;
+  font-family: "Be Vietnam Pro", sans-serif;
+}
+
+.date-input__label {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--color-text-primary, #33291f);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.date-input__field {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 0 16px;
+  overflow: hidden;
+  box-sizing: border-box;
+  border: 1px solid var(--color-border, #e8dcc9);
+  border-radius: var(--radius-control, 8px);
+  background: var(--color-input-bg, #fffcf7);
+}
+
+.date-input__field--md {
+  height: 40px;
+}
+
+.date-input__field--lg {
+  height: 48px;
+}
+
+.date-input__field:not(.date-input__field--disabled):not(
+    .date-input__field--readonly
+  ):hover {
+  border-color: var(--color-border-strong, #d9c7ac);
+}
+
+.date-input__field:focus-within {
+  border-color: var(--color-primary, #b5533c);
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #4f7d94;
+}
+
+.date-input__field--error,
+.date-input__field--error:focus-within {
+  border-color: var(--color-error, #a64438);
+}
+
+.date-input__field--disabled,
+.date-input__field--readonly {
+  background: var(--color-surface-alt, #f5eee3);
+}
+
+.date-input__field--disabled {
+  opacity: 0.65;
+}
+
+.date-input__text {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--color-text-primary, #33291f);
+  font-size: 16px;
+  line-height: 24px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+
+.date-input__text--placeholder {
+  color: var(--color-text-muted, #a69c8e);
+}
+
+.date-input__icon {
+  flex: none;
+  color: #a69c8e;
+  pointer-events: none;
+}
+
+.date-input__native {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.date-input__native:disabled {
+  cursor: not-allowed;
+}
+
+.date-input__native:read-only {
+  cursor: default;
+}
+
+.date-input__error {
+  margin: 6px 0 0;
+  color: var(--color-error, #a64438);
+  font-size: 13px;
+}

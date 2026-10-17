@@ -5,6 +5,7 @@ import { MenuPage } from "../pages/Menu";
 import { LoginPage } from "../pages/Login";
 import { RegisterPage } from "../pages/Register";
 import { DishDetailPage } from "../pages/DishDetail/DishDetailPage";
+import { ReservationPage } from "../pages/Reservation/ReservationPage";
 
 export function AppRouter() {
     return (
@@ -14,6 +15,7 @@ export function AppRouter() {
             <Route path = "/login" element = {<LoginPage></LoginPage>}></Route>
             <Route path = "/register" element = {<RegisterPage></RegisterPage>}></Route>
             <Route path="/menu/:id" element={<DishDetailPage />} />
+            <Route path="/reservation" element={<ReservationPage />} />
             <Route path="*" element={<Navigate to="/" replace />}
       />
         </Routes>
