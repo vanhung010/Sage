@@ -11,13 +11,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/reservations")
+@RequestMapping("/api/customer/reservations")
 @RequiredArgsConstructor
 public class ReservationController {
 
@@ -26,8 +23,7 @@ public class ReservationController {
     @PostMapping
     @PreAuthorize("hasRole('CUSTOMER')")
     @Operation(summary = "Khách hàng tạo đơn đặt bàn")
-    public ResponseEntity<ReservationResponse> create(
-            @AuthenticationPrincipal AuthenticatedUser user,
+    public ResponseEntity<ReservationResponse> create(@AuthenticationPrincipal AuthenticatedUser user,
             @Valid @RequestBody CreateReservationRequest request
     ) {
         // accountId lấy từ principal đã được JWT filter xác thực.
@@ -39,5 +35,12 @@ public class ReservationController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(response);
+    }
+
+    @PatchMapping
+    @Operation(summary = "Hủy đơn đặt bàn")
+    public ResponseEntity<ReservationResponse> cancel(@AuthenticationPrincipal AuthenticatedUser user, @PathVariable Long id){
+        ReservationResponse response = reservationService.cancel(user, id);
+        return ResponseEntity.ok(response);
     }
 }
