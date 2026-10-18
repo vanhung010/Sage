@@ -99,35 +99,16 @@ public class ReservationService {
         );
     }
 
-    private String findConstraintName(Throwable exception) {
-        Throwable current = exception;
-
-        while (current != null) {
-            if (current instanceof ConstraintViolationException violation) {
-                return violation.getConstraintName();
-            }
-
-            current = current.getCause();
-        }
-
-        return null;
-    }
 
     @Transactional
     public ReservationResponse cancel(AuthenticatedUser currentUser, Long reservationId) {
-
-
-        //Chuyển trạng thái sang CANCELLED.
-        //Ghi nhật ký: người thực hiện, thời điểm, trạng thái trước và sau.
-        //Lưu thay đổi và nhật ký trong cùng một transaction.
-        //Trả kết quả thành công.
 
         Account currentAccount = accountRepository.findById(currentUser.accountId()).orElseThrow(() -> new BusinessException(
                 HttpStatus.UNAUTHORIZED,
                 "ACCOUNT_NOT_FOUND",
                 "Tài khoản không còn tồn tại"
         ));
-        Reservation reservation = reservationRepository.findById(reservationId).orElseThrow(() ->
+        Reservation reservation = reservationRepository.findByIdForUpdate(reservationId).orElseThrow(() ->
                 new BusinessException(HttpStatus.NOT_FOUND,
                 "RESERVATION NOT EXITS", "Không tìm thấy đơn đặt bàn"));
 
@@ -169,6 +150,39 @@ public class ReservationService {
         reservationStatusLogRepository.save(log);
 
         return toDTO(reservation);
+    }
+
+    @Transactional(readOnly = true)
+    public ReservationResponse getDetail(
+            AuthenticatedUser currentUser,
+            Long reservationId
+    ) {
+        Reservation reservation = reservationRepository
+                .findByIdAndCustomer_Id(
+                        reservationId,
+                        currentUser.accountId()
+                )
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.NOT_FOUND,
+                        "RESERVATION_NOT_FOUND",
+                        "Không tìm thấy đơn đặt bàn"
+                ));
+
+        return toDTO(reservation);
+    }
+
+    private String findConstraintName(Throwable exception) {
+        Throwable current = exception;
+
+        while (current != null) {
+            if (current instanceof ConstraintViolationException violation) {
+                return violation.getConstraintName();
+            }
+
+            current = current.getCause();
+        }
+
+        return null;
     }
 
         public static ReservationResponse toDTO(Reservation reservation) {

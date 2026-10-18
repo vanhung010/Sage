@@ -2,7 +2,9 @@ package  com.sagares.saga_res_api.reservation.repository;
 
 
 import com.sagares.saga_res_api.reservation.entity.Reservation;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -93,4 +95,13 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
     );
 
     Optional<Reservation> findByCode(String code);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("select r from Reservation r where r.id = :id")
+    Optional<Reservation> findByIdForUpdate(@Param("id") Long id);
+
+    Optional<Reservation> findByIdAndCustomer_Id(
+            Long id,
+            Long customerId
+    );
 }

@@ -43,4 +43,12 @@ public class ReservationController {
         ReservationResponse response = reservationService.cancel(user, id);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{id}")
+    public ReservationResponse getDetail(
+            @AuthenticationPrincipal AuthenticatedUser currentUser,
+            @PathVariable("id") Long id
+    ) {
+        return reservationService.getDetail(currentUser, id);
+    }
 }

@@ -68,6 +68,12 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("/api/admin/**")
                         .hasRole("ADMIN")
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/api/me/reservations/*")
+                        .hasRole("CUSTOMER")
+                        .requestMatchers("/api/customer/**")
+                        .hasRole("CUSTOMER")
                         .anyRequest()
                         .authenticated()
                 )
