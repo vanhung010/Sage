@@ -104,4 +104,55 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
             Long id,
             Long customerId
     );
+
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("""
+        select r
+        from Reservation r
+        where r.id = :id
+          and r.customer.id = :customerId
+        """)
+    Optional<Reservation> findOwnedByIdForUpdate(
+            @Param("id") Long id,
+            @Param("customerId") Long customerId
+    );
+
+    @Query(value = """
+        SELECT EXISTS (
+            SELECT 1
+            FROM reservation r
+            WHERE r.id <> :reservationId
+              AND r.customer_id = :customerId
+              AND r.status IN ('PENDING', 'CONFIRMED', 'ARRIVED')
+              AND r.reservation_range
+                  && tstzrange(:startTime, :endTime, '[)')
+        )
+        """, nativeQuery = true)
+    boolean existsCustomerOverlapExcludingReservation(
+            @Param("reservationId") Long reservationId,
+            @Param("customerId") Long customerId,
+            @Param("startTime") Instant startTime,
+            @Param("endTime") Instant endTime
+    );
+
+    @Query(value = """
+        SELECT EXISTS (
+            SELECT 1
+            FROM reservation r
+            WHERE r.id <> :reservationId
+              AND r.table_id = :tableId
+              AND r.status IN (
+                  'PENDING', 'CONFIRMED', 'ARRIVED', 'COMPLETED'
+              )
+              AND r.occupied_range
+                  && tstzrange(:startTime, :occupiedEnd, '[)')
+        )
+        """, nativeQuery = true)
+    boolean existsTableOverlapExcludingReservation(
+            @Param("reservationId") Long reservationId,
+            @Param("tableId") Long tableId,
+            @Param("startTime") Instant startTime,
+            @Param("occupiedEnd") Instant occupiedEnd
+    );
 }

@@ -17,6 +17,12 @@ import java.util.stream.Collectors;
 @Transactional(readOnly = true)
 public class ReservationSettingsService {
 
+    public record RescheduleSettings(
+            int deadlineHours,
+            int maxRescheduleCount
+    ) {
+    }
+
     public static final ZoneId RESTAURANT_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
 
     private final BusinessConfigRepository businessConfigRepository;
@@ -46,10 +52,8 @@ public class ReservationSettingsService {
     }
 
     public Settings load() {
-        Map<String, String> values = businessConfigRepository
-                .findAll()
-                .stream()
-                .collect(Collectors.toMap(BusinessConfig::getConfigKey, BusinessConfig::getConfigValue));
+
+        Map<String, String> values = loadValues();
 
         Settings settings = new Settings(
                 readInt(values, "buffer_minutes"),
@@ -151,6 +155,44 @@ public class ReservationSettingsService {
         if (settings.bufferMinutes() > Short.MAX_VALUE) {
             throw invalidConfig("buffer_minutes vượt quá giới hạn lưu trữ");
         }
+    }
+
+    public RescheduleSettings loadRescheduleSettings() {
+        Map<String, String> values = loadValues();
+
+        int deadlineHours = readInt(
+                values,
+                "cancel_change_deadline_hours"
+        );
+
+        int maxRescheduleCount = readInt(
+                values,
+                "max_reschedule_count"
+        );
+
+        // rescheduleCount trong entity đang lưu bằng short.
+        if (deadlineHours < 0
+                || maxRescheduleCount < 0
+                || maxRescheduleCount > Short.MAX_VALUE) {
+            throw invalidConfig(
+                    "Cấu hình hạn đổi lịch hoặc số lần đổi không hợp lệ"
+            );
+        }
+
+        return new RescheduleSettings(
+                deadlineHours,
+                maxRescheduleCount
+        );
+    }
+
+    private Map<String, String> loadValues() {
+        return businessConfigRepository
+                .findAll()
+                .stream()
+                .collect(Collectors.toMap(
+                        BusinessConfig::getConfigKey,
+                        BusinessConfig::getConfigValue
+                ));
     }
 
     private BusinessException invalidConfig(String message) {

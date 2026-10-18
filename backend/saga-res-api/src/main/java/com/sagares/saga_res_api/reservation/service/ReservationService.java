@@ -125,7 +125,7 @@ public class ReservationService {
 
         Instant now = Instant.now();
 
-        if(!now.plus(Duration.ofHours(2)).isAfter(reservation.getStartTime())){
+        if(now.plus(Duration.ofHours(2)).isAfter(reservation.getStartTime())){
             throw new BusinessException(HttpStatus.CONFLICT, "NOT CANCELLED","Hiện tại không thể hủy đơn đặt bàn");
         }
 

@@ -16,6 +16,7 @@ interface DateInputProps {
   error?: string;
   name?: string;
   className?: string;
+  id?: string;
 }
 
 function formatDate(value: string): string {
@@ -28,6 +29,7 @@ function formatDate(value: string): string {
 }
 
 export function DateInput({
+  id,
   value,
   onChange,
   label,
@@ -42,7 +44,8 @@ export function DateInput({
   name,
   className = "",
 }: DateInputProps) {
-  const inputId = useId();
+  const generatedId = useId();
+  const inputId = id ?? generatedId;
   const errorId = `${inputId}-error`;
 
   return (

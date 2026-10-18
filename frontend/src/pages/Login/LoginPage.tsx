@@ -131,10 +131,18 @@ export function LoginPage() {
 
     await login({ email: form.email.trim(), password: form.password,});
 
-    const returnTo = (location.state as { returnTo?: string } | null)?.returnTo;
-    navigate(returnTo === "/reservation" ? returnTo : "/", {
-    replace: true,
-});
+        const returnTo = (location.state as {returnTo?: string;} | null)?.returnTo;
+
+    const safeReturnTo =
+      returnTo === "/reservation" ||
+      /^\/reservations\/[1-9]\d*(?:\/reschedule)?$/.test(
+        returnTo ?? "",
+      );
+
+    navigate(
+      safeReturnTo ? returnTo! : "/",
+      { replace: true },
+    );
   } catch (error) {
     setFormError(getApiError(error).message);
   } finally {

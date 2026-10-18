@@ -148,11 +148,12 @@ export function ReservationSuccessPage() {
 
           <div className="reservation-success__actions">
             {/* Bật nút khi đã có route xem chi tiết đơn. */}
-            <Button
+           <Button
               type="button"
               size="lg"
-              disabled
-              title="Chức năng xem chi tiết đơn sẽ được bổ sung"
+              onClick={() =>
+                navigate(`/reservations/${reservation.id}`)
+              }
             >
               Xem đơn đặt bàn
             </Button>

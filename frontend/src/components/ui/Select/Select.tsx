@@ -21,6 +21,9 @@ export interface SelectOption {
 interface SelectProps {
   options: SelectOption[];
 
+  id?: string;
+"aria-label"?: string;
+
   value?: string;
   defaultValue?: string;
 
@@ -49,6 +52,8 @@ export function Select({
   disabled = false,
   leadingIcon,
   name,
+    id,
+  "aria-label": ariaLabel,
   onValueChange,
   className = "",
 }: SelectProps) {
@@ -60,6 +65,7 @@ export function Select({
   const containerRef = useRef<HTMLDivElement>(null);
 
   const listboxId = useId();
+
 
   const selectedValue =
     value !== undefined ? value : internalValue;
@@ -157,15 +163,17 @@ export function Select({
       )}
 
       <button
-        type="button"
-        className={classes}
-        disabled={disabled}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        aria-controls={listboxId}
-        aria-invalid={error || undefined}
-        onClick={handleToggle}
-        onKeyDown={handleKeyDown}
+        id={id ?? name}
+  aria-label={ariaLabel}
+  type="button"
+  className={classes}
+  disabled={disabled}
+  aria-haspopup="listbox"
+  aria-expanded={open}
+  aria-controls={listboxId}
+  aria-invalid={error || undefined}
+  onClick={handleToggle}
+  onKeyDown={handleKeyDown}
       >
         {leadingIcon && (
           <span className="sage-select__icon">

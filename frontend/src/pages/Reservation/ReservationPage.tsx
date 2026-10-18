@@ -21,16 +21,12 @@ import { Select } from "../../components/ui/Select";
 import { Textarea } from "../../components/ui/Textarea";
 import { DateInput } from "../../components/ui/DateInput";
 
+import { areaApi } from "../../api/area.api";
+import type { AreaResponse, PublicArea } from "../../types/area";
+
 import "./ReservationPage.css";
 
-interface Area {
-  id: number;
-  name: string;
-}
 
-interface ReservationPageProps {
-  areas?: Area[];
-}
 
 interface SearchForm {
   date: string;
@@ -144,9 +140,7 @@ function displayTime(value: string): string {
   }).format(new Date(value));
 }
 
-export function ReservationPage({
-  areas = [],
-}: ReservationPageProps) {
+export function ReservationPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
 
@@ -162,6 +156,12 @@ export function ReservationPage({
   const [bookingError, setBookingError] = useState("");
   const [createdReservation, setCreatedReservation] =
     useState<ReservationResponse | null>(null);
+
+
+  const [areas, setAreas] = useState<AreaResponse[]>([]);
+  const [areasLoading, setAreasLoading] = useState(true);
+  const [areasError, setAreasError] = useState("");
+  const [areasRetryCount, setAreasRetryCount] = useState(0);
 
   const searchController = useRef<AbortController | null>(null);
 
@@ -303,6 +303,40 @@ export function ReservationPage({
     }
   }
 
+  useEffect(() => {
+  const controller = new AbortController();
+
+  setAreasLoading(true);
+  setAreasError("");
+
+  async function loadAreas() {
+    try {
+      const result = await areaApi.list(
+        controller.signal,
+      );
+
+      if (!controller.signal.aborted) {
+        setAreas(result);
+      }
+    } catch (cause) {
+      if (!controller.signal.aborted) {
+        setAreasError(
+          getApiError(cause).message ||
+            "Không thể tải danh sách khu vực.",
+        );
+      }
+    } finally {
+      if (!controller.signal.aborted) {
+        setAreasLoading(false);
+      }
+    }
+  }
+
+  void loadAreas();
+
+  return () => controller.abort();
+}, [areasRetryCount]);
+
   return (
     <div className="reservation-page">
       <Header variant="guest" active="reservation" />
@@ -368,18 +402,48 @@ export function ReservationPage({
                   </FormField>
                 </div>
 
-                <div role="group" aria-label="Khu vực">
-                  <FormField label="Khu vực" supportingText="Không bắt buộc">
+               <div role="group" aria-label="Khu vực">
+                  <FormField
+                    label="Khu vực"
+                    supportingText={
+                      areasLoading
+                        ? "Đang tải danh sách khu vực..."
+                        : "Không bắt buộc"
+                    }
+                  >
                     <Select
                       size="lg"
                       value={form.areaId}
                       options={areaOptions}
-                      disabled={booking}
+                      disabled={
+                        booking ||
+                        areasLoading ||
+                        Boolean(areasError)
+                      }
+                      error={Boolean(areasError)}
                       onValueChange={(value) =>
                         updateSearchField("areaId", value)
                       }
                     />
                   </FormField>
+
+                  {areasError && (
+                    <div>
+                      <p role="alert">{areasError}</p>
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="md"
+                        disabled={booking}
+                        onClick={() =>
+                          setAreasRetryCount((count) => count + 1)
+                        }
+                      >
+                        Thử lại
+                      </Button>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -573,3 +637,4 @@ export function ReservationPage({
     </div>
   );
 }
+

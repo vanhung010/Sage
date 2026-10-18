@@ -50,6 +50,75 @@ public class ReservationMailListener {
         }
     }
 
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onRescheduled(ReservationRescheduledEvent event) {
+        try {
+            executor.execute(() -> sendRescheduledEmail(event));
+        } catch (RuntimeException exception) {
+            log.error(
+                    "Không thể xếp lịch gửi email đổi lịch cho đơn {}",
+                    event.reservation().code(),
+                    exception
+            );
+        }
+    }
+
+    private void sendRescheduledEmail(ReservationRescheduledEvent event) {
+        try {
+            JavaMailSender sender = mailSenderProvider.getIfAvailable();
+
+            if (sender == null || from.isBlank()) {
+                log.warn(
+                        "Chưa cấu hình SMTP; không gửi email đổi lịch cho đơn {}",
+                        event.reservation().code()
+                );
+                return;
+            }
+
+            var reservation = event.reservation();
+
+            String status = reservation.status()
+                    == com.sagares.saga_res_api.reservation.entity
+                    .ReservationStatus.PENDING
+                    ? "Đơn đang chờ nhà hàng xác nhận."
+                    : "Lịch mới đã được xác nhận.";
+
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(from);
+            message.setTo(event.recipient());
+
+            message.setSubject(
+                    "Sage - Đổi lịch đặt bàn " + reservation.code()
+            );
+
+            message.setText("""
+                Đơn đặt bàn của bạn đã được đổi lịch.
+                Mã đặt bàn: %s
+                Số khách: %d
+                Bắt đầu: %s
+                Kết thúc: %s
+                %s
+                Thời gian hiển thị theo múi giờ Việt Nam.
+                """.formatted(
+                    reservation.code(),
+                    reservation.partySize(),
+                    reservation.startTime().format(DATE_TIME_FORMAT),
+                    reservation.endTime().format(DATE_TIME_FORMAT),
+                    status
+            ));
+
+            sender.send(message);
+
+        } catch (Exception exception) {
+            log.error(
+                    "Gửi email đổi lịch thất bại cho đơn {}",
+                    event.reservation().code(),
+                    exception
+            );
+        }
+    }
+
     private void sendEmail(ReservationConfirmedEvent event) {
         try {
             JavaMailSender mailSender = mailSenderProvider.getIfAvailable();

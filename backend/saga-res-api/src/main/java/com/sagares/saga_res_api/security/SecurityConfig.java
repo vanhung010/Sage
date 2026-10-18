@@ -63,7 +63,8 @@ public class SecurityConfig {
                                 "/api/menu/**",
                                 "/api/restaurant/**",
                                 "/api/opening-hours",
-                                "/api/availability/**"
+                                "/api/availability/**",
+                                "/api/areas"
                         )
                         .permitAll()
                         .requestMatchers("/api/admin/**")

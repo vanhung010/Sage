@@ -1,6 +1,6 @@
 import { CalendarDays, Clock3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-
+import { useEffect, useState } from "react";
 import type {
   ReservationResponse,
   ReservationStatus,
@@ -19,10 +19,14 @@ import "./ReservationDetailPage.css";
 
 interface ReservationDetailPageProps {
   reservation: ReservationResponse;
-
-  // Trang cha xử lý chuyển trang đổi lịch hoặc mở modal xác nhận hủy.
   onReschedule?: () => void;
   onCancel?: () => void;
+  isCancelling?: boolean;
+  cancelFeedback?: {
+    type: "success" | "error";
+    message: string;
+  } | null;
+   notice?: string;
 }
 
 const restaurantInfo: FooterRestaurantInfo = {
@@ -106,6 +110,9 @@ export function ReservationDetailPage({
   reservation,
   onReschedule,
   onCancel,
+  notice,
+  isCancelling = false,
+  cancelFeedback = null,
 }: ReservationDetailPageProps) {
   const navigate = useNavigate();
 
@@ -124,7 +131,18 @@ export function ReservationDetailPage({
     reservation.status === "PENDING" ||
     reservation.status === "CONFIRMED";
 
-  const withinDeadline = Date.now() < deadline.getTime();
+    const [now, setNow] = useState(Date.now);
+
+  useEffect(() => {
+    const timer = window.setInterval(
+      () => setNow(Date.now()),
+      1000,
+    );
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const withinDeadline = now <= deadline.getTime();
 
   const canCancel = active && withinDeadline;
   const canReschedule =
@@ -168,6 +186,14 @@ export function ReservationDetailPage({
         </section>
 
         <section className="reservation-detail-page__content">
+          {notice && (
+  <p
+    className="container reservation-detail-page__notice"
+    role="status"
+  >
+    {notice}
+  </p>
+)}
           <div className="container reservation-detail-page__grid">
             <div className="reservation-detail-page__left">
               <article className="reservation-detail-page__card">
@@ -263,16 +289,27 @@ export function ReservationDetailPage({
 
                 <p>Còn {remainingChanges} lần đổi lịch</p>
 
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="lg"
-                  fullWidth
-                  disabled={!canCancel || !onCancel}
-                  onClick={onCancel}
-                >
-                  Hủy đơn
-                </Button>
+              <Button
+              type="button"
+              variant="outline"
+              size="lg"
+              fullWidth
+              disabled={!canCancel || !onCancel || isCancelling}
+              aria-busy={isCancelling}
+              onClick={onCancel}
+            >
+              {isCancelling ? "Đang hủy..." : "Hủy đơn"}
+            </Button>
+
+            {cancelFeedback && (
+              <p
+                role={
+                  cancelFeedback.type === "error" ? "alert" : "status"
+                }
+              >
+                {cancelFeedback.message}
+              </p>
+            )}
 
                 <p>
                   {active && withinDeadline

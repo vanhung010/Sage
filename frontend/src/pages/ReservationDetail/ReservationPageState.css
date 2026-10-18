@@ -1,0 +1,20 @@
+.reservation-page-state {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.reservation-page-state__content {
+  flex: 1;
+  padding-block: var(--space-16);
+}
+
+.reservation-page-state__content h1 {
+  font-size: 28px;
+  line-height: 36px;
+}
+
+.reservation-page-state__content p {
+  color: var(--color-text-secondary);
+}

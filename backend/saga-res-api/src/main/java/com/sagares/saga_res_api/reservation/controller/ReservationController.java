@@ -37,7 +37,7 @@ public class ReservationController {
                 .body(response);
     }
 
-    @PatchMapping
+    @PatchMapping("/{id}/cancel")
     @Operation(summary = "Hủy đơn đặt bàn")
     public ResponseEntity<ReservationResponse> cancel(@AuthenticationPrincipal AuthenticatedUser user, @PathVariable Long id){
         ReservationResponse response = reservationService.cancel(user, id);

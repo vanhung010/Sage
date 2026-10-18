@@ -224,3 +224,16 @@
     line-height: 28px;
   }
 }
+
+.reservation-detail-page__notice {
+  margin-block: 0 24px;
+  padding: 16px;
+
+  border-radius: var(--radius-control);
+
+  background: var(--color-success-bg);
+  color: var(--color-success);
+
+  font-size: 14px;
+  line-height: 20px;
+}

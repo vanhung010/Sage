@@ -1,0 +1,140 @@
+.app-feedback-modal {
+  box-sizing: border-box;
+  width: min(480px, calc(100% - 32px));
+  max-width: none;
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: var(--space-card-padding-desktop);
+
+  border: var(--border-default) solid var(--color-border);
+  border-radius: var(--radius-modal);
+
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.app-feedback-modal[open] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.app-feedback-modal::backdrop {
+  background: var(--color-overlay);
+}
+
+.app-feedback-modal__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+
+.app-feedback-modal__severity {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  width: var(--size-button-lg);
+  height: var(--size-button-lg);
+  border-radius: var(--radius-lg);
+
+  color: var(--feedback-color);
+  background: var(--feedback-bg);
+}
+
+.app-feedback-modal__severity svg {
+  display: block;
+  flex-shrink: 0;
+}
+
+.app-feedback-modal--success {
+  --feedback-color: var(--color-success);
+  --feedback-bg: var(--color-success-bg);
+}
+
+.app-feedback-modal--info {
+  --feedback-color: var(--color-info);
+  --feedback-bg: var(--color-info-bg);
+}
+
+.app-feedback-modal--warning {
+  --feedback-color: var(--color-warning);
+  --feedback-bg: var(--color-warning-bg);
+}
+
+.app-feedback-modal--error {
+  --feedback-color: var(--color-error);
+  --feedback-bg: var(--color-error-bg);
+}
+
+.app-feedback-modal__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.app-feedback-modal__title {
+  margin: 0;
+  color: var(--color-text-primary);
+
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+
+  overflow-wrap: anywhere;
+}
+
+/* Heading nhận focus để đọc nội dung trước các nút thao tác. */
+.app-feedback-modal__title:focus {
+  outline: none;
+}
+
+.app-feedback-modal__description {
+  margin: 0;
+  color: var(--color-text-secondary);
+
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
+
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.app-feedback-modal__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+@media (max-width: 640px) {
+  .app-feedback-modal {
+    padding: var(--space-card-padding-mobile);
+  }
+
+  .app-feedback-modal__actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+  }
+
+  .app-feedback-modal__actions > button {
+    width: 100%;
+  }
+
+  /* Mobile: nút chính ở trên, nút phụ ở dưới theo Figma. */
+  .app-feedback-modal__primary {
+    order: -1;
+  }
+}

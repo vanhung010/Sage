@@ -2,6 +2,7 @@ package com.sagares.saga_res_api.reservation.service;
 
 import com.sagares.saga_res_api.common.exception.BusinessException;
 import com.sagares.saga_res_api.reservation.dto.AvailabilityResponse;
+import com.sagares.saga_res_api.reservation.entity.ReservationStatus;
 import com.sagares.saga_res_api.reservation.dto.AvailabilitySlotResponse;
 import com.sagares.saga_res_api.reservation.entity.Reservation;
 import com.sagares.saga_res_api.reservation.repository.ReservationRepository;
@@ -50,14 +51,58 @@ public class AvailabilityService {
 
     private final Clock clock;
 
+    // API availability công khai hiện tại tiếp tục gọi hàm này.
     public AvailabilityResponse search(
             LocalDate date,
             int partySize,
             int durationMinutes,
-            Long areaId) {
-        Instant now = clock.instant();
+            Long areaId
+    ) {
+        return search(
+                date,
+                partySize,
+                durationMinutes,
+                areaId,
+                null,
+                null,
+                clock.instant()
+        );
+    }
+
+    // Chỉ gọi sau khi đã kiểm tra chủ đơn và điều kiện đổi lịch.
+// Package-private: dùng trong cùng package service.
+    AvailabilityResponse searchForReschedule(
+            LocalDate date,
+            int partySize,
+            int durationMinutes,
+            Long areaId,
+            Reservation reservation,
+            Instant now
+    ) {
+        return search(
+                date,
+                partySize,
+                durationMinutes,
+                areaId,
+                reservation.getId(),
+                reservation.getCustomer().getId(),
+                now
+        );
+    }
+
+    // Phần tính giờ trống dùng chung.
+    private AvailabilityResponse search(
+            LocalDate date,
+            int partySize,
+            int durationMinutes,
+            Long areaId,
+            Long excludedReservationId,
+            Long customerId,
+            Instant now
+    ) {
         Settings settings = settingsService.load();
 
+        // Kiểm tra ngày, số khách, thời lượng và khu vực mới.
         validateRequest(
                 date,
                 partySize,
@@ -69,7 +114,10 @@ public class AvailabilityService {
 
         OpeningHour openingHour = loadOpeningHour(date);
 
-        List<RestaurantTable> tables = findSuitableTables(partySize, areaId);
+        List<RestaurantTable> tables = findSuitableTables(
+                partySize,
+                areaId
+        );
 
         if (tables.isEmpty()) {
             return response(
@@ -77,7 +125,8 @@ public class AvailabilityService {
                     partySize,
                     durationMinutes,
                     areaId,
-                    List.of());
+                    List.of()
+            );
         }
 
         Instant rangeStart = date
@@ -85,32 +134,100 @@ public class AvailabilityService {
                 .atZone(RESTAURANT_ZONE)
                 .toInstant();
 
-        // Bao phủ cả buffer của slot cuối cùng trong ngày.
+        // Bao phủ cả buffer của slot cuối cùng.
         Instant rangeEnd = date
                 .atTime(openingHour.getCloseTime())
                 .atZone(RESTAURANT_ZONE)
                 .plusMinutes(settings.bufferMinutes())
                 .toInstant();
 
-        Map<Long, List<BusyInterval>> busyByTable = loadBusyIntervals(tables, rangeStart, rangeEnd);
+        // Đọc dữ liệu chiếm bàn một lần cho cả ngày.
+        List<Reservation> reservations = reservationRepository
+                .findTableOccupancyInRange(
+                        rangeStart,
+                        rangeEnd
+                );
 
-        int advanceHours = partySize > settings.autoConfirmThreshold()
+        Map<Long, List<BusyInterval>> busyByTable =
+                loadBusyIntervals(
+                        tables,
+                        rangeStart,
+                        rangeEnd,
+                        reservations,
+                        excludedReservationId
+                );
+
+        // Thời gian đặt trước được tính theo số khách mới.
+        int advanceHours =
+                partySize > settings.autoConfirmThreshold()
                         ? settings.minAdvanceHoursLargeGroup()
                         : settings.minAdvanceHours();
 
-        Instant earliestStart = now.plus(advanceHours, ChronoUnit.HOURS);
+        Instant earliestStart = now.plus(
+                advanceHours,
+                ChronoUnit.HOURS
+        );
 
-        List<AvailabilitySlotResponse> slots =
-                calculator.calculate(
-                        date,
-                        openingHour.getOpenTime(),
-                        openingHour.getCloseTime(),
-                        earliestStart,
-                        durationMinutes,
-                        settings.bufferMinutes(),
-                        settings.slotStepMinutes(),
-                        busyByTable
-                );
+        List<AvailabilitySlotResponse> slots = calculator.calculate(
+                date,
+                openingHour.getOpenTime(),
+                openingHour.getCloseTime(),
+                earliestStart,
+                durationMinutes,
+                settings.bufferMinutes(),
+                settings.slotStepMinutes(),
+                busyByTable
+        );
+
+        // Khi đổi lịch, loại thêm các giờ trùng với đơn khác của khách.
+        if (customerId != null) {
+            List<BusyInterval> customerIntervals = reservations
+                    .stream()
+
+                    // Không coi chính đơn đang sửa là lịch trùng.
+                    .filter(reservation ->
+                            !reservation.getId()
+                                    .equals(excludedReservationId)
+                    )
+
+                    // Xét cả đơn của khách ở bàn/khu vực khác.
+                    .filter(reservation ->
+                            reservation.getCustomer() != null
+                                    && customerId.equals(
+                                    reservation.getCustomer().getId()
+                            )
+                    )
+
+                    .filter(reservation ->
+                            reservation.getStatus()
+                                    == ReservationStatus.PENDING
+                                    || reservation.getStatus()
+                                    == ReservationStatus.CONFIRMED
+                                    || reservation.getStatus()
+                                    == ReservationStatus.ARRIVED
+                    )
+
+                    // Lịch khách không cộng buffer dọn bàn.
+                    .map(reservation -> new BusyInterval(
+                            reservation.getStartTime(),
+                            reservation.getEndTime()
+                    ))
+                    .toList();
+
+            slots = slots.stream()
+                    .filter(slot ->
+                            customerIntervals.stream()
+                                    .noneMatch(busy ->
+                                            slot.startTime()
+                                                    .toInstant()
+                                                    .isBefore(busy.end())
+                                                    && busy.start().isBefore(
+                                                    slot.endTime().toInstant()
+                                            )
+                                    )
+                    )
+                    .toList();
+        }
 
         return response(
                 date,
@@ -239,35 +356,38 @@ public class AvailabilityService {
     private Map<Long, List<BusyInterval>> loadBusyIntervals(
             List<RestaurantTable> tables,
             Instant rangeStart,
-            Instant rangeEnd
+            Instant rangeEnd,
+            List<Reservation> reservations,
+            Long excludedReservationId
     ) {
-        Map<Long, List<BusyInterval>> busyByTable =
-                new HashMap<>();
+        Map<Long, List<BusyInterval>> busyByTable = new HashMap<>();
 
-        // Giữ cả những bàn chưa có reservation hoặc suspension.
+        // Bàn chưa có reservation/suspension vẫn phải được xét.
         for (RestaurantTable table : tables) {
-            busyByTable.put(table.getId(), new ArrayList<>());
+            busyByTable.put(
+                    table.getId(),
+                    new ArrayList<>()
+            );
         }
 
-        List<Reservation> reservations =
-                reservationRepository.findTableOccupancyInRange(
-                        rangeStart,
-                        rangeEnd
-                );
-
         for (Reservation reservation : reservations) {
+            // Chỉ bỏ qua chính đơn đang sửa.
+            // Các đơn khác trên cùng bàn vẫn phải chặn giờ.
+            if (reservation.getId().equals(excludedReservationId)) {
+                continue;
+            }
+
             Long tableId = reservation.getTable().getId();
 
-            List<BusyInterval> intervals =
-                    busyByTable.get(tableId);
+            List<BusyInterval> intervals = busyByTable.get(tableId);
 
+            // Bàn này không thuộc danh sách bàn phù hợp.
             if (intervals == null) {
                 continue;
             }
 
-            // Dùng buffer đã lưu trên reservation cũ.
-            Instant occupiedEnd = reservation
-                    .getEndTime()
+            // Dùng buffer snapshot đã lưu trên từng đơn.
+            Instant occupiedEnd = reservation.getEndTime()
                     .plus(
                             reservation.getBufferMinutes(),
                             ChronoUnit.MINUTES
@@ -279,8 +399,9 @@ public class AvailabilityService {
             ));
         }
 
-        List<TableSuspension> suspensions =
-                suspensionRepository.findAllOverlapping(
+        // Suspension của bàn vẫn luôn được xét.
+        List<TableSuspension> suspensions = suspensionRepository
+                .findAllOverlapping(
                         rangeStart,
                         rangeEnd
                 );
@@ -288,8 +409,7 @@ public class AvailabilityService {
         for (TableSuspension suspension : suspensions) {
             Long tableId = suspension.getTable().getId();
 
-            List<BusyInterval> intervals =
-                    busyByTable.get(tableId);
+            List<BusyInterval> intervals = busyByTable.get(tableId);
 
             if (intervals == null) {
                 continue;

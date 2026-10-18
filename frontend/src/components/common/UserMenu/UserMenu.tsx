@@ -23,7 +23,7 @@ interface UserMenuProps {
 
 export function UserMenu({
   userName,
-  onProfile,
+  
   onReservations,
   onOrders,
   onChangePassword,
@@ -112,13 +112,7 @@ export function UserMenu({
           className="sage-user-menu__dropdown"
           role="menu"
         >
-          <UserMenuItem
-            onClick={() =>
-              handleSelect(onProfile)
-            }
-          >
-            Hồ sơ cá nhân
-          </UserMenuItem>
+         
 
           <UserMenuItem
             onClick={() =>
