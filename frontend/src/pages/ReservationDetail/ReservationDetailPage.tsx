@@ -290,16 +290,16 @@ export function ReservationDetailPage({
                 <p>Còn {remainingChanges} lần đổi lịch</p>
 
               <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              fullWidth
-              disabled={!canCancel || !onCancel || isCancelling}
-              aria-busy={isCancelling}
-              onClick={onCancel}
-            >
-              {isCancelling ? "Đang hủy..." : "Hủy đơn"}
-            </Button>
+                type="button"
+                variant="outline"
+                size="lg"
+                fullWidth
+                disabled={!canCancel || !onCancel || isCancelling}
+                aria-busy={isCancelling}
+                onClick={onCancel}
+              >
+                {isCancelling ? "Đang hủy..." : "Hủy đơn"}
+              </Button>
 
             {cancelFeedback && (
               <p

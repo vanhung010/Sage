@@ -72,4 +72,11 @@ export const reservationApi = {
 
     return response.data;
   },
+  async cancel(id: number): Promise<ReservationResponse> {
+  const response = await apiClient.patch<ReservationResponse>(
+    `${CUSTOMER_RESERVATIONS}/${id}/cancel`,
+  );
+
+  return response.data;
+},
 };
