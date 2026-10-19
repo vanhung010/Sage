@@ -33,7 +33,7 @@ public class OrderDishService {
     @Transactional
     public OrderDishResponse create(long id, CreateOrderDishRequest request){
 
-        if(validatePhone(request.deliveryPhone())){
+        if(!validatePhone(request.deliveryPhone())){
             throw new BusinessException(HttpStatus.BAD_REQUEST, "NUMBER NOT VALID", "Số điện thoại không đúng");
         }
 
@@ -48,7 +48,7 @@ public class OrderDishService {
         FoodOrder foodOrderSave = foodOrderRepository.save(foodOrder);
 
         List<OrderDishItemResponse> orderDishItemResponseList = new ArrayList<>();
-
+        int totalAmount = 0;
         for(CreateOrderDishItemRequest item : request.createOrderDishItemRequestList()){
 
             Dish dish = dishRepository.findToOrderById(item.idDish()).orElseThrow(() -> new BusinessException(
@@ -61,15 +61,17 @@ public class OrderDishService {
             foodOrderItem.setFoodOrder(foodOrderSave);
             foodOrderItem.setDish(dish);
             foodOrderItem.setQuantity(item.quantity());
-            foodOrderItem.setUnitPrice(item.price());
+            foodOrderItem.setUnitPrice(dish.getPrice());
 
             foodOrderItemRepository.save(foodOrderItem);
 
-            OrderDishItemResponse orderDishItemResponse = new OrderDishItemResponse(dish.getName(), item.quantity());
+            int totalLine = item.quantity() * dish.getPrice();
+            totalAmount += totalLine;
+            OrderDishItemResponse orderDishItemResponse = new OrderDishItemResponse(dish.getName(), item.quantity(), dish.getPrice(), totalLine);
             orderDishItemResponseList.add(orderDishItemResponse);
 
         }
-        return toDTO(foodOrderSave, orderDishItemResponseList);
+        return toDTO(foodOrderSave, orderDishItemResponseList, totalAmount);
     }
 
     private boolean validatePhone(String phone){
@@ -77,8 +79,12 @@ public class OrderDishService {
         return  phone.matches(regex);
     }
 
-    private OrderDishResponse toDTO(FoodOrder foodOrder, List<OrderDishItemResponse> list){
+    private OrderDishResponse toDTO(FoodOrder foodOrder, List<OrderDishItemResponse> list, int totalAmount){
         OrderDishResponse result = new OrderDishResponse(
+                foodOrder.getId(),
+                foodOrder.getStatus(),
+                foodOrder.getCreatedAt(),
+                totalAmount,
                 foodOrder.getDeliveryAddress(),
                 foodOrder.getDeliveryPhone(),
                 foodOrder.getPaymentMethod(),
