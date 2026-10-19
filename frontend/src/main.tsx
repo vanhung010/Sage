@@ -4,12 +4,16 @@ import './index.css'
 import App from './App.tsx'
 
 import { AuthProvider } from "./auth/AuthContext";
+import { CartProvider } from "./cart/CartContext";
+import { ToastProvider } from "./components/ui/Toast";
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-  
     <AuthProvider>
-    <App />
+      <ToastProvider>
+        <CartProvider>
+          <App />
+        </CartProvider>
+      </ToastProvider>
     </AuthProvider>
-   
   </StrictMode>,
 )

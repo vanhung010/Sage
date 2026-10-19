@@ -16,6 +16,8 @@ interface DishCardProps {
   onClick?: () => void;
 
   className?: string;
+
+  addDisabled?: boolean;
 }
 
 export function DishCard({
@@ -27,6 +29,7 @@ export function DishCard({
   onAdd,
   onClick,
   className = "",
+  addDisabled = false,
 }: DishCardProps) {
   const classes = [
     "sage-dish-card",
@@ -89,9 +92,11 @@ export function DishCard({
             {formattedPrice}
           </span>
 
-          <Button
+          
+           <Button
             variant="outline"
             size="md"
+            disabled={addDisabled}
             onClick={handleAdd}
           >
             Thêm món

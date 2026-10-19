@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +73,7 @@ public class OrderDishService {
         return toDTO(foodOrderSave, orderDishItemResponseList, totalAmountPrice);
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public OrderDetailDishResponse getDetail(Long idAccount, Long idRequest){
 
         FoodOrder foodOrder = foodOrderRepository.findOwnedDetail(idRequest, idAccount).orElseThrow(() -> new BusinessException(
@@ -97,6 +98,7 @@ public class OrderDishService {
             );
         }
         foodOrder.setStatus(FoodOrderStatus.CANCELLED);
+        foodOrder.setCancelledAt(Instant.now());
         FoodOrder foodOrderSave = foodOrderRepository.save(foodOrder);
         return OrderDetailDishResponse.toDTO(foodOrder);
     }

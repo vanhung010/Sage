@@ -1,0 +1,10 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Circle">
+<mask id="path-1-inside-1_0_279" fill="white">
+<path d="M0 8C0 3.58172 3.58172 0 8 0V0C12.4183 0 16 3.58172 16 8V8C16 12.4183 12.4183 16 8 16V16C3.58172 16 0 12.4183 0 8V8Z"/>
+</mask>
+<path d="M0 8C0 3.58172 3.58172 0 8 0V0C12.4183 0 16 3.58172 16 8V8C16 12.4183 12.4183 16 8 16V16C3.58172 16 0 12.4183 0 8V8Z" fill="white"/>
+<path d="M0 8M16 8M16 8M0 8M8 0M16 8M8 16M0 8M8 16V14C4.68629 14 2 11.3137 2 8H0H-2C-2 13.5228 2.47715 18 8 18V16ZM16 8H14C14 11.3137 11.3137 14 8 14V16V18C13.5228 18 18 13.5228 18 8H16ZM8 0V2C11.3137 2 14 4.68629 14 8H16H18C18 2.47715 13.5228 -2 8 -2V0ZM8 0V-2C2.47715 -2 -2 2.47715 -2 8H0H2C2 4.68629 4.68629 2 8 2V0Z" fill="#B5533C" mask="url(#path-1-inside-1_0_279)"/>
+<circle id="Selected Indicator" cx="8" cy="8" r="4" fill="#B5533C"/>
+</g>
+</svg>

@@ -18,6 +18,8 @@ export interface FooterRestaurantInfo {
 }
 
 interface FooterProps {
+  logoSrc?: string;
+  contactIcons?: { address: string; phone: string; mail: string };
   restaurantInfo: FooterRestaurantInfo;
   className?: string;
 }
@@ -42,6 +44,8 @@ const navigationItems = [
 ];
 
 export function Footer({
+  logoSrc,
+  contactIcons,
   restaurantInfo,
   className = "",
 }: FooterProps) {
@@ -63,7 +67,7 @@ export function Footer({
             aria-label="Sage - Trang chủ"
           >
             <img
-              src={sageLogo}
+              src={logoSrc ?? sageLogo}
               alt="Sage"
               className="sage-footer__logo"
             />
@@ -104,11 +108,11 @@ export function Footer({
 
           <div className="sage-footer__contact-list">
             <div className="sage-footer__contact-item">
-              <MapPin
+              {contactIcons ? <img src={contactIcons.address} width={20} height={20} alt="" /> : <MapPin
                 size={20}
                 strokeWidth={1.8}
                 aria-hidden="true"
-              />
+              />}
 
               <span>
                 {restaurantInfo.address}
@@ -119,11 +123,11 @@ export function Footer({
               href={`tel:${restaurantInfo.phone}`}
               className="sage-footer__contact-item"
             >
-              <Phone
+              {contactIcons ? <img src={contactIcons.phone} width={20} height={20} alt="" /> : <Phone
                 size={20}
                 strokeWidth={1.8}
                 aria-hidden="true"
-              />
+              />}
 
               <span>
                 {restaurantInfo.phone}
@@ -134,11 +138,11 @@ export function Footer({
               href={`mailto:${restaurantInfo.email}`}
               className="sage-footer__contact-item"
             >
-              <Mail
+              {contactIcons ? <img src={contactIcons.mail} width={20} height={20} alt="" /> : <Mail
                 size={20}
                 strokeWidth={1.8}
                 aria-hidden="true"
-              />
+              />}
 
               <span>
                 {restaurantInfo.email}

@@ -10,7 +10,7 @@ import { Button } from "../../ui/Button";
 import { UserMenu } from "../../common/UserMenu";
 
 import sageLogo from "../../../assets/logo/sage-logo-light.svg";
-
+import { useCart } from "../../../cart/CartContext";
 import "./Header.css";
 
 export type HeaderVariant =
@@ -26,6 +26,7 @@ export type HeaderActiveItem =
   | "about";
 
 interface HeaderProps {
+  logoSrc?: string;
   variant?: HeaderVariant;
   /** Omit to match the current URL; use null to clear the selection. */
   active?: HeaderActiveItem | null;
@@ -62,11 +63,15 @@ const navItems = [
 ] as const;
 
 export function Header({
+  logoSrc,
   variant: requestedVariant = "guest",
   active,
   userName: fallbackUserName = "Khách hàng",
   className = "",
 }: HeaderProps) {
+
+  const { totalQuantity } = useCart();
+
   const navigate = useNavigate();
   const { pathname, hash } = useLocation();
   const { user, logout } = useAuth();
@@ -134,7 +139,7 @@ export function Header({
       >
         <img
           className="sage-header__logo"
-          src={sageLogo}
+          src={logoSrc ?? sageLogo}
           alt="Sage"
         />
       </Link>
@@ -150,6 +155,11 @@ export function Header({
               key={item.to}
               to={item.to}
               aria-current={activeItem === item.id ? "page" : undefined}
+              aria-label={
+                item.id === "order" && totalQuantity > 0
+                  ? `${item.label}, giỏ hàng có ${totalQuantity} món`
+                  : undefined
+              }
               className={
                 [
                   "sage-header__nav-item",
@@ -162,6 +172,11 @@ export function Header({
               }
             >
               {item.label}
+              {item.id === "order" && totalQuantity > 0 && (
+                <span className="sage-header__cart-count" aria-hidden="true">
+                  {totalQuantity > 99 ? "99+" : totalQuantity}
+                </span>
+              )}
             </Link>
           ))}
         </nav>

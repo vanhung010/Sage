@@ -6,6 +6,7 @@ import {
 } from "react";
 
 import { Button } from "../../ui/Button";
+import type { ButtonVariant } from "../../ui/Button/Button";
 
 import warningIcon from "../../../assets/reservation/warning.svg";
 import closeIcon from "../../../assets/reservation/close.svg";
@@ -13,6 +14,9 @@ import closeIcon from "../../../assets/reservation/close.svg";
 import "./AppFeedbackModal.css";
 
 interface AppFeedbackModalProps {
+  className?: string;
+  iconSrc?: string;
+  primaryVariant?: ButtonVariant;
   open: boolean;
   title: string;
   children: ReactNode;
@@ -24,6 +28,9 @@ interface AppFeedbackModalProps {
 }
 
 export function AppFeedbackModal({
+  className = "",
+  iconSrc = warningIcon,
+  primaryVariant = "primary",
   open,
   title,
   children,
@@ -74,7 +81,7 @@ export function AppFeedbackModal({
   return (
     <dialog
       ref={dialogRef}
-      className="app-feedback-modal"
+      className={`app-feedback-modal ${className}`}
       aria-labelledby={titleId}
       aria-describedby={descriptionId}
       aria-busy={busy}
@@ -158,7 +165,7 @@ export function AppFeedbackModal({
       <div className="app-feedback-modal__header">
         <span className="app-feedback-modal__severity">
           <img
-            src={warningIcon}
+            src={iconSrc}
             width={24}
             height={24}
             alt=""
@@ -200,6 +207,7 @@ export function AppFeedbackModal({
         <Button
           type="button"
           loading={busy}
+          variant={primaryVariant}
           onClick={onConfirm}
         >
           {primaryLabel}

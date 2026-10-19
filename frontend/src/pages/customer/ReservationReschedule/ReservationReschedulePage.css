@@ -1,0 +1,346 @@
+@import "../../../assets/reservation/fonts/reschedule-fonts.css";
+
+.reschedule-page {
+  --font-body: "Sage Reservation", sans-serif;
+
+  font-family: var(--font-body);
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.reschedule-page__heading {
+  padding: var(--space-8) 0 var(--space-10);
+  background: var(--color-surface-alt);
+}
+
+.reschedule-page__heading h1 {
+  margin: var(--space-6) 0 var(--space-2);
+  font-size: 32px;
+  line-height: 40px;
+}
+
+.reschedule-page__heading p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.reschedule-page__content {
+  padding-block: var(--space-12) var(--space-16);
+}
+
+.reschedule-page__grid {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 824fr)
+    minmax(0, 464fr);
+  gap: var(--space-8);
+  align-items: start;
+}
+
+.reschedule-page__column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+.reschedule-page__card {
+  padding: var(--space-card-padding-desktop);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+}
+
+.reschedule-page__card h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 32px;
+}
+
+.reschedule-page__intro {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-secondary);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.reschedule-page__editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.reschedule-page__editor form,
+.reschedule-page__editor fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.reschedule-page__fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.reschedule-page__fields .sage-form-field {
+  min-width: 0;
+}
+
+.reschedule-page__search-action {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-6);
+}
+
+.reschedule-page__availability {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-border);
+}
+
+.reschedule-page__availability-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.reschedule-page__availability-heading span,
+.reschedule-page__availability > p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-text-secondary);
+}
+
+.reschedule-page__slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.reschedule-page__slot {
+  display: grid;
+  place-items: center;
+
+  width: 96px;
+  height: 40px;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  cursor: pointer;
+}
+
+.reschedule-page__slot:hover:not(:disabled) {
+  border-color: var(--color-primary);
+}
+
+.reschedule-page__slot[aria-pressed="true"] {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+  color: var(--color-primary);
+}
+
+.reschedule-page__slot:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.reschedule-page__slot:disabled {
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+  cursor: not-allowed;
+}
+
+.reschedule-page__selected {
+  padding: var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-alt);
+}
+
+.reschedule-page__selected strong {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.reschedule-page__selected p {
+  margin: var(--space-2) 0 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-text-secondary);
+}
+
+.reschedule-page__note {
+  padding: var(--space-4);
+}
+
+.reschedule-page__note h3 {
+  margin: 0 0 var(--space-4);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.reschedule-page__note p {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-text-secondary);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.reschedule-page__comparison {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-4);
+}
+
+.reschedule-page__comparison > p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.reschedule-page__identity {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.reschedule-page__identity > span:first-child {
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-text-secondary);
+}
+
+.reschedule-page__identity strong {
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.reschedule-page__rows {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.reschedule-page__rows > div {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding-block: 10px;
+}
+
+.reschedule-page__rows dt {
+  flex: 0 0 132px;
+  color: var(--color-text-secondary);
+}
+
+.reschedule-page__rows dd {
+  flex: 1;
+  margin: 0;
+  text-align: right;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.reschedule-page__allowance {
+  padding: var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-alt);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.reschedule-page__notice {
+  padding: var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-surface-alt);
+}
+
+.reschedule-page__notice h2,
+.reschedule-page__notice h3 {
+  margin: 0 0 var(--space-2);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.reschedule-page__notice p,
+.reschedule-page__approval p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.reschedule-page__notice--warning {
+  margin-bottom: var(--space-6);
+  background: var(--color-warning-bg);
+}
+
+.reschedule-page__notice--warning button {
+  margin-top: var(--space-4);
+}
+
+.reschedule-page__approval {
+  padding: var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-warning-bg);
+}
+
+.reschedule-page__approval p {
+  margin-top: var(--space-2);
+}
+
+.reschedule-page__availability > .reschedule-page__error,
+.reschedule-page__field-error {
+  color: var(--color-error);
+}
+
+.reschedule-page__field-error {
+  margin-top: var(--space-3);
+  font-size: 14px;
+}
+
+.reschedule-page__lost-slot {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 14px;
+  line-height: 20px;
+  color: var(--color-text-secondary);
+}
+
+.reschedule-page__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+
+  padding: 0;
+  margin: -1px;
+
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

@@ -1,0 +1,78 @@
+@font-face { font-family: "Sage Order Body"; src: url("../../../assets/order-detail/fonts/BeVietnamPro-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Sage Order Body"; src: url("../../../assets/order-detail/fonts/BeVietnamPro-Medium.ttf") format("truetype"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Sage Order Body"; src: url("../../../assets/order-detail/fonts/BeVietnamPro-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
+.food-order-detail { --font-body: "Sage Order Body", sans-serif; min-height: 100vh; font-family: var(--font-body); background: var(--color-bg); }
+.food-order-detail p, .food-order-detail h1, .food-order-detail h2, .food-order-detail dl, .food-order-detail dd { margin: 0; }
+.food-order-detail__container { width: calc(100% - 120px); max-width: 1320px; margin-inline: auto; }
+.food-order-detail__hero { display: flex; align-items: center; min-height: 260px; padding-block: 40px; background: var(--color-surface-alt); }
+.food-order-detail__eyebrow { color: var(--color-primary); font-size: 14px; font-weight: 500; line-height: 20px; }
+.food-order-detail h1 { margin-block: 12px; font-size: 32px; font-weight: 700; line-height: 40px; }
+.food-order-detail__subtitle { color: var(--color-text-secondary); font-size: 18px; line-height: 28px; }
+.food-order-detail__content { padding-block: 64px 80px; }
+.food-order-detail__grid { display: grid; grid-template-columns: minmax(0, 824fr) minmax(0, 464fr); gap: 32px; align-items: start; }
+.food-order-detail__column { display: grid; gap: 24px; min-width: 0; }
+.food-order-detail__card { display: flex; flex-direction: column; gap: 24px; min-width: 0; padding: 24px; border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-surface); }
+.food-order-detail h2 { font-size: 24px; font-weight: 700; line-height: 32px; }
+.food-order-detail__section-heading { display: grid; gap: 8px; }
+.food-order-detail__section-heading p, .food-order-detail__description { color: var(--color-text-secondary); font-size: 16px; line-height: 24px; }
+.food-order-detail__table-wrap { overflow-x: auto; }
+.food-order-detail__table-wrap:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 4px; }
+.food-order-detail table { width: 100%; min-width: 650px; table-layout: fixed; border-collapse: collapse; text-align: left; }
+.food-order-detail col:nth-child(1) { width: 41.3437%; }
+.food-order-detail col:nth-child(2) { width: 20.6718%; }
+.food-order-detail col:nth-child(3) { width: 13.4367%; }
+.food-order-detail col:nth-child(4) { width: 24.5478%; }
+.food-order-detail thead { background: var(--color-surface-alt); }
+.food-order-detail thead th { padding: 12px 16px; color: var(--color-text-secondary); font-size: 14px; line-height: 20px; font-weight: 500; }
+.food-order-detail tbody th, .food-order-detail tbody td { padding: 20px 16px; font-size: 16px; line-height: 24px; font-weight: 400; overflow-wrap: anywhere; }
+.food-order-detail tbody tr + tr { border-top: 1px solid var(--color-border); }
+.food-order-detail th:nth-child(2), .food-order-detail td:nth-child(2), .food-order-detail th:nth-child(4), .food-order-detail td:nth-child(4) { text-align: right; white-space: nowrap; }
+.food-order-detail th:nth-child(3), .food-order-detail td:nth-child(3) { text-align: center; }
+.food-order-detail tbody td:last-child { font-size: 14px; line-height: 20px; font-weight: 500; }
+.food-order-detail__note { font-size: 14px; line-height: 20px; color: var(--color-text-secondary); }
+.food-order-detail__delivery > div { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: 24px; padding-block: 10px; font-size: 16px; line-height: 24px; }
+.food-order-detail__delivery dt, .food-order-detail__summary dt { color: var(--color-text-secondary); }
+.food-order-detail__delivery dd { text-align: right; overflow-wrap: anywhere; white-space: pre-line; }
+.food-order-detail__status-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.food-order-detail__summary { display: grid; gap: 14px; }
+.food-order-detail__summary > div { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; font-size: 16px; line-height: 24px; }
+.food-order-detail__summary dd { text-align: right; }
+.food-order-detail__summary .food-order-detail__divider { height: 1px; background: var(--color-border); }
+.food-order-detail__summary .food-order-detail__total { font-size: 24px; line-height: 32px; font-weight: 700; }
+.food-order-detail__total dt { color: var(--color-text-primary); }
+.food-order-detail__total dd { color: var(--color-primary); }
+.food-order-detail__state-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.food-order-detail__notice { margin-bottom: 24px !important; padding: 16px; border-radius: var(--radius-control); background: var(--color-success-bg); color: var(--color-success); line-height: 24px; }
+.food-order-detail__notice.is-error { color: var(--color-error); background: var(--color-error-bg); }
+.food-order-detail__sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+.food-order-detail .sage-header__logo-link, .food-order-detail .sage-header__logo { width: 140px; height: 70px; max-width: 140px; object-fit: cover; }
+.food-order-detail .sage-header__nav-item--active { color: var(--color-primary); }
+.food-order-detail .sage-footer__logo { width: 190px; height: 95px; object-fit: cover; }
+.food-order-detail .sage-footer__contact-item img { flex-shrink: 0; }
+.food-order-detail .sage-footer__contact-item span { white-space: pre-line; }
+.food-order-cancel-modal { font-family: "Sage Order Body", sans-serif; padding: 23px 24px; box-shadow: none; }
+.food-order-cancel-modal .app-feedback-modal__severity { background: var(--color-error-bg); }
+.food-order-cancel-modal .app-feedback-modal__content h2 { margin: 0 0 8px; }
+.food-order-cancel-modal .app-feedback-modal__actions { justify-content: flex-end; }
+.food-order-cancel-modal .app-feedback-modal__actions > :last-child { flex: none; }
+@media (max-width: 1100px) {
+  .food-order-detail__container { width: calc(100% - 64px); }
+  .food-order-detail__grid { grid-template-columns: minmax(0, 1fr); }
+  .food-order-detail .sage-header { padding-inline: 32px; }
+  .food-order-detail .sage-header__navigation { gap: 8px; }
+  .food-order-detail .sage-header__customer-actions { min-width: auto; }
+}
+@media (max-width: 700px) {
+  .food-order-detail__container { width: calc(100% - 32px); }
+  .food-order-detail__hero { min-height: 220px; }
+  .food-order-detail h1 { font-size: 28px; line-height: 36px; }
+  .food-order-detail__content { padding-block: 32px 48px; }
+  .food-order-detail__card { padding: 20px 16px; }
+  .food-order-detail__delivery > div { grid-template-columns: 110px minmax(0, 1fr); gap: 16px; }
+  .food-order-detail .sage-header { height: auto; min-height: 80px; flex-wrap: wrap; padding: 8px 16px; gap: 8px; }
+  .food-order-detail .sage-header__navigation { order: 3; width: 100%; gap: 0; justify-content: flex-start; overflow-x: auto; }
+  .food-order-detail .sage-header__nav-item { padding-inline: 10px; }
+  .food-order-detail .sage-footer__logo { width: 190px; }
+  .food-order-cancel-modal .app-feedback-modal__actions { flex-direction: column; }
+  .food-order-cancel-modal .app-feedback-modal__actions > * { width: 100%; }
+}
