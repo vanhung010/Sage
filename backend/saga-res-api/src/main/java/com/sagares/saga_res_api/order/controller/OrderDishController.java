@@ -30,4 +30,10 @@ public class OrderDishController {
         OrderDetailDishResponse data = orderDishService.getDetail(authenticatedUser.accountId(), id);
         return ResponseEntity.ok(data);
     }
+
+    @PatchMapping("/api/me/orders/{id}/cancel")
+    public ResponseEntity<OrderDetailDishResponse> cancelled (@PathVariable Long id, @AuthenticationPrincipal AuthenticatedUser authenticatedUser){
+        OrderDetailDishResponse data = orderDishService.cancelledFoodOrder(authenticatedUser.accountId(), id);
+        return ResponseEntity.ok(data);
+    }
 }

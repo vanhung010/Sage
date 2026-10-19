@@ -3,6 +3,7 @@ package com.sagares.saga_res_api.order.dto;
 import com.sagares.saga_res_api.order.entity.FoodOrderItem;
 
 public record OrderDishItemResponse(
+        Long id,
         String nameDish,
         int quantity,
         int unitPrice,
@@ -10,6 +11,7 @@ public record OrderDishItemResponse(
 ) {
     public static OrderDishItemResponse toDTO(FoodOrderItem foodOrderItem){
         return new OrderDishItemResponse(
+                foodOrderItem.getId(),
                 foodOrderItem.getDish().getName(),
                 foodOrderItem.getQuantity(),
                 foodOrderItem.getUnitPrice(),

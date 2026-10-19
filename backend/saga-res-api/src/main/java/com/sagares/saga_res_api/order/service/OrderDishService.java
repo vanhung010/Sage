@@ -8,6 +8,7 @@ import com.sagares.saga_res_api.menu.repository.DishRepository;
 import com.sagares.saga_res_api.order.dto.*;
 import com.sagares.saga_res_api.order.entity.FoodOrder;
 import com.sagares.saga_res_api.order.entity.FoodOrderItem;
+import com.sagares.saga_res_api.order.entity.FoodOrderStatus;
 import com.sagares.saga_res_api.order.repository.FoodOrderItemRepository;
 import com.sagares.saga_res_api.order.repository.FoodOrderRepository;
 import lombok.RequiredArgsConstructor;
@@ -64,7 +65,7 @@ public class OrderDishService {
 
             int totalLine = item.quantity() * dish.getPrice();
             totalAmountPrice += totalLine;
-            OrderDishItemResponse orderDishItemResponse = new OrderDishItemResponse(dish.getName(), item.quantity(), dish.getPrice(), totalLine);
+            OrderDishItemResponse orderDishItemResponse = OrderDishItemResponse.toDTO(foodOrderItem);
             orderDishItemResponseList.add(orderDishItemResponse);
 
         }
@@ -79,6 +80,24 @@ public class OrderDishService {
                 "FOOD ORDER NOT EXIXTS",
                 "Không tìm thấy đơn đặt thức ăn"
         ));
+        return OrderDetailDishResponse.toDTO(foodOrder);
+    }
+
+    public OrderDetailDishResponse cancelledFoodOrder(Long idAccount, Long idRequest){
+        FoodOrder foodOrder = foodOrderRepository.findOwnedDetail(idRequest, idAccount).orElseThrow(() -> new BusinessException(
+                HttpStatus.NOT_FOUND,
+                "FOOD ORDER NOT EXIXTS",
+                "Không tìm thấy đơn đặt thức ăn"
+        ));
+        if(foodOrder.getStatus() != FoodOrderStatus.PLACED) {
+            throw  new BusinessException(
+                    HttpStatus.BAD_REQUEST,
+                    "FOOD ORDER CANNOT CANCELLED",
+                    "Trạng thái đơn đặt món hiện tại không thể hủy"
+            );
+        }
+        foodOrder.setStatus(FoodOrderStatus.CANCELLED);
+        FoodOrder foodOrderSave = foodOrderRepository.save(foodOrder);
         return OrderDetailDishResponse.toDTO(foodOrder);
     }
 
