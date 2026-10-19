@@ -119,4 +119,11 @@ public interface DishRepository extends JpaRepository<Dish, Long> {
             @Param("id") Long id,
             @Param("hiddenStatus") DishStatus hiddenStatus
     );
+
+    @Query("""
+        select distinct d 
+        from Dish d
+        WHERE d.id = :id and d.status = "AVAILABLE"
+        """)
+    Optional<Dish> findToOrderById(@Param("id") Long id);
 }

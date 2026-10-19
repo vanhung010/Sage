@@ -14,7 +14,7 @@ export function CustomerRoute() {
   if (!user) {
     return (
       <Navigate
-        to="/login"
+        to="/"
         replace
         state={{ returnTo: pathname }}
       />
