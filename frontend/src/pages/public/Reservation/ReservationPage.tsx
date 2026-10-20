@@ -22,7 +22,7 @@ import { Textarea } from "../../../components/ui/Textarea";
 import { DateInput } from "../../../components/ui/DateInput";
 
 import { areaApi } from "../../../api/area.api";
-import type { AreaResponse, PublicArea } from "../../../types/area";
+import type { AreaResponse } from "../../../types/area";
 
 import "./ReservationPage.css";
 

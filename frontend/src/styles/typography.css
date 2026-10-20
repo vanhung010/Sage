@@ -5,6 +5,7 @@
 :root {
   --font-display: "Playfair Display", serif;
   --font-body: "Be Vietnam Pro", sans-serif;
+  --font-header: var(--font-body);
 }
 
 /* =========================

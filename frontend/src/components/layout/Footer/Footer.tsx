@@ -22,6 +22,7 @@ interface FooterProps {
   contactIcons?: { address: string; phone: string; mail: string };
   restaurantInfo: FooterRestaurantInfo;
   className?: string;
+  mobileSystemLabel?: string;
 }
 
 const navigationItems = [
@@ -39,7 +40,7 @@ const navigationItems = [
   },
   {
     label: "Về Sage",
-    to: "/#about",
+    to: "/about",
   },
 ];
 
@@ -48,6 +49,7 @@ export function Footer({
   contactIcons,
   restaurantInfo,
   className = "",
+  mobileSystemLabel,
 }: FooterProps) {
   const classes = [
     "sage-footer",
@@ -159,9 +161,10 @@ export function Footer({
           © 2026 Sage. Tất cả quyền được bảo lưu.
         </span>
 
-        <span>
+        <span className="sage-footer__system-label">
           Restaurant Reservation System
         </span>
+        {mobileSystemLabel && <span className="sage-footer__mobile-label">{mobileSystemLabel}</span>}
       </div>
     </footer>
   );

@@ -34,6 +34,7 @@ interface SelectProps {
   disabled?: boolean;
 
   leadingIcon?: ReactNode;
+  trailingIcon?: ReactNode;
 
   name?: string;
 
@@ -51,6 +52,7 @@ export function Select({
   error = false,
   disabled = false,
   leadingIcon,
+  trailingIcon,
   name,
     id,
   "aria-label": ariaLabel,
@@ -193,12 +195,12 @@ export function Select({
             : placeholder}
         </span>
 
-        <ChevronDown
+        {trailingIcon ?? <ChevronDown
           className="sage-select__chevron"
           size={20}
           strokeWidth={2}
           aria-hidden="true"
-        />
+        />}
       </button>
 
       {open && !disabled && (

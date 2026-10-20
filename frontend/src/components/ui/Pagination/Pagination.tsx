@@ -2,6 +2,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import type { ReactNode } from "react";
 
 import { IconButton } from "../IconButton";
 import { PaginationItem } from "./PaginationItem";
@@ -13,6 +14,8 @@ interface PaginationProps {
   totalPages: number;
   onPageChange: (page: number) => void;
   className?: string;
+  previousIcon?: ReactNode;
+  nextIcon?: ReactNode;
 }
 
 type PaginationValue = number | "ellipsis";
@@ -22,6 +25,8 @@ export function Pagination({
   totalPages,
   onPageChange,
   className = "",
+  previousIcon,
+  nextIcon,
 }: PaginationProps) {
   const pages = getPaginationPages(
     currentPage,
@@ -53,7 +58,7 @@ export function Pagination({
       aria-label="Phân trang"
     >
       <IconButton
-        icon={<ChevronLeft />}
+        icon={previousIcon ?? <ChevronLeft />}
         size="md"
         variant="ghost"
         aria-label="Trang trước"
@@ -87,7 +92,7 @@ export function Pagination({
       })}
 
       <IconButton
-        icon={<ChevronRight />}
+        icon={nextIcon ?? <ChevronRight />}
         size="md"
         variant="ghost"
         aria-label="Trang sau"

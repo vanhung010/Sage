@@ -1,4 +1,10 @@
+.sage-header__mobile-toggle { display: none; }
+
 .sage-header {
+  /* Keep Header typography independent of each page's body font. */
+  --font-body: var(--font-header);
+  font-family: var(--font-header);
+
   width: 100%;
   height: 80px;
 

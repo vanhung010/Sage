@@ -1,4 +1,5 @@
 import { ChevronRight } from "lucide-react";
+import type { ReactNode } from "react";
 
 import { NavigationBreadcrumbItem } from "./NavigationBreadcrumbItem";
 
@@ -12,11 +13,13 @@ export interface BreadcrumbEntry {
 interface NavigationBreadcrumbProps {
   items: BreadcrumbEntry[];
   className?: string;
+  separator?: ReactNode;
 }
 
 export function NavigationBreadcrumb({
   items,
   className = "",
+  separator,
 }: NavigationBreadcrumbProps) {
   if (items.length === 0) return null;
 
@@ -33,7 +36,7 @@ export function NavigationBreadcrumb({
             key={`${index}-${item.label}`}
           >
             {index > 0 && (
-              <ChevronRight
+              separator ?? <ChevronRight
                 className="sage-navigation-breadcrumb__separator"
                 size={16}
                 strokeWidth={2}

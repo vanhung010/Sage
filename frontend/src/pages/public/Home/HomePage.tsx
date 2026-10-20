@@ -70,9 +70,9 @@ export function HomePage() {
   //danh sách dishes
   const [dishes, setDishes] = useState<DishSummary[]>([]);
   //Lỗi
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
   
-  const [loading, setLoading] = useState(false);
+  const [, setLoading] = useState(false);
 
    const { user } = useAuth();
     const { addItem } = useCart();

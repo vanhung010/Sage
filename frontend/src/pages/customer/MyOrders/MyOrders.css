@@ -1,0 +1,236 @@
+@font-face {
+  font-family: "Sage Customer Orders";
+  src: url("../../../assets/order-detail/fonts/BeVietnamPro-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Sage Customer Orders";
+  src: url("../../../assets/order-detail/fonts/BeVietnamPro-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Sage Customer Orders";
+  src: url("../../../assets/order-detail/fonts/BeVietnamPro-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Sage Customer Orders";
+  src: url("../../../assets/order/BeVietnamPro-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-display: swap;
+}
+
+.customer-orders {
+  --font-body: "Sage Customer Orders", sans-serif;
+  min-height: 100vh;
+  background: var(--color-bg);
+  color: var(--color-text-primary);
+  font: 400 14px/20px var(--font-body);
+}
+.customer-orders p, .customer-orders h1, .customer-orders h2,
+.customer-orders dl, .customer-orders dd { margin: 0; }
+.customer-orders__container { width: min(1200px, calc(100% - 64px)); margin-inline: auto; }
+.customer-orders__heading { padding-block: 32px; background: var(--color-surface-alt); }
+.customer-orders__heading-content { display: flex; flex-direction: column; gap: 24px; }
+.customer-orders__navigation { display: flex; gap: 8px; }
+.customer-orders__navigation a {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 8px 12px;
+  border-radius: var(--radius-control);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+.customer-orders__navigation a.active { color: var(--color-primary); }
+.customer-orders__navigation a.active::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 8px;
+  height: 2px;
+  background: url("../../../assets/my-orders/reservation-tab.svg") center / auto no-repeat;
+}
+.customer-orders__navigation a.active[href="/orders"]::after {
+  background-image: url("../../../assets/my-orders/order-tab.svg");
+}
+.customer-orders__title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 24px; }
+.customer-orders__title-row h1 { font-size: 32px; line-height: 40px; font-weight: 700; }
+.customer-orders__title-row p { margin-top: 8px; color: var(--color-text-secondary); }
+.customer-orders__title-row > .sage-button { flex-shrink: 0; }
+.customer-orders__content { display: flex; flex-direction: column; gap: 24px; padding-block: 32px 48px; }
+.customer-orders__toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  padding: 15px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  min-height: 72px;
+}
+.customer-orders__toolbar > p, .customer-orders__status-filter > p { color: var(--color-text-secondary); }
+.customer-orders__scope, .customer-orders__order-filters { display: flex; gap: 8px; }
+.customer-orders__scope button, .customer-orders__order-filters button {
+  position: relative;
+  border: 0;
+  padding: 8px 16px;
+  min-height: 40px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.customer-orders__scope button[aria-pressed="true"] { color: var(--color-primary); }
+.customer-orders__scope button[aria-pressed="true"]::after {
+  position: absolute;
+  content: "";
+  height: 2px;
+  inset-inline: 16px;
+  bottom: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+}
+.customer-orders__order-filters button { border-radius: var(--radius-full); }
+.customer-orders__order-filters button[aria-pressed="true"] { color: var(--color-primary); background: var(--color-primary-light); }
+.customer-orders__scope button:hover, .customer-orders__order-filters button:hover { color: var(--color-primary); }
+.customer-orders__status-filter { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.customer-orders__status-filter label { font-weight: 500; }
+.customer-orders__status-filter .sage-select-container { width: 240px; }
+.customer-orders__status-filter .sage-select { background: var(--color-input-bg); }
+.customer-orders__status-filter .sage-select img { flex-shrink: 0; }
+.customer-orders__summary { display: flex; justify-content: space-between; gap: 16px; align-items: baseline; }
+.customer-orders__summary > p:first-child { font-size: 16px; line-height: 24px; }
+.customer-orders__summary > p + p { color: var(--color-text-secondary); }
+.customer-orders__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start; }
+.customer-orders__card { display: flex; flex-direction: column; gap: 16px; min-width: 0; padding: 23px; border: 1px solid var(--color-border); border-radius: var(--radius-card); background: var(--color-surface); }
+.customer-orders__identity { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.customer-orders__identity > div { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.customer-orders__identity h2 { font-size: 14px; line-height: 20px; font-weight: 500; overflow-wrap: anywhere; }
+.customer-orders__caption { font-size: 12px; line-height: 16px; color: var(--color-text-secondary); }
+.customer-orders__divider { height: 1px; flex-shrink: 0; background: var(--color-border); }
+.customer-orders__card-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.customer-orders__card-footer > a { flex-shrink: 0; font-weight: 500; }
+.reservation-list-card__schedule { display: flex; gap: 16px; align-items: center; }
+.reservation-list-card__calendar { display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; flex-shrink: 0; background: var(--color-surface-alt); border-radius: var(--radius-control); }
+.reservation-list-card__schedule > div { display: grid; gap: 4px; color: var(--color-text-secondary); }
+.reservation-list-card__schedule .reservation-list-card__date { font-size: 24px; line-height: 32px; font-weight: 700; color: var(--color-text-primary); }
+.reservation-list-card__information > div { display: flex; gap: 16px; justify-content: space-between; padding-block: 10px; }
+.reservation-list-card__information dt { flex-shrink: 0; color: var(--color-text-secondary); }
+.reservation-list-card__information dd { font-weight: 500; text-align: right; overflow-wrap: anywhere; }
+.food-order-list-card__items { display: flex; flex-direction: column; gap: 4px; }
+.food-order-list-card .customer-orders__identity { align-items: flex-start; }
+.food-order-list-card__items > p:first-child { font-size: 16px; line-height: 24px; }
+.food-order-list-card__other { color: var(--color-text-secondary); }
+.food-order-list-card__total { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+.food-order-list-card__total > span { color: var(--color-text-secondary); }
+.food-order-list-card__total strong { color: var(--color-primary); font-size: 18px; line-height: 24px; font-weight: 600; }
+.food-order-list-card__payment { display: flex; align-items: center; gap: 8px; font-size: 12px; line-height: 16px; color: var(--color-text-secondary); }
+.food-order-list-card__cancelled-at { background: var(--color-error-bg); padding: 12px; border-radius: var(--radius-control); color: var(--color-text-secondary); font-size: 12px; line-height: 16px; }
+.food-order-list-card--cancelled { min-height: 361px; justify-content: center; }
+.customer-orders__pagination { display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 40px; }
+.customer-orders__pagination > p { font-size: 12px; line-height: 16px; color: var(--color-text-secondary); }
+.customer-orders__help { padding: 16px; border-radius: var(--radius-card); background: var(--color-surface-alt); display: grid; gap: 8px; }
+.customer-orders__help h2 { font-size: 14px; line-height: 20px; font-weight: 500; }
+.customer-orders__help p { color: var(--color-text-secondary); }
+.customer-orders__state { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; padding: 48px 24px; background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-card); }
+.customer-orders__state h2 { font-size: 20px; line-height: 28px; font-weight: 500; }
+.customer-orders__state p { color: var(--color-text-secondary); }
+.customer-orders__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  min-height: 400px;
+  padding: 47px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  text-align: center;
+}
+.customer-orders__empty-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 80px;
+  height: 80px;
+  border-radius: var(--radius-full);
+  background: var(--color-surface-alt);
+}
+.customer-orders__empty-copy { width: 100%; max-width: 480px; display: grid; gap: 8px; }
+.customer-orders__empty h2 { font-size: 24px; line-height: 32px; font-weight: 700; }
+.customer-orders__empty-copy p { font-size: 16px; line-height: 24px; color: var(--color-text-secondary); }
+.customer-orders__empty-action { display: flex; justify-content: center; width: 100%; max-width: 480px; }
+.customer-orders button:focus-visible, .customer-orders a:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 3px; }
+.customer-orders .sage-header__logo-link, .customer-orders .sage-header__logo { width: 140px; height: 70px; max-width: 140px; object-fit: cover; }
+.customer-orders .sage-footer__logo { width: 190px; height: 95px; object-fit: cover; }
+.customer-orders .sage-footer__contact-item span { white-space: pre-line; }
+.customer-orders .sage-footer__contact-item img { flex-shrink: 0; }
+.customer-orders .sage-user-menu-trigger__icon { display: none; }
+.customer-orders .sage-user-menu-trigger::after { content: ""; width: 16px; height: 16px; background: url("../../../assets/my-orders/user-chevron.svg") center no-repeat; }
+.customer-orders .sage-user-menu-trigger--open::after { transform: rotate(180deg); }
+
+@media (max-width: 1100px) {
+  .customer-orders .sage-header { padding-inline: 32px; }
+  .customer-orders .sage-header__navigation { gap: 8px; }
+  .customer-orders .sage-header__customer-actions { min-width: auto; }
+}
+@media (max-width: 760px) {
+  .customer-orders__container { width: calc(100% - 32px); }
+  .customer-orders__grid { grid-template-columns: minmax(0, 1fr); }
+  .customer-orders__title-row { flex-wrap: wrap; gap: 16px; }
+  .customer-orders__title-row h1 { font-size: 28px; line-height: 36px; }
+  .customer-orders__heading { padding-block: 24px; }
+  .customer-orders__toolbar, .customer-orders__summary, .customer-orders__pagination { flex-wrap: wrap; }
+  .customer-orders__toolbar { gap: 8px; }
+  .customer-orders__toolbar > p { padding-inline: 16px; font-size: 12px; }
+  .customer-orders__summary > p + p { font-size: 12px; line-height: 20px; }
+  .customer-orders__status-filter > p { flex-basis: 100%; }
+  .customer-orders__card { padding: 20px 16px; }
+  .food-order-list-card__payment > span:last-child { max-width: 110px; }
+  .customer-orders .sage-header { height: auto; min-height: 80px; flex-wrap: wrap; padding: 8px 16px; gap: 8px; }
+  .customer-orders .sage-header__navigation { width: 100%; order: 3; justify-content: flex-start; overflow-x: auto; gap: 0; }
+  .customer-orders .sage-header__nav-item { padding-inline: 10px; }
+  .customer-orders .sage-footer__logo { width: 190px; }
+  .customer-orders__empty { min-height: 360px; padding: 23px 24px; }
+  .customer-orders__empty-action .sage-button { width: 100%; }
+  .customer-orders--empty .customer-orders__content { padding-block: 24px 32px; }
+  .customer-orders--empty .customer-orders__title-row h1 { font-size: 24px; line-height: 32px; }
+  .customer-orders--empty .sage-header { min-height: 72px; height: 72px; padding: 0 16px; gap: 4px; flex-wrap: nowrap; position: relative; z-index: 10; }
+  .customer-orders--empty .sage-header__logo-link,
+  .customer-orders--empty .sage-header__logo { width: 112px; height: 56px; }
+  .customer-orders--empty .sage-header__customer-actions { margin-left: auto; }
+  .customer-orders--empty .sage-header__mobile-toggle { display: inline-flex; flex-shrink: 0; }
+  .customer-orders--empty .sage-header__navigation { display: none; }
+  .customer-orders--empty .sage-header--mobile-open .sage-header__navigation {
+    display: flex; position: absolute; left: 0; top: 100%; padding: 12px 16px;
+    border-bottom: 1px solid var(--color-border); background: var(--color-surface); box-shadow: 0 6px 12px var(--color-shadow);
+  }
+  .customer-orders--empty .sage-footer { padding: 32px 16px 24px; gap: 24px; }
+  .customer-orders--empty .sage-footer__content,
+  .customer-orders--empty .sage-footer__brand,
+  .customer-orders--empty .sage-footer__navigation { display: contents; }
+  .customer-orders--empty .sage-footer__logo { width: 140px; height: 70px; }
+  .customer-orders--empty .sage-footer__description { font-size: 14px; line-height: 20px; opacity: 1; }
+  .customer-orders--empty .sage-footer__navigation > .sage-footer__title { display: none; }
+  .customer-orders--empty .sage-footer__links { flex-direction: row; flex-wrap: wrap; gap: 16px; width: 100%; }
+  .customer-orders--empty .sage-footer__link { padding: 8px 12px; min-height: 40px; font-weight: 500; }
+  .customer-orders--empty .sage-footer__contact-item span { white-space: normal; }
+  .customer-orders--empty .sage-footer__divider { display: none; }
+  .customer-orders--empty .sage-footer__bottom { padding-top: 15px; border-top: 1px solid var(--color-text-on-dark); opacity: 1; }
+  .customer-orders--empty .sage-footer__system-label { display: none; }
+  .customer-orders--empty .sage-footer__mobile-label { display: block; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .customer-orders *, .customer-orders *::after { transition: none; }
+}

@@ -1,11 +1,5 @@
-@font-face { font-family: "Sage Checkout Body"; src: url("../../../assets/order-detail/fonts/BeVietnamPro-Regular.ttf") format("truetype"); font-weight: 400; font-style: normal; font-display: swap; }
-@font-face { font-family: "Sage Checkout Body"; src: url("../../../assets/order-detail/fonts/BeVietnamPro-Medium.ttf") format("truetype"); font-weight: 500; font-style: normal; font-display: swap; }
-@font-face { font-family: "Sage Checkout Body"; src: url("../../../assets/order/BeVietnamPro-SemiBold.ttf") format("truetype"); font-weight: 600; font-style: normal; font-display: swap; }
-@font-face { font-family: "Sage Checkout Body"; src: url("../../../assets/order-detail/fonts/BeVietnamPro-Bold.ttf") format("truetype"); font-weight: 700; font-style: normal; font-display: swap; }
-@font-face { font-family: "Sage Checkout Inter"; src: url("../../../assets/order/Inter.ttf") format("truetype"); font-weight: 100 900; font-style: normal; font-display: swap; }
-.checkout-page { --font-body: "Sage Checkout Body", sans-serif; min-height: 100vh; font-family: var(--font-body); background: var(--color-bg); }
+.checkout-page { min-height: 100vh; font-family: var(--font-body); background: var(--color-bg); }
 .checkout-page p, .checkout-page h1, .checkout-page h2, .checkout-page h3, .checkout-page dl, .checkout-page dd, .checkout-page ul { margin: 0; }
-.checkout-page__container { width: calc(100% - 120px); max-width: 1320px; margin-inline: auto; }
 .checkout-page__hero { min-height: 260px; padding-block: 40px; display: flex; align-items: center; background: var(--color-surface-alt); }
 .checkout-page__eyebrow { color: var(--color-primary); font-size: 14px; font-weight: 500; line-height: 20px; }
 .checkout-page h1 { font-size: 32px; font-weight: 700; line-height: 40px; }
@@ -57,7 +51,7 @@
 .checkout-page__note { color: var(--color-text-secondary); font-size: 14px; line-height: 20px; }
 .checkout-page__actions { display: grid; gap: 12px; }
 .checkout-page__error { padding: 16px; background: var(--color-error-bg); border: 1px solid var(--color-error); border-radius: var(--radius-control); color: var(--color-error); line-height: 24px; }
-.checkout-page__success { padding: 64px 60px 80px; }
+.checkout-page__success { padding-block: 64px 80px; }
 .checkout-page__success-container { display: flex; flex-direction: column; align-items: center; gap: 24px; max-width: 720px; margin-inline: auto; }
 .checkout-page__success-heading { display: grid; gap: 12px; width: 100%; text-align: center; }
 .checkout-page__success-heading p:first-child { color: var(--color-success); font-size: 14px; font-weight: 500; line-height: 20px; }
@@ -71,27 +65,27 @@
 .checkout-page__success-section dl > div { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 400px); gap: 24px; font-size: 16px; line-height: 24px; }
 .checkout-page__success-section dt { color: var(--color-text-secondary); }
 .checkout-page__success-section dd { text-align: right; white-space: pre-line; overflow-wrap: anywhere; }
-.checkout-page__success-section dd, .checkout-page__success-section li span:first-child { font-family: "Sage Checkout Inter", sans-serif; font-weight: 500; }
+.checkout-page__success-section dd, .checkout-page__success-section li span:first-child { font-weight: 500; }
 .checkout-page__success-section li { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; font-size: 16px; line-height: 24px; }
 .checkout-page__success-section li span:last-child { color: var(--color-text-secondary); flex-shrink: 0; }
 .checkout-page__success-note { max-width: 600px; color: var(--color-text-secondary); text-align: center; font-size: 14px; line-height: 20px; }
 .checkout-page__success-actions { display: flex; justify-content: center; flex-wrap: wrap; gap: 12px; }
 .checkout-page .sage-header__logo-link, .checkout-page .sage-header__logo { width: 140px; height: 70px; max-width: 140px; object-fit: cover; }
-.checkout-page .sage-header__nav-item--active { color: var(--color-primary); }
 .checkout-page .sage-footer__logo { width: 190px; height: 95px; object-fit: cover; }
 .checkout-page .sage-footer__contact-item img { flex-shrink: 0; }
 .checkout-page .sage-footer__contact-item span { white-space: pre-line; }
 @media (max-width: 1100px) {
-  .checkout-page__container { width: calc(100% - 64px); }
   .checkout-page__grid { grid-template-columns: minmax(0, 1fr); }
   .checkout-page .sage-header { padding-inline: 32px; }
   .checkout-page .sage-header__navigation { gap: 8px; }
   .checkout-page .sage-header__customer-actions { min-width: auto; }
 }
-@media (max-width: 700px) {
-  .checkout-page__container { width: calc(100% - 32px); }
-  .checkout-page__hero { min-height: 220px; }
+@media (max-width: 768px) {
   .checkout-page h1 { font-size: 28px; line-height: 36px; }
+  .checkout-page__subtitle, .checkout-page__success-heading p:last-child { font-size: 16px; line-height: 24px; }
+}
+@media (max-width: 700px) {
+  .checkout-page__hero { min-height: 220px; }
   .checkout-page__content { padding-block: 32px 48px; }
   .checkout-page__card { padding: 20px 16px; }
   .checkout-page__item { flex-wrap: wrap; padding: 12px; gap: 12px; }
@@ -100,7 +94,7 @@
   .checkout-page__item-actions strong { margin-top: 0; }
   .checkout-page__summary > div { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
   .checkout-page__empty-message br { display: none; }
-  .checkout-page__success { padding: 40px 16px 48px; }
+  .checkout-page__success { padding-block: 40px 48px; }
   .checkout-page__success-section dl > div { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
   .checkout-page__success-card-heading { align-items: flex-start; }
   .checkout-page__success-card-heading h2 { font-size: 22px; }

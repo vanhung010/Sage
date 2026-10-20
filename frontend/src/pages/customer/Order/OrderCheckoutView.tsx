@@ -63,7 +63,7 @@ export function OrderCheckoutView(props: Props) {
       {props.createdOrder ? <OrderSuccess order={props.createdOrder} /> : (
         <main>
           <section className="checkout-page__hero">
-            <div className="checkout-page__container">
+            <div className="container checkout-page__container">
               <p className="checkout-page__eyebrow">ĐẶT MÓN ĂN</p>
               <h1>{empty ? "Đặt món ăn" : "Hoàn tất đơn đặt món"}</h1>
               <p className="checkout-page__subtitle">{empty
@@ -73,7 +73,7 @@ export function OrderCheckoutView(props: Props) {
           </section>
 
           <div className="checkout-page__content">
-            <form className="checkout-page__container checkout-page__grid" onSubmit={props.onSubmit} noValidate>
+            <form className="container checkout-page__container checkout-page__grid" onSubmit={props.onSubmit} noValidate>
               <div className="checkout-page__column">
                 <section className="checkout-page__card">
                   <div className="checkout-page__section-heading">
@@ -186,7 +186,7 @@ export function OrderCheckoutView(props: Props) {
 function OrderSuccess({ order }: { order: OrderResponse }) {
   const navigate = useNavigate();
   return (
-    <main className="checkout-page__success">
+    <main className="container checkout-page__success">
       <div className="checkout-page__success-container">
         <img src={successIcon} width={48} height={48} alt="" />
         <div className="checkout-page__success-heading">

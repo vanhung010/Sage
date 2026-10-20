@@ -46,7 +46,6 @@
 .food-order-detail__notice.is-error { color: var(--color-error); background: var(--color-error-bg); }
 .food-order-detail__sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .food-order-detail .sage-header__logo-link, .food-order-detail .sage-header__logo { width: 140px; height: 70px; max-width: 140px; object-fit: cover; }
-.food-order-detail .sage-header__nav-item--active { color: var(--color-primary); }
 .food-order-detail .sage-footer__logo { width: 190px; height: 95px; object-fit: cover; }
 .food-order-detail .sage-footer__contact-item img { flex-shrink: 0; }
 .food-order-detail .sage-footer__contact-item span { white-space: pre-line; }

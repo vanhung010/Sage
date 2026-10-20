@@ -3,10 +3,12 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
+import { useId, useState } from "react";
 
 import { useAuth } from "../../../auth/AuthContext";
 
 import { Button } from "../../ui/Button";
+import { IconButton } from "../../ui/IconButton";
 import { UserMenu } from "../../common/UserMenu";
 
 import sageLogo from "../../../assets/logo/sage-logo-light.svg";
@@ -32,6 +34,7 @@ interface HeaderProps {
   active?: HeaderActiveItem | null;
   userName?: string;
   className?: string;
+  mobileMenuIcon?: string;
 }
 
 const navItems = [
@@ -58,7 +61,7 @@ const navItems = [
   {
     id: "about",
     label: "Về Sage",
-    to: "/#about",
+    to: "/about",
   },
 ] as const;
 
@@ -68,7 +71,10 @@ export function Header({
   active,
   userName: fallbackUserName = "Khách hàng",
   className = "",
+  mobileMenuIcon,
 }: HeaderProps) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const navigationId = useId();
 
   const { totalQuantity } = useCart();
 
@@ -80,7 +86,7 @@ export function Header({
     ? active
     : navItems.find((item) => {
         if (item.id === "about") {
-          return pathname === "/" && hash === "#about";
+          return pathname === "/about" || (pathname === "/" && hash === "#about");
         }
 
         if (item.id === "home") {
@@ -103,6 +109,7 @@ export function Header({
 
   const classes = [
     "sage-header",
+    mobileMenuOpen ? "sage-header--mobile-open" : "",
     className,
   ]
     .filter(Boolean)
@@ -147,6 +154,8 @@ export function Header({
       {/* Main Navigation */}
       {variant !== "auth" && (
         <nav
+          id={navigationId}
+          onClick={() => setMobileMenuOpen(false)}
           className="sage-header__navigation"
           aria-label="Điều hướng chính"
         >
@@ -225,6 +234,14 @@ export function Header({
       )}
 
       {/* Auth */}
+      {mobileMenuIcon && variant !== "auth" && (
+        <IconButton type="button" variant="ghost" size="md"
+          className="sage-header__mobile-toggle"
+          icon={<img src={mobileMenuIcon} alt="" />}
+          aria-label={mobileMenuOpen ? "Đóng menu điều hướng" : "Mở menu điều hướng"}
+          aria-expanded={mobileMenuOpen} aria-controls={navigationId}
+          onClick={() => setMobileMenuOpen((value) => !value)} />
+      )}
       {variant === "auth" && (
         <Link
           to="/"
