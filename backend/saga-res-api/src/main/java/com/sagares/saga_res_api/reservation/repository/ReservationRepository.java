@@ -3,9 +3,10 @@ package  com.sagares.saga_res_api.reservation.repository;
 
 import com.sagares.saga_res_api.reservation.entity.Reservation;
 import jakarta.persistence.LockModeType;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 
 import java.time.Instant;
@@ -13,7 +14,15 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+public interface ReservationRepository extends JpaRepository<Reservation, Long>, JpaSpecificationExecutor<Reservation> {
+
+
+    @Override
+    @EntityGraph(attributePaths = "requestedArea")
+    Page<Reservation> findAll(
+            Specification<Reservation> spec,
+            Pageable pageable
+    );
 
     @Query(value = """
         SELECT r.id

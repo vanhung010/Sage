@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import com.sagares.saga_res_api.common.dto.PageResponse;
+import com.sagares.saga_res_api.reservation.entity.ReservationStatus;
 
 @RestController
 @RequestMapping("/api/customer/reservations")
@@ -21,7 +23,6 @@ public class ReservationController {
     private final ReservationService reservationService;
 
     @PostMapping
-    @PreAuthorize("hasRole('CUSTOMER')")
     @Operation(summary = "Khách hàng tạo đơn đặt bàn")
     public ResponseEntity<ReservationResponse> create(@AuthenticationPrincipal AuthenticatedUser user,
             @Valid @RequestBody CreateReservationRequest request
@@ -50,5 +51,18 @@ public class ReservationController {
             @PathVariable("id") Long id
     ) {
         return reservationService.getDetail(currentUser, id);
+    }
+
+    @GetMapping
+    public PageResponse<ReservationResponse> listMine(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @RequestParam(name = "scope", defaultValue = "all") String scope,
+            @RequestParam(name = "status", required = false) ReservationStatus status,
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "4") int size
+    ) {
+        return reservationService.listMine(
+                user.accountId(), scope, status, page, size
+        );
     }
 }

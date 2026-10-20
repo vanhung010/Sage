@@ -20,6 +20,10 @@ import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.sagares.saga_res_api.common.dto.PageResponse;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -171,6 +175,69 @@ public class ReservationService {
         return toDTO(reservation);
     }
 
+
+    @Transactional(readOnly = true)
+    public PageResponse<ReservationResponse> listMine(
+            Long customerId,
+            String scope,
+            ReservationStatus status,
+            int page,
+            int size
+    ) {
+        if (page < 0 || size < 1 || size > 100) {
+            throw new BusinessException(
+                    HttpStatus.BAD_REQUEST,
+                    "INVALID_PAGINATION",
+                    "page phải >= 0; size phải từ 1 đến 100"
+            );
+        }
+
+        if (!java.util.Set.of("all", "upcoming", "history").contains(scope)) {
+            throw new BusinessException(
+                    HttpStatus.BAD_REQUEST,
+                    "INVALID_SCOPE",
+                    "scope phải là all, upcoming hoặc history"
+            );
+        }
+
+        Instant now = Instant.now();
+
+        Specification<Reservation> spec = (root, query, cb) -> {
+            var owned = cb.equal(root.get("customer").get("id"), customerId);
+            var upcoming = cb.and(
+                    root.get("status").in(
+                            ReservationStatus.PENDING,
+                            ReservationStatus.CONFIRMED,
+                            ReservationStatus.ARRIVED
+                    ),
+                    cb.greaterThan(root.<Instant>get("endTime"), now)
+            );
+
+            var scopePredicate = switch (scope) {
+                case "upcoming" -> upcoming;
+                case "history" -> cb.not(upcoming);
+                default -> cb.conjunction();
+            };
+
+            var statusPredicate = status == null
+                    ? cb.conjunction()
+                    : cb.equal(root.get("status"), status);
+
+            return cb.and(owned, scopePredicate, statusPredicate);
+        };
+
+        Sort sort = scope.equals("upcoming")
+                ? Sort.by(Sort.Direction.ASC, "startTime", "id")
+                : Sort.by(Sort.Direction.DESC, "startTime", "id");
+
+        var result = reservationRepository.findAll(
+                spec,
+                PageRequest.of(page, size, sort)
+        );
+
+        return PageResponse.from(result.map(ReservationService::toDTO));
+    }
+
     private String findConstraintName(Throwable exception) {
         Throwable current = exception;
 
@@ -185,7 +252,7 @@ public class ReservationService {
         return null;
     }
 
-        public static ReservationResponse toDTO(Reservation reservation) {
+    public static ReservationResponse toDTO(Reservation reservation) {
             Area area = reservation.getRequestedArea();
 
             ReservationResponse.AreaSummary requestedArea =

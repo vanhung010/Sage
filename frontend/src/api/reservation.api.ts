@@ -8,6 +8,9 @@ import type {
   ReservationResponse,
 } from "../types/reservation";
 
+import type { PageResponse } from "../types/api";
+import type { ReservationStatus } from "../types/reservation";
+
 export type * from "../types/reservation";
 
 const CUSTOMER_RESERVATIONS = "/api/customer/reservations";
@@ -77,6 +80,22 @@ export const reservationApi = {
     `${CUSTOMER_RESERVATIONS}/${id}/cancel`,
   );
 
+  return response.data;
+},
+
+async listMine(
+  params: {
+    scope: "all" | "upcoming" | "history";
+    status?: ReservationStatus;
+    page?: number;
+    size?: number;
+  },
+  signal?: AbortSignal,
+): Promise<PageResponse<ReservationResponse>> {
+  const response = await apiClient.get<PageResponse<ReservationResponse>>(
+    CUSTOMER_RESERVATIONS,
+    { params, signal },
+  );
   return response.data;
 },
 };

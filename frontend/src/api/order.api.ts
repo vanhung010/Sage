@@ -1,5 +1,5 @@
 import { apiClient } from "./client";
-
+import type { PageResponse } from "../types/api";
 import type {
   CreateOrderRequest,
   OrderResponse,
@@ -37,4 +37,19 @@ export const orderApi = {
 
     return response.data;
   },
+
+  async listMine(
+  params: {
+    status?: "PLACED" | "CANCELLED";
+    page?: number;
+    size?: number;
+  },
+  signal?: AbortSignal,
+): Promise<PageResponse<OrderDetailResponse>> {
+  const response = await apiClient.get<PageResponse<OrderDetailResponse>>(
+    BASE_URL,
+    { params, signal },
+  );
+  return response.data;
+},
 };
