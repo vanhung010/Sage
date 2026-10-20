@@ -1,6 +1,6 @@
 package com.sagares.saga_res_api.account.controller;
 
-import com.sagares.saga_res_api.account.Service.AccountService;
+import com.sagares.saga_res_api.account.service.AccountService;
 import com.sagares.saga_res_api.account.dto.AccountResponse;
 import com.sagares.saga_res_api.account.dto.CreateAaccountRequestDTO;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.servlet.function.EntityResponse;
 
 @RestController
 @RequestMapping("/api/admin/acocunt")

@@ -75,6 +75,13 @@ public class SecurityConfig {
                         .hasRole("CUSTOMER")
                         .requestMatchers("/api/customer/**")
                         .hasRole("CUSTOMER")
+                        .requestMatchers(
+                                HttpMethod.POST,
+                                "/api/auth/forgot-password",
+                                "/api/auth/verify-reset-code",
+                                "/api/auth/reset-password"
+                        )
+                        .permitAll()
                         .anyRequest()
                         .authenticated()
                 )

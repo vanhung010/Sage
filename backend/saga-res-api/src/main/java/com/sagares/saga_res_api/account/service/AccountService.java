@@ -1,9 +1,8 @@
-package com.sagares.saga_res_api.account.Service;
+package com.sagares.saga_res_api.account.service;
 
 import com.sagares.saga_res_api.account.dto.AccountResponse;
 import com.sagares.saga_res_api.account.dto.CreateAaccountRequestDTO;
 import com.sagares.saga_res_api.account.entity.Account;
-import com.sagares.saga_res_api.account.entity.AccountRole;
 import com.sagares.saga_res_api.account.repository.AccountRepository;
 import com.sagares.saga_res_api.common.exception.BusinessException;
 import lombok.RequiredArgsConstructor;
