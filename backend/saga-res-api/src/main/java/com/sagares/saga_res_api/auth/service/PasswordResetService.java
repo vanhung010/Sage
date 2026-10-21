@@ -34,6 +34,7 @@ public class PasswordResetService {
     private final ApplicationEventPublisher eventPublisher;
 
     //Xử lí yêu cầu tạo và gửi mã
+    @Transactional
     public void sendResetCode(String email){
         Account account = accountRepository
                 .findByEmailForUpdate(normalizeEmail(email))

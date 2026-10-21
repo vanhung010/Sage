@@ -2,7 +2,7 @@ import axios from "axios";
 
 import { authStorage } from "../storage/authStorage";
 
-//Explain
+
 export const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
 
@@ -17,6 +17,9 @@ export const apiClient = axios.create({
 const publicAuthEndpoints = [
   "/api/auth/login",
   "/api/auth/register",
+  "/api/auth/forgot-password",
+  "/api/auth/verify-reset-code",
+  "/api/auth/reset-password",
 ];
 
 apiClient.interceptors.request.use(
