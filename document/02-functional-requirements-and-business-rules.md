@@ -39,20 +39,20 @@ Tài liệu liệt kê **yêu cầu chức năng**, **quy tắc nghiệp vụ** 
 
 ### 3.1 Tài khoản và xác thực (AUTH)
 
-| Mã | Yêu cầu | Vai trò | Ưu tiên |
-|---|---|---|---|
-| FR-AUTH-01 | Đăng ký tài khoản bằng email, mật khẩu, họ tên, số điện thoại | Khách vãng lai | MUST |
-| FR-AUTH-02 | Đăng nhập và đăng xuất | Tất cả | MUST |
-| FR-AUTH-03 | Phân quyền truy cập theo ba vai trò CUSTOMER, STAFF, ADMIN | Tất cả | MUST |
-| FR-AUTH-04 | Xem và cập nhật hồ sơ cá nhân | Khách hàng | SHOULD |
-| FR-AUTH-05 | Đổi mật khẩu | Khách hàng | SHOULD |
-| FR-AUTH-06 | Quên mật khẩu, đặt lại qua email | Khách hàng | SHOULD |
-| FR-AUTH-07 | Xác thực email khi đăng ký; ở MVP không bắt buộc | Khách hàng | COULD |
-| FR-AUTH-08 | Admin xem danh sách, khóa/mở khóa tài khoản, đổi vai trò | Admin | SHOULD |
-| FR-AUTH-09 | Đăng nhập bằng Google | Khách hàng | COULD |
-| FR-AUTH-10 | Khi đăng nhập thành công, hệ thống cấp JWT access token có thời hạn 1 giờ | Tất cả | MUST |
-| FR-AUTH-11 | API cần xác thực chỉ chấp nhận JWT hợp lệ qua `Authorization: Bearer <token>` và trả `401` khi thiếu/token không hợp lệ | Tất cả | MUST |
-| FR-AUTH-12 | MVP dùng phiên stateless, không dùng server session và không có refresh token; đăng xuất bằng cách xóa access token phía client | Tất cả | MUST |
+| Mã         | Yêu cầu                                                                                                                         | Vai trò        | Ưu tiên |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------- | -------------- | ------- |
+| FR-AUTH-01 | Đăng ký tài khoản bằng email, mật khẩu, họ tên, số điện thoại                                                                   | Khách vãng lai | MUST    |
+| FR-AUTH-02 | Đăng nhập và đăng xuất                                                                                                          | Tất cả         | MUST    |
+| FR-AUTH-03 | Phân quyền truy cập theo ba vai trò CUSTOMER, STAFF, ADMIN                                                                      | Tất cả         | MUST    |
+| FR-AUTH-04 | Xem và cập nhật hồ sơ cá nhân                                                                                                   | Khách hàng     | SHOULD  |
+| FR-AUTH-05 | Đổi mật khẩu                                                                                                                    | Khách hàng     | SHOULD  |
+| FR-AUTH-06 | Quên mật khẩu, đặt lại qua email                                                                                                | Khách hàng     | SHOULD  |
+| FR-AUTH-07 | Xác thực email khi đăng ký; ở MVP không bắt buộc                                                                                | Khách hàng     | COULD   |
+| FR-AUTH-08 | Admin xem danh sách, khóa/mở khóa tài khoản, đổi vai trò                                                                        | Admin          | SHOULD  |
+| FR-AUTH-09 | Đăng nhập bằng Google                                                                                                           | Khách hàng     | COULD   |
+| FR-AUTH-10 | Khi đăng nhập thành công, hệ thống cấp JWT access token có thời hạn 1 giờ                                                       | Tất cả         | MUST    |
+| FR-AUTH-11 | API cần xác thực chỉ chấp nhận JWT hợp lệ qua `Authorization: Bearer <token>` và trả `401` khi thiếu/token không hợp lệ         | Tất cả         | MUST    |
+| FR-AUTH-12 | MVP dùng phiên stateless, không dùng server session và không có refresh token; đăng xuất bằng cách xóa access token phía client | Tất cả         | MUST    |
 
 ### 3.2 Thông tin nhà hàng (INFO)
 

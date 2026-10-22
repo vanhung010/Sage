@@ -22,4 +22,6 @@ public class AccountController {
         AccountResponse data = accountService.create(request);
         return ResponseEntity.ok(data);
     }
+
+
 }

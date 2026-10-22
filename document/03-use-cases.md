@@ -526,15 +526,15 @@ Ghi chú: nhờ quy tắc đặt trước tối thiểu 4 giờ cho đơn cần 
 
 ### 5.3 Use case ưu tiên COULD (chưa đặc tả)
 
-| Mã | Use case | Tác nhân | Yêu cầu liên quan |
-|---|---|---|---|
-| UC-27 | Xác thực email khi đăng ký | Khách hàng | FR-AUTH-07 |
-| UC-28 | Đăng nhập bằng Google | Khách hàng | FR-AUTH-09 |
-| UC-29 | Đánh dấu món yêu thích | Khách hàng | FR-MENU-11 |
-| UC-30 | Sắp xếp thứ tự hiển thị menu | Quản trị | FR-MENU-09 |
-| UC-31 | Tải ảnh món lên từ máy | Quản trị | FR-MENU-10 |
-| UC-32 | Xem sơ đồ bàn trực quan | Quản trị, khách | FR-TBL-04 |
-| UC-33 | Thông báo trong ứng dụng | Hệ thống | FR-NTF-04 |
+| Mã    | Use case                                | Tác nhân             | Yêu cầu liên quan |
+| ----- | --------------------------------------- | -------------------- | ----------------- |
+| UC-27 | Xác thực email khi đăng ký              | Khách hàng           | FR-AUTH-07        |
+| UC-28 | Đăng nhập bằng Google                   | Khách hàng           | FR-AUTH-09        |
+| UC-29 | Đánh dấu món yêu thích                  | Khách hàng           | FR-MENU-11        |
+| UC-30 | Sắp xếp thứ tự hiển thị menu            | Quản trị             | FR-MENU-09        |
+| UC-31 | Tải ảnh món lên từ máy                  | Quản trị             | FR-MENU-10        |
+| UC-32 | Xem sơ đồ bàn trực quan                 | Quản trị, khách      | FR-TBL-04         |
+| UC-33 | Thông báo trong ứng dụng                | Hệ thống             | FR-NTF-04         |
 | UC-34 | Đánh giá sau bữa ăn, xem và ẩn đánh giá | Khách hàng, Quản trị | FR-REV-01, 02, 03 |
 
 ## 6. Các quyết định bổ sung (đã xác nhận)
