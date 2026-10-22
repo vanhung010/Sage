@@ -1,8 +1,4 @@
-@import "../../../assets/reservation/fonts/reschedule-fonts.css";
-
 .reschedule-page {
-  --font-body: "Sage Reservation", sans-serif;
-
   font-family: var(--font-body);
   min-height: 100vh;
   background: var(--color-bg);

@@ -3,7 +3,7 @@ import {
   useLocation,
   useNavigate,
 } from "react-router-dom";
-import { useId, useState } from "react";
+import { useId, useState, type ReactNode } from "react";
 
 import { useAuth } from "../../../auth/AuthContext";
 
@@ -34,7 +34,7 @@ interface HeaderProps {
   active?: HeaderActiveItem | null;
   userName?: string;
   className?: string;
-  mobileMenuIcon?: string;
+  mobileMenuIcon?: ReactNode;
 }
 
 const navItems = [
@@ -233,15 +233,25 @@ export function Header({
         </div>
       )}
 
-      {/* Auth */}
-      {mobileMenuIcon && variant !== "auth" && (
-        <IconButton type="button" variant="ghost" size="md"
-          className="sage-header__mobile-toggle"
-          icon={<img src={mobileMenuIcon} alt="" />}
-          aria-label={mobileMenuOpen ? "Đóng menu điều hướng" : "Mở menu điều hướng"}
-          aria-expanded={mobileMenuOpen} aria-controls={navigationId}
-          onClick={() => setMobileMenuOpen((value) => !value)} />
-      )}
+     {mobileMenuIcon && variant !== "auth" && (
+      <IconButton
+      type="button"
+      variant="ghost"
+      size="md"
+      className="sage-header__mobile-toggle"
+      icon = {
+        typeof mobileMenuIcon === "string" ? (<img src= {mobileMenuIcon} alt=""></img>) 
+        : (mobileMenuIcon)
+      }
+      aria-label={
+        mobileMenuOpen ? "Đóng menu điều hướng" : "Mở menu điều hướng"
+      }
+      aria-expanded = {mobileMenuOpen}
+      aria-controls={navigationId}
+      onClick={() => setMobileMenuOpen((current) => !current)} //đảo trạng thái mở/đóng.
+      />
+     )}
+     
       {variant === "auth" && (
         <Link
           to="/"

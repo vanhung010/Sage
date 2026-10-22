@@ -16,7 +16,6 @@ import { areaApi } from "../../../api/area.api";
 import { getApiError } from "../../../api/error";
 import { reservationApi } from "../../../api/reservation.api";
 
-import { AppFeedbackModal } from "../../../components/common/AppFeedbackModal";
 import { Footer } from "../../../components/layout/Footer";
 import { Header } from "../../../components/layout/Header";
 import { Badge } from "../../../components/ui/Badge";
@@ -27,7 +26,7 @@ import { NavigationBreadcrumb } from "../../../components/ui/NavigationBreadcrum
 import { Select } from "../../../components/ui/Select";
 
 import { useReservationDetail } from "../../../hooks/useReservationDetail";
-
+import { AppFeedbackModal } from "../../../components/ui/AppFeedbackModal";
 import type { AreaResponse } from "../../../types/area";
 
 import type {
@@ -1125,53 +1124,53 @@ function RescheduleEditor({
       <Footer restaurantInfo={restaurantInfo} />
 
       <AppFeedbackModal
-        open={confirmOpen}
-        title="Xác nhận đổi lịch?"
-        busy={submitting}
-        primaryLabel={
-          submitting
-            ? "Đang đổi lịch…"
-            : "Xác nhận đổi lịch"
-        }
-        onConfirm={() => void confirm()}
-        onClose={() => {
-          if (!submittingRef.current) {
-            setConfirmOpen(false);
-          }
-        }}
-      >
-        <p>Đơn {reservation.code}</p>
+  open={confirmOpen}
+  severity="confirm"
+  title="Xác nhận đổi lịch?"
+  primaryButtonLabel="Xác nhận đổi lịch"
+  secondaryButtonLabel="Quay lại chỉnh sửa"
+  primaryDisabled={!selectedSlot}
+  loading={submitting}
+  loadingLabel="Đang đổi lịch..."
+  onPrimaryAction={() => void confirm()}
+  onClose={() => {
+    if (!submittingRef.current) {
+      setConfirmOpen(false);
+    }
+  }}
+>
+  <p>Đơn {reservation.code}</p>
 
-        <p>
-          Lịch hiện tại:{" "}
-          {displayDate(
-            dateInputValue(reservation.startTime),
-          )}{" "}
-          · {timeRange(reservation)}.
-        </p>
+  <p>
+    Lịch hiện tại:{" "}
+    {displayDate(dateInputValue(reservation.startTime))}
+    {" · "}
+    {timeRange(reservation)}.
+  </p>
 
-        {selectedSlot && (
-          <p>
-            Lịch mới: {displayDate(form.date)} ·{" "}
-            {timeRange(selectedSlot)}.
-          </p>
-        )}
+  {selectedSlot && (
+    <p>
+      Lịch mới: {displayDate(form.date)}
+      {" · "}
+      {timeRange(selectedSlot)}.
+    </p>
+  )}
 
-        <p>
-          {form.partySize} khách ·{" "}
-          {form.durationMinutes} phút ·{" "}
-          {selectedAreaName}.
-        </p>
+  <p>
+    {form.partySize} khách · {form.durationMinutes} phút
+    {" · "}
+    {selectedAreaName}.
+  </p>
 
-        <p>
-          Sau khi đổi thành công, bạn còn{" "}
-          {Math.max(0, remaining - 1)} lần đổi lịch.
-        </p>
+  <p>
+    Sau khi đổi thành công, bạn còn{" "}
+    {Math.max(0, remaining - 1)} lần đổi lịch.
+  </p>
 
-        {Number(form.partySize) >= 7 && (
-          <p>Đơn sẽ chờ nhà hàng duyệt lại.</p>
-        )}
-      </AppFeedbackModal>
+  {Number(form.partySize) >= 7 && (
+    <p>Đơn sẽ chờ nhà hàng duyệt lại.</p>
+  )}
+</AppFeedbackModal>
     </div>
   );
 }

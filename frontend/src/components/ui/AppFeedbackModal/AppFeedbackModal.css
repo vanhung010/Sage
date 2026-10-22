@@ -1,9 +1,39 @@
+@font-face {
+  font-family: "Sage Feedback";
+  src: url("../../../assets/order-detail/fonts/BeVietnamPro-Regular.ttf")
+    format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Sage Feedback";
+  src: url("../../../assets/order-detail/fonts/BeVietnamPro-Medium.ttf")
+    format("truetype");
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Sage Feedback";
+  src: url("../../../assets/order-detail/fonts/BeVietnamPro-Bold.ttf")
+    format("truetype");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
 .app-feedback-modal {
+  --font-body: "Sage Feedback", sans-serif;
+
   box-sizing: border-box;
-  width: min(480px, calc(100% - 32px));
+  width: min(480px, calc(100vw - 32px));
   max-width: none;
   max-height: calc(100vh - 32px);
   max-height: calc(100dvh - 32px);
+
   margin: auto;
   padding: var(--space-card-padding-desktop);
 
@@ -14,65 +44,65 @@
   color: var(--color-text-primary);
   font-family: var(--font-body);
 
+  box-shadow: none;
   overflow: auto;
   overscroll-behavior: contain;
-}
-
-.app-feedback-modal[open] {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
 }
 
 .app-feedback-modal::backdrop {
   background: var(--color-overlay);
 }
 
+.app-feedback-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  margin: 0;
+  min-width: 0;
+}
+
 .app-feedback-modal__header {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
+  justify-content: space-between;
   gap: var(--space-4);
-  flex-shrink: 0;
 }
 
 .app-feedback-modal__severity {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  flex: 0 0 48px;
 
-  width: var(--size-button-lg);
-  height: var(--size-button-lg);
+  width: 48px;
+  height: 48px;
   border-radius: var(--radius-lg);
 
-  color: var(--feedback-color);
   background: var(--feedback-bg);
 }
 
-.app-feedback-modal__severity svg {
-  display: block;
-  flex-shrink: 0;
-}
-
 .app-feedback-modal--success {
-  --feedback-color: var(--color-success);
   --feedback-bg: var(--color-success-bg);
 }
 
 .app-feedback-modal--info {
-  --feedback-color: var(--color-info);
   --feedback-bg: var(--color-info-bg);
 }
 
 .app-feedback-modal--warning {
-  --feedback-color: var(--color-warning);
   --feedback-bg: var(--color-warning-bg);
 }
 
-.app-feedback-modal--error {
-  --feedback-color: var(--color-error);
+.app-feedback-modal--error,
+.app-feedback-modal--destructive {
   --feedback-bg: var(--color-error-bg);
+}
+
+.app-feedback-modal--confirm {
+  --feedback-bg: var(--color-primary-light);
+}
+
+.app-feedback-modal--loading {
+  --feedback-bg: transparent;
 }
 
 .app-feedback-modal__content {
@@ -82,26 +112,27 @@
   min-width: 0;
 }
 
-.app-feedback-modal__title {
+/* Có thêm selector modal để tránh CSS h2 của trang ghi đè. */
+.app-feedback-modal .app-feedback-modal__title {
   margin: 0;
   color: var(--color-text-primary);
-
+  font-family: var(--font-body);
   font-size: 24px;
   font-weight: 700;
   line-height: 32px;
-
   overflow-wrap: anywhere;
 }
 
-/* Heading nhận focus để đọc nội dung trước các nút thao tác. */
 .app-feedback-modal__title:focus {
   outline: none;
 }
 
 .app-feedback-modal__description {
-  margin: 0;
-  color: var(--color-text-secondary);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 
+  color: var(--color-text-secondary);
   font-size: 16px;
   font-weight: 400;
   line-height: 24px;
@@ -110,16 +141,96 @@
   overflow-wrap: anywhere;
 }
 
+.app-feedback-modal .app-feedback-modal__description p {
+  margin: 0;
+}
+
+.app-feedback-modal .app-feedback-modal__reason {
+  gap: var(--space-2);
+}
+
+.app-feedback-modal__reason .sage-form-field__label-row {
+  gap: var(--space-1);
+}
+
+.app-feedback-modal .app-feedback-modal__reason-input {
+  box-sizing: border-box;
+  height: 96px;
+  min-height: 96px;
+}
+
+.app-feedback-modal .app-feedback-modal__hint,
+.app-feedback-modal .app-feedback-modal__reason-error {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 16px;
+  overflow-wrap: anywhere;
+}
+
+.app-feedback-modal__hint {
+  color: var(--color-text-secondary);
+}
+
+.app-feedback-modal__reason-error {
+  color: var(--color-error);
+}
+
 .app-feedback-modal__actions {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
   align-items: flex-start;
+  justify-content: flex-end;
   gap: var(--space-3);
+}
+
+.app-feedback-modal__actions > button {
+  flex: 0 0 auto;
+  max-width: 100%;
+}
+
+.app-feedback-modal__primary {
+  position: relative;
+}
+
+/*
+ * Giữ diện tích nhãn để nút loading không co về kích thước icon.
+ * aria-label của nút vẫn thông báo "Đang xử lý...".
+ */
+.app-feedback-modal__primary--loading
+  .app-feedback-modal__primary-label {
+  opacity: 0;
+}
+
+.app-feedback-modal
+  .app-feedback-modal__primary--loading:disabled {
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+  opacity: 1;
+  cursor: wait;
+}
+
+.app-feedback-modal__button-spinner {
+  position: absolute;
+  top: calc(50% - 8px);
+  left: calc(50% - 8px);
+  animation: feedback-spin 900ms linear infinite;
+}
+
+.app-feedback-modal__spinner {
+  animation: feedback-spin 900ms linear infinite;
+}
+
+@keyframes feedback-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 640px) {
   .app-feedback-modal {
+    width: calc(100vw - 32px);
     padding: var(--space-card-padding-mobile);
   }
 
@@ -133,8 +244,14 @@
     width: 100%;
   }
 
-  /* Mobile: nút chính ở trên, nút phụ ở dưới theo Figma. */
   .app-feedback-modal__primary {
     order: -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-feedback-modal__spinner,
+  .app-feedback-modal__button-spinner {
+    animation: none;
   }
 }

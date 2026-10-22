@@ -4,13 +4,13 @@ import { Header } from "../../../components/layout/Header";
 import { Footer } from "../../../components/layout/Footer";
 import { Badge } from "../../../components/ui/Badge";
 import { Button } from "../../../components/ui/Button";
-import { AppFeedbackModal } from "../../../components/common/AppFeedbackModal";
+import { AppFeedbackModal } from "../../../components/ui/AppFeedbackModal";
 import headerLogo from "../../../assets/order-detail/header-logo.png";
 import footerLogo from "../../../assets/order-detail/footer-logo.png";
 import addressIcon from "../../../assets/order-detail/address.svg";
 import phoneIcon from "../../../assets/order-detail/phone.svg";
 import mailIcon from "../../../assets/order-detail/mail.svg";
-import cancelIcon from "../../../assets/order-detail/cancel.svg";
+
 import "./OrderDetailView.css";
 
 interface Props {
@@ -162,13 +162,19 @@ export function OrderDetailView({
 
       <Footer restaurantInfo={restaurantInfo} logoSrc={footerLogo} contactIcons={contactIcons} />
 
-      <AppFeedbackModal className="food-order-cancel-modal"
-        open={confirmOpen} title={`Hủy đơn hàng #${order?.id ?? ""}?`}
-        primaryLabel="Xác nhận hủy đơn" secondaryLabel="Giữ đơn hàng"
-        primaryVariant="destructive" iconSrc={cancelIcon}
-        busy={cancelling} onConfirm={onConfirmCancel} onClose={onCloseCancel}>
-        <p>Bạn có chắc muốn hủy đơn hàng này? Sau khi hủy, đơn hàng không thể khôi phục.</p>
-      </AppFeedbackModal>
+     <AppFeedbackModal
+  open={confirmOpen}
+  severity="destructive"
+  title={`Hủy đơn hàng #${order?.id ?? ""}?`}
+  description="Bạn có chắc muốn hủy đơn hàng này? Sau khi hủy, đơn hàng không thể khôi phục."
+  primaryButtonLabel="Xác nhận hủy đơn"
+  secondaryButtonLabel="Giữ đơn hàng"
+  primaryDisabled={!order}
+  loading={cancelling}
+  loadingLabel="Đang hủy..."
+  onPrimaryAction={onConfirmCancel}
+  onClose={onCloseCancel}
+/>
     </div>
   );
 }

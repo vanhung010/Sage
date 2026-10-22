@@ -1,6 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Clock3, MapPin } from "lucide-react";
-
+// Modal dùng chung, đã chuyển icon sang lucide-react ở bước trên.
+import { AppFeedbackModal } from "../../../components/ui/AppFeedbackModal";
 import { Header } from "../../../components/layout/Header";
 import {
   Footer,
@@ -66,6 +67,25 @@ const mockRestaurantInfo: RestaurantInfo = {
 
 export function HomePage() {
   const navigate = useNavigate();
+
+  // Lấy thông tin của lần điều hướng hiện tại.
+const location = useLocation();
+
+// Chỉ có cờ giao diện; không truyền mật khẩu qua router.
+const navigationState = location.state as {
+  passwordChanged?: boolean;
+} | null;
+
+// Có cờ true thì mở modal thành công.
+const passwordChanged = navigationState?.passwordChanged === true;
+
+// Bấm Đã hiểu, nút đóng hoặc Escape đều dùng cùng một hàm.
+function closePasswordChangedModal() {
+  navigate("/", {
+    replace: true, // Không thêm một entry mới vào history.
+    state: null, // Xóa cờ để modal không mở lại sau khi đã đóng.
+  });
+}
 
   //danh sách dishes
   const [dishes, setDishes] = useState<DishSummary[]>([]);
@@ -345,6 +365,17 @@ export function HomePage() {
       <Footer
         restaurantInfo={mockRestaurantInfo}
       />
+
+      <AppFeedbackModal
+  open={passwordChanged}
+  severity="success"
+  title="Đổi mật khẩu thành công"
+  description="Mật khẩu của bạn đã được cập nhật. Hãy dùng mật khẩu mới cho lần đăng nhập tiếp theo."
+  primaryButtonLabel="Đã hiểu"
+  showSecondaryButton={false}
+  onPrimaryAction={closePasswordChangedModal}
+  onClose={closePasswordChangedModal}
+/>
     </div>
   );
 }

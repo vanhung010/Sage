@@ -1,6 +1,6 @@
 .date-input {
   width: 100%;
-  font-family: "Be Vietnam Pro", sans-serif;
+  font-family: var(--font-body);
 }
 
 .date-input__label {

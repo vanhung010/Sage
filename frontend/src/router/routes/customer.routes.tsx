@@ -6,7 +6,8 @@ import { ReservationDetailRoute } from "../../pages/customer/ReservationDetail/R
 import { ReservationReschedulePage } from "../../pages/customer/ReservationReschedule/ReservationReschedulePage";
 import { MyReservationsPage } from "../../pages/customer/MyOrders/MyReservationsPage";
 import { MyFoodOrdersPage } from "../../pages/customer/MyOrders/MyFoodOrdersPage";
-
+// Trang đổi mật khẩu vừa tạo.
+import { ChangePasswordPage } from "../../pages/customer/ChangePassword/ChangePasswordPage";
 export const customerRoutes: RouteObject[] = [
   {
     element: <CustomerRoute />,
@@ -17,6 +18,7 @@ export const customerRoutes: RouteObject[] = [
       { path: "/reservations/:id/reschedule", element: <ReservationReschedulePage /> },
       { path: "/order", element: <OrderPage /> },
       { path: "/orders/:id", element: <OrderDetailPage /> },
+      { path: "/change-password", element: <ChangePasswordPage></ChangePasswordPage>}
     ],
   },
 ];

@@ -1,41 +1,9 @@
-@font-face {
-  font-family: "Sage About Display";
-  src: url("../../../assets/about/PlayfairDisplay.ttf") format("truetype");
-  font-weight: 400 900;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Sage About Body";
-  src: url("../../../assets/order-detail/fonts/BeVietnamPro-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Sage About Body";
-  src: url("../../../assets/order-detail/fonts/BeVietnamPro-Medium.ttf") format("truetype");
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: "Sage About Body";
-  src: url("../../../assets/order-detail/fonts/BeVietnamPro-Bold.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
 .about-page {
   min-height: 100vh;
   background: var(--color-bg);
 }
 
-/* Scope the design fonts to the new content; the shared header keeps its typography. */
 .about-page__main {
-  --font-body: "Sage About Body", sans-serif;
-  --font-display: "Sage About Display", serif;
   font-family: var(--font-body);
   color: var(--color-text-primary);
 }
@@ -78,7 +46,6 @@
 .about-page__actions { display: flex; gap: 12px; }
 .about-page__main a:focus-visible { outline: 2px solid var(--color-focus-ring); outline-offset: 3px; }
 .about-page .sage-header__logo-link, .about-page .sage-header__logo { width: 140px; height: 70px; max-width: 140px; object-fit: cover; }
-.about-page .sage-footer { --font-body: "Sage About Body", sans-serif; }
 .about-page .sage-footer__logo { width: 190px; height: 95px; object-fit: cover; }
 .about-page .sage-footer__contact-item span { white-space: pre-line; }
 .about-page .sage-footer__contact-item img { flex-shrink: 0; }

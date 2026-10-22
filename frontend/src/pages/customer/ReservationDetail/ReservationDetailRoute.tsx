@@ -9,7 +9,7 @@ import {
 import { reservationApi } from "../../../api/reservation.api";
 import { getApiError } from "../../../api/error";
 
-import { AppFeedbackModal } from "../../../components/common/AppFeedbackModal";
+import { AppFeedbackModal } from "../../../components/ui/AppFeedbackModal";
 import { useReservationDetail } from "../../../hooks/useReservationDetail";
 
 import type { ReservationResponse } from "../../../types/reservation";
@@ -183,29 +183,38 @@ function ReservationDetailContent({
       />
 
       <AppFeedbackModal
-        open={confirmOpen}
-        title="Xác nhận hủy đơn đặt bàn?"
-        primaryLabel={
-          isCancelling
-            ? "Đang hủy…"
-            : "Xác nhận hủy đơn"
-        }
-        secondaryLabel="Giữ đơn đặt bàn"
-        busy={isCancelling}
-        onConfirm={() => void confirmCancel()}
-        onClose={() => {
-          if (!cancellingRef.current) {
-            setConfirmOpen(false);
-          }
-        }}
-      >
-        <p>Bạn muốn hủy đơn {reservation.code}?</p>
-
-        <p>
-          Lịch đặt bàn sẽ được giải phóng sau khi hủy
-          thành công.
-        </p>
-      </AppFeedbackModal>
+  open={confirmOpen}
+  severity="warning"
+  primaryVariant="destructive"
+  title="Hủy đơn đặt bàn?"
+  description={
+    `Bạn muốn hủy đơn ${reservation.code} lúc ` +
+    new Intl.DateTimeFormat("vi-VN", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+    }).format(new Date(reservation.startTime)) +
+    " ngày " +
+    new Intl.DateTimeFormat("vi-VN", {
+      timeZone: "Asia/Ho_Chi_Minh",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    }).format(new Date(reservation.startTime)) +
+    "? Đơn đã hủy không thể khôi phục."
+  }
+  primaryButtonLabel="Xác nhận hủy"
+  secondaryButtonLabel="Giữ đơn"
+  loading={isCancelling}
+  loadingLabel="Đang hủy..."
+  onPrimaryAction={() => void confirmCancel()}
+  onClose={() => {
+    if (!cancellingRef.current) {
+      setConfirmOpen(false);
+    }
+  }}
+/>
     </>
   );
 }
