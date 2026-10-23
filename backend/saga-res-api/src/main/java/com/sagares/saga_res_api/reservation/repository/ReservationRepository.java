@@ -18,7 +18,12 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
 
 
     @Override
-    @EntityGraph(attributePaths = "requestedArea")
+    @EntityGraph(attributePaths = {
+            "requestedArea",
+            "customer",
+            "table",
+            "table.area"
+    })
     Page<Reservation> findAll(
             Specification<Reservation> spec,
             Pageable pageable

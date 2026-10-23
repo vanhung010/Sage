@@ -16,6 +16,7 @@ public class PasswordResetConfig {
         executor.setCorePoolSize(2);
         executor.setMaxPoolSize(4);
         executor.setQueueCapacity(100);
+        
         executor.setThreadNamePrefix("password-reset-");
 
         return executor;
