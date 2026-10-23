@@ -13,7 +13,9 @@ import type { AuthUser, LoginRequest } from "../types/auth";
 
 interface AuthContextValue {
   user: AuthUser | null;
-  login: (request: LoginRequest) => Promise<void>;
+
+  login: (request: LoginRequest) => Promise<AuthUser>;
+
   logout: () => void;
 }
 
@@ -77,12 +79,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  async function login(request: LoginRequest) {
-    const response = await authApi.login(request);
+  async function login(
+  request: LoginRequest,
+): Promise<AuthUser> {
+  const response = await authApi.login(request);
 
-    authStorage.setAccessToken(response.accessToken);
-    setUser(response.user);
-  }
+  authStorage.setAccessToken(response.accessToken);
+  setUser(response.user);
+
+  return response.user;
+}
 
   function logout() {
     authStorage.clearAccessToken();

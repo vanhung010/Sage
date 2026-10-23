@@ -1,5 +1,42 @@
-import type { RouteObject } from "react-router-dom";
+import {
+  Navigate,
+  type RouteObject,
+} from "react-router-dom";
 
-// Khai báo nhóm /staff với RoleRoute allowedRoles={["STAFF"]}
-// khi có màn hình đầu tiên. Xem src/README.md.
-export const staffRoutes: RouteObject[] = [];
+import { RoleRoute } from "../guards/RoleRoute";
+
+import {
+  StaffLayout,
+  type StaffRouteHandle,
+} from "../../components/layout/StaffLayout";
+
+import { StaffReservationsPage } from "../../pages/staff/Reservations/StaffReservationsPage";
+
+export const staffRoutes: RouteObject[] = [
+  {
+    path: "/staff",
+    element: (
+      <RoleRoute allowedRoles={["STAFF", "ADMIN"]} />
+    ),
+    children: [
+      {
+        element: <StaffLayout />,
+        children: [
+          {
+            index: true,
+            element: (
+              <Navigate to="reservations" replace />
+            ),
+          },
+          {
+            path: "reservations",
+            element: <StaffReservationsPage />,
+            handle: {
+              breadcrumb: "Đặt bàn",
+            } satisfies StaffRouteHandle,
+          },
+        ],
+      },
+    ],
+  },
+];

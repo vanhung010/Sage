@@ -1,0 +1,26 @@
+.staff-user-menu {
+  position: relative;
+  display: inline-flex;
+  min-width: 0;
+}
+
+.staff-user-menu__trigger {
+  max-width: 200px;
+}
+
+.staff-user-menu__trigger > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.staff-user-menu__dropdown {
+  width: 200px;
+  max-width: calc(100vw - 96px);
+}
+
+@media (max-width: 767px) {
+  .staff-user-menu__trigger {
+    max-width: 144px;
+  }
+}

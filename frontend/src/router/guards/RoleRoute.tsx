@@ -1,6 +1,14 @@
 import type { ReactNode } from "react";
-import { Navigate, Outlet, useLocation } from "react-router-dom";
+
+import {
+  Navigate,
+  Outlet,
+  useLocation,
+} from "react-router-dom";
+
 import { useAuth } from "../../auth/AuthContext";
+import { getRoleHome } from "../../auth/redirects";
+
 import type { AccountRole } from "../../types/auth";
 
 interface RoleRouteProps {
@@ -10,17 +18,37 @@ interface RoleRouteProps {
 
 export function RoleRoute({
   allowedRoles,
-  fallback = <Navigate to="/" replace />,
+  fallback,
 }: RoleRouteProps) {
   const { user } = useAuth();
-  const { pathname } = useLocation();
+  const location = useLocation();
 
   if (!user) {
-    return <Navigate to="/login" replace state={{ returnTo: pathname }} />;
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{
+          returnTo:
+            location.pathname +
+            location.search +
+            location.hash,
+        }}
+      />
+    );
   }
 
   if (!allowedRoles.includes(user.role)) {
-    return <>{fallback}</>;
+    return (
+      <>
+        {fallback ?? (
+          <Navigate
+            to={getRoleHome(user.role)}
+            replace
+          />
+        )}
+      </>
+    );
   }
 
   return <Outlet />;

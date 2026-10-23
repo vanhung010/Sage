@@ -15,6 +15,7 @@ import { Button } from "../../../components/ui/Button";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../auth/AuthContext";
 import { getApiError } from "../../../api/error";
+import { getLoginDestination } from "../../../auth/redirects";
 import "./LoginPage.css";
 
 interface LoginForm {
@@ -116,35 +117,34 @@ export function LoginPage() {
     );
   }
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>,) {
-    event.preventDefault();
-    //Đã đăng nhập
-    if (loading) return;
+  async function handleSubmit(
+  event: FormEvent<HTMLFormElement>,
+) {
+  event.preventDefault();
 
-    setFormError("");
+  if (loading) return;
 
-    //Nếu lỗi prompt
-    if (!validateForm()) return;
+  setFormError("");
+
+  if (!validateForm()) return;
 
   try {
     setLoading(true);
 
-    await login({ email: form.email.trim(), password: form.password,});
+    const loggedInUser = await login({
+      email: form.email.trim(),
+      password: form.password,
+    });
 
-        const returnTo = (location.state as {returnTo?: string;} | null)?.returnTo;
-
-    const safeReturnTo =
-                          returnTo === "/order" ||
-                          /^\/orders\/[1-9]\d*$/.test(returnTo ?? "") ||
-                          returnTo === "/menu" ||
-                          /^\/menu\/[1-9]\d*$/.test(returnTo ?? "") ||
-                          returnTo === "/reservation" ||
-                          /^\/reservations\/[1-9]\d*(?:\/reschedule)?$/.test(
-                            returnTo ?? "",
-                          );
+    const returnTo = (
+      location.state as { returnTo?: unknown } | null
+    )?.returnTo;
 
     navigate(
-      safeReturnTo ? returnTo! : "/",
+      getLoginDestination(
+        loggedInUser.role,
+        returnTo,
+      ),
       { replace: true },
     );
   } catch (error) {
@@ -152,7 +152,7 @@ export function LoginPage() {
   } finally {
     setLoading(false);
   }
-  }
+}
 
   return (
     <div className="login-page">
