@@ -121,4 +121,105 @@ public class StaffReservationController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
+
+
+
+    @PostMapping("/{id}/approve")
+    @Operation(
+            summary = "Duyệt đơn đặt bàn",
+            description = """
+                Chỉ duyệt đơn đang PENDING và chưa hết hạn duyệt.
+                Trả về chi tiết đơn sau khi chuyển sang CONFIRMED,
+                bao gồm nhật ký duyệt.
+                """
+    )
+    public StaffReservationDetailResponse approve(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @PathVariable("id") Long id
+    ) {
+        return staffReservationService.approve(user, id);
+    }
+
+    @PostMapping("/{id}/reject")
+    @Operation(
+            summary = "Từ chối đơn đặt bàn",
+            description = """
+                Chỉ từ chối đơn đang PENDING.
+                Bắt buộc cung cấp lý do.
+                Hệ thống chuyển đơn sang REJECTED và ghi nhật ký.
+                """
+    )
+    public StaffReservationDetailResponse reject(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @PathVariable("id") Long id,
+            @Valid @RequestBody RejectReservationRequest request
+    ) {
+        return staffReservationService.reject(user, id, request);
+    }
+
+    @PostMapping("/{id}/cancel")
+    @Operation(
+            summary = "Hủy đơn đặt bàn thay khách",
+            description = """
+                Chỉ hủy đơn đang PENDING hoặc CONFIRMED.
+                Bắt buộc cung cấp lý do.
+                Không áp dụng hạn hủy 2 giờ của khách hàng.
+                Trả về chi tiết đơn sau khi hủy.
+                """
+    )
+    public StaffReservationDetailResponse cancelForCustomer(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @PathVariable("id") Long id,
+            @Valid @RequestBody StaffCancelReservationRequest request
+    ) {
+        return staffReservationService.cancelForCustomer(user, id, request);
+    }
+
+    @PostMapping("/{id}/arrive")
+    @Operation(
+            summary = "Ghi nhận khách đã đến",
+            description = """
+                Chỉ áp dụng cho đơn đang CONFIRMED.
+                Chỉ được thực hiện trong ngày hẹn theo múi giờ Việt Nam.
+                Chuyển đơn sang ARRIVED và ghi nhật ký.
+                """
+    )
+    public StaffReservationDetailResponse markArrived(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @PathVariable("id") Long id
+    ) {
+        return staffReservationService.markArrived(user, id);
+    }
+
+    @PostMapping("/{id}/no-show")
+    @Operation(
+            summary = "Ghi nhận khách không đến",
+            description = """
+                Chỉ áp dụng cho đơn đang CONFIRMED.
+                Chỉ thực hiện khi đã đủ thời gian chờ sau giờ bắt đầu.
+                Chuyển đơn sang NO_SHOW và ghi nhật ký.
+                """
+    )
+    public StaffReservationDetailResponse markNoShow(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @PathVariable("id") Long id
+    ) {
+        return staffReservationService.markNoShow(user, id);
+    }
+
+    @PostMapping("/{id}/complete")
+    @Operation(
+            summary = "Hoàn thành đơn đặt bàn",
+            description = """
+                Chỉ áp dụng cho đơn đang ARRIVED.
+                Chuyển đơn sang COMPLETED và ghi nhật ký.
+                Giữ nguyên khoảng chiếm bàn đến hết thời gian dọn bàn.
+                """
+    )
+    public StaffReservationDetailResponse markCompleted(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @PathVariable("id") Long id
+    ) {
+        return staffReservationService.markCompleted(user, id);
+    }
 }

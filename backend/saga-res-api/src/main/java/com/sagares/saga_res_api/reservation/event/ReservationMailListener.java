@@ -64,6 +64,115 @@ public class ReservationMailListener {
         }
     }
 
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onRejected(ReservationRejectedEvent event) {
+        try {
+            executor.execute(() -> sendRejectedEmail(event));
+        } catch (RuntimeException exception) {
+            log.error(
+                    "Không thể xếp lịch gửi email từ chối cho đơn {}",
+                    event.reservationCode(),
+                    exception
+            );
+        }
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    public void onCancelled(ReservationCancelledEvent event) {
+        try {
+            executor.execute(() -> sendCancelledEmail(event));
+        } catch (RuntimeException exception) {
+            log.error(
+                    "Không thể xếp lịch gửi email hủy cho đơn {}",
+                    event.reservationCode(),
+                    exception
+            );
+        }
+    }
+    private void sendCancelledEmail(ReservationCancelledEvent event) {
+        try {
+            JavaMailSender sender = mailSenderProvider.getIfAvailable();
+
+            if (sender == null || from.isBlank()) {
+                log.warn(
+                        "Chưa cấu hình SMTP; không gửi email hủy cho đơn {}",
+                        event.reservationCode()
+                );
+                return;
+            }
+
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(from);
+            message.setTo(event.recipient());
+            message.setSubject(
+                    "Sage - Hủy đặt bàn " + event.reservationCode()
+            );
+
+            message.setText("""
+                Đơn đặt bàn của bạn đã được nhân viên nhà hàng hủy.
+
+                Mã đặt bàn: %s
+                Lý do hủy: %s
+
+                Vui lòng liên hệ nhà hàng nếu bạn cần hỗ trợ.
+                """.formatted(
+                    event.reservationCode(),
+                    event.reason()
+            ));
+
+            sender.send(message);
+
+        } catch (Exception exception) {
+            log.error(
+                    "Gửi email hủy thất bại cho đơn {}",
+                    event.reservationCode(),
+                    exception
+            );
+        }
+    }
+
+    private void sendRejectedEmail(ReservationRejectedEvent event) {
+        try {
+            JavaMailSender sender = mailSenderProvider.getIfAvailable();
+
+            if (sender == null || from.isBlank()) {
+                log.warn(
+                        "Chưa cấu hình SMTP; không gửi email từ chối cho đơn {}",
+                        event.reservationCode()
+                );
+                return;
+            }
+
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom(from);
+            message.setTo(event.recipient());
+            message.setSubject(
+                    "Sage - Từ chối đặt bàn " + event.reservationCode()
+            );
+
+            message.setText("""
+                    Rất tiếc, nhà hàng không thể xác nhận đơn đặt bàn của bạn.
+                    
+                    Mã đặt bàn: %s
+                    Lý do từ chối: %s
+                    
+                    Vui lòng liên hệ nhà hàng nếu bạn cần hỗ trợ.
+                    """.formatted(
+                    event.reservationCode(),
+                    event.reason()
+            ));
+
+            sender.send(message);
+
+        } catch (Exception exception) {
+            log.error(
+                    "Gửi email từ chối thất bại cho đơn {}",
+                    event.reservationCode(),
+                    exception
+            );
+        }
+    }
+
     private void sendRescheduledEmail(ReservationRescheduledEvent event) {
         try {
             JavaMailSender sender = mailSenderProvider.getIfAvailable();
