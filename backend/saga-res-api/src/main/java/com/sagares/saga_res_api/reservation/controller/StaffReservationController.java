@@ -1,18 +1,22 @@
 package com.sagares.saga_res_api.reservation.controller;
 
 import com.sagares.saga_res_api.common.dto.PageResponse;
+import com.sagares.saga_res_api.reservation.dto.CreateGuestReservationRequest;
+import com.sagares.saga_res_api.reservation.dto.CreateGuestReservationResponse;
 import com.sagares.saga_res_api.reservation.dto.StaffReservationStatisticsResponse;
 import com.sagares.saga_res_api.reservation.dto.StaffReservationSummaryResponse;
 import com.sagares.saga_res_api.reservation.entity.ReservationStatus;
 import com.sagares.saga_res_api.reservation.service.StaffReservationService;
+import com.sagares.saga_res_api.security.AuthenticatedUser;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 
@@ -99,5 +103,19 @@ public class StaffReservationController {
                 status,
                 areaId
         );
+    }
+
+    @PostMapping("/guest")
+    @Operation(summary = "Nhân viên đặt bàn hộ khách")
+    public ResponseEntity<CreateGuestReservationResponse> create(
+            @AuthenticationPrincipal AuthenticatedUser user,
+            @Valid @RequestBody CreateGuestReservationRequest request
+    ) {
+        CreateGuestReservationResponse response =
+                staffReservationService.create(user.accountId(), request);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(response);
     }
 }

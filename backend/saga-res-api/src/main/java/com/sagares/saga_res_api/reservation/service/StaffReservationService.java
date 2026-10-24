@@ -3,6 +3,8 @@ package com.sagares.saga_res_api.reservation.service;
 import com.sagares.saga_res_api.account.entity.Account;
 import com.sagares.saga_res_api.common.dto.PageResponse;
 import com.sagares.saga_res_api.common.exception.BusinessException;
+import com.sagares.saga_res_api.reservation.dto.CreateGuestReservationRequest;
+import com.sagares.saga_res_api.reservation.dto.CreateGuestReservationResponse;
 import com.sagares.saga_res_api.reservation.dto.StaffReservationStatisticsResponse;
 import com.sagares.saga_res_api.reservation.dto.StaffReservationSummaryResponse;
 import com.sagares.saga_res_api.reservation.entity.Reservation;
@@ -11,7 +13,11 @@ import com.sagares.saga_res_api.reservation.repository.ReservationRepository;
 import com.sagares.saga_res_api.reservation.specification.ReservationSpecifications;
 import com.sagares.saga_res_api.table.entity.Area;
 import com.sagares.saga_res_api.table.entity.RestaurantTable;
+
 import lombok.RequiredArgsConstructor;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +39,11 @@ public class StaffReservationService {
             ZoneId.of("Asia/Ho_Chi_Minh");
 
     private final ReservationRepository reservationRepository;
+
+    private static final int MAX_ATTEMPTS = 3;
+
+
+    private final StaffReservationCreationTransaction creationTransaction;
 
     @Transactional(readOnly = true)
     public PageResponse<StaffReservationSummaryResponse> list(
@@ -144,6 +155,54 @@ public class StaffReservationService {
         return new StaffReservationStatisticsResponse(pendingCount);
     }
 
+    public CreateGuestReservationResponse create(
+            Long staffId,
+            CreateGuestReservationRequest request
+    ) {
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; attempt++) {
+            try {
+                return creationTransaction.create(staffId, request);
+
+            } catch (DataIntegrityViolationException exception) {
+                String constraint = findConstraintName(exception);
+
+                boolean tableConflict =
+                        "reservation_table_no_overlap".equals(constraint);
+
+                boolean codeConflict =
+                        "reservation_code_key".equals(constraint);
+
+                if (!tableConflict && !codeConflict) {
+                    throw exception;
+                }
+
+                // Transaction trước đã rollback.
+                // Thử lại việc chọn bàn hoặc sinh mã đơn mới.
+
+            } catch (PessimisticLockingFailureException exception) {
+                // Retry toàn bộ transaction khi gặp tranh chấp khóa.
+            }
+        }
+
+        throw new BusinessException(
+                HttpStatus.CONFLICT,
+                "RESERVATION_RETRY_REQUIRED",
+                "Có cập nhật đồng thời, vui lòng thử lại"
+        );
+    }
+
+    private String findConstraintName(Throwable exception) {
+        for (Throwable cause = exception;
+             cause != null;
+             cause = cause.getCause()) {
+
+            if (cause instanceof ConstraintViolationException violation) {
+                return violation.getConstraintName();
+            }
+        }
+
+        return null;
+    }
 
     private void validateRequest(
             LocalDate date,
