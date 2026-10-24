@@ -14,11 +14,25 @@ import type {
   StaffReservationFilterKey,
 } from "../../../types/staff-reservation";
 
-import { dateInputValue } from "../../../utils/reservation";
+import {
+  dateInputValue,
+  displayDate,
+  displayTime,
+} from "../../../utils/reservation";
 
 import { ReservationFilters } from "./ReservationFilters";
 import { ReservationsTable } from "./ReservationsTable";
 import { useStaffReservations } from "./useStaffReservations";
+
+import { useLocation, useNavigate } from "react-router-dom";
+
+import { AppFeedbackModal } from
+  "../../../components/ui/AppFeedbackModal";
+
+import type {
+  CreateGuestReservationResponse,
+  StaffReservationNavigationState,
+} from "../../../types/staff-reservation";
 
 import "./StaffReservationsPage.css";
 
@@ -32,8 +46,28 @@ function defaultFilters(): StaffReservationFilterForm {
 }
 
 export function StaffReservationsPage() {
+ 
+   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [createdReservation, setCreatedReservation] =
+    useState<CreateGuestReservationResponse | null>(() => {
+      const state =
+        location.state as StaffReservationNavigationState | null;
+
+      return state?.guestCreated ?? null;
+    });
+
   const [filters, setFilters] =
-    useState<StaffReservationFilterForm>(defaultFilters);
+    useState<StaffReservationFilterForm>(() => ({
+      ...defaultFilters(),
+
+      // Mở đúng ngày của đơn vừa tạo.
+      date: createdReservation
+        ? dateInputValue(createdReservation.startTime)
+        : dateInputValue(),
+    }));
+
 
   const [draft, setDraft] =
     useState<StaffReservationFilterForm>(
@@ -116,6 +150,34 @@ export function StaffReservationsPage() {
   const busy = list.loading || summary.loading;
   const pendingCount = summary.data?.pendingCount;
 
+  useEffect(() => {
+  const state =
+    location.state as StaffReservationNavigationState | null;
+
+  if (!state?.guestCreated) return;
+
+  // Đã đưa kết quả vào state của trang.
+  // Xóa navigation state để refresh không mở lại thông báo cũ.
+        void navigate(
+          {
+            pathname: location.pathname,
+            search: location.search,
+            hash: location.hash,
+          },
+          {
+            replace: true,
+            state: null,
+          },
+        );
+      }, [
+        location.pathname,
+        location.search,
+        location.hash,
+        location.state,
+        navigate,
+      ]);
+
+
   return (
     <section
       className="staff-reservations"
@@ -132,14 +194,13 @@ export function StaffReservationsPage() {
           </p>
         </div>
 
-        <Button
-          type="button"
-          size="md"
-         
-          title="Chức năng đặt bàn hộ chưa được triển khai"
-        >
-          Đặt bàn hộ
-        </Button>
+       <Button
+        type="button"
+        size="md"
+        onClick={() => void navigate("/staff/reservations/guest")}
+      >
+        Đặt bàn hộ
+      </Button>
       </div>
 
       <div
@@ -264,6 +325,30 @@ export function StaffReservationsPage() {
           ? `Đã chọn ${selectedKeys.size} đơn trên trang hiện tại.`
           : "Danh sách được sắp xếp theo thời gian khách đến tăng dần."}
       </p>
+      <AppFeedbackModal
+        open={createdReservation !== null}
+        severity="success"
+        title="Đặt bàn hộ thành công"
+        description={
+          createdReservation
+            ? [
+                `Mã ${createdReservation.reservationCode}`,
+                createdReservation.name,
+                createdReservation.tableCode,
+                `${createdReservation.partySize} khách`,
+                `${displayDate(
+                  dateInputValue(createdReservation.startTime),
+                )} · ${displayTime(
+                  createdReservation.startTime,
+                )}–${displayTime(createdReservation.endTime)}`,
+              ].join(" • ") + ". Đọc lại mã và lịch hẹn cho khách."
+            : undefined
+        }
+        primaryButtonLabel="Về danh sách"
+        showSecondaryButton={false}
+        onClose={() => setCreatedReservation(null)}
+        onPrimaryAction={() => setCreatedReservation(null)}
+      />
     </section>
   );
 }

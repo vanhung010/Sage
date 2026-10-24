@@ -202,4 +202,36 @@ public class ReservationSettingsService {
                 message
         );
     }
+
+    public record StaffOperationSettings(
+            int pendingAutoCancelHours,
+            int noShowGraceMinutes
+    ) {
+    }
+
+    public StaffOperationSettings loadStaffOperationSettings() {
+        Map<String, String> values = loadValues();
+
+        int pendingAutoCancelHours = readInt(
+                values,
+                "pending_auto_cancel_hours"
+        );
+
+        int noShowGraceMinutes = readInt(
+                values,
+                "no_show_grace_minutes"
+        );
+
+        if (pendingAutoCancelHours < 0 || noShowGraceMinutes < 0) {
+            throw invalidConfig(
+                    "Thời hạn duyệt và thời gian chờ khách không được âm"
+            );
+        }
+
+        return new StaffOperationSettings(
+                pendingAutoCancelHours,
+                noShowGraceMinutes
+        );
+    }
+
 }

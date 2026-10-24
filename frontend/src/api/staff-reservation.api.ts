@@ -7,6 +7,13 @@ import type {
   StaffReservationStatistics,
 } from "../types/staff-reservation";
 
+
+import type {
+  CreateGuestReservationRequest,
+  CreateGuestReservationResponse,
+} from "../types/staff-reservation";
+
+
 function toParams(filters: StaffReservationFilterForm) {
   return {
     date: filters.date,
@@ -54,4 +61,15 @@ export const staffReservationApi = {
 
     return response.data;
   },
+
+  async createGuest(
+  request: CreateGuestReservationRequest,): Promise<CreateGuestReservationResponse> {
+  const response =
+    await apiClient.post<CreateGuestReservationResponse>(
+      "/api/staff/reservations/guest",
+      request,
+    );
+
+  return response.data;
+},
 };

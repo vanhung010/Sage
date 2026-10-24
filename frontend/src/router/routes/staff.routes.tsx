@@ -4,7 +4,7 @@ import {
 } from "react-router-dom";
 
 import { RoleRoute } from "../guards/RoleRoute";
-
+import { GuestReservationPage } from "../../pages/staff/GuestReservation/GuestReservationPage";
 import {
   StaffLayout,
   type StaffRouteHandle,
@@ -35,6 +35,13 @@ export const staffRoutes: RouteObject[] = [
               breadcrumb: "Đặt bàn",
             } satisfies StaffRouteHandle,
           },
+          {
+        path: "reservations/guest",
+        element: <GuestReservationPage />,
+        handle: {
+          breadcrumb: "Đặt bàn hộ",
+        } satisfies StaffRouteHandle,
+      },
         ],
       },
     ],

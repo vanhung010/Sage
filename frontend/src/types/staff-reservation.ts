@@ -34,3 +34,28 @@ export interface StaffReservationFilterForm {
 
 export type StaffReservationFilterKey =
   keyof StaffReservationFilterForm;
+
+  export interface CreateGuestReservationRequest {
+  name: string;
+  phone: string;
+  date: string;
+  timeStart: string;
+  timeEnd: string;
+  partySize: number;
+  areaId?: number | null;
+  description?: string | null;
+}
+
+export interface CreateGuestReservationResponse {
+  reservationCode: string;
+  name: string;
+  tableCode: string;
+  partySize: number;
+  startTime: string;
+  endTime: string;
+}
+
+/** Dữ liệu chuyển từ trang tạo đơn về danh sách. */
+export interface StaffReservationNavigationState {
+  guestCreated?: CreateGuestReservationResponse;
+}

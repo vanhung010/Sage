@@ -1,10 +1,7 @@
 package com.sagares.saga_res_api.reservation.controller;
 
 import com.sagares.saga_res_api.common.dto.PageResponse;
-import com.sagares.saga_res_api.reservation.dto.CreateGuestReservationRequest;
-import com.sagares.saga_res_api.reservation.dto.CreateGuestReservationResponse;
-import com.sagares.saga_res_api.reservation.dto.StaffReservationStatisticsResponse;
-import com.sagares.saga_res_api.reservation.dto.StaffReservationSummaryResponse;
+import com.sagares.saga_res_api.reservation.dto.*;
 import com.sagares.saga_res_api.reservation.entity.ReservationStatus;
 import com.sagares.saga_res_api.reservation.service.StaffReservationService;
 import com.sagares.saga_res_api.security.AuthenticatedUser;
@@ -105,17 +102,23 @@ public class StaffReservationController {
         );
     }
 
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Xem chi tiết đơn đặt bàn")
+    public StaffReservationDetailResponse getDetail(
+            @PathVariable("id") Long id
+    ) {
+        return staffReservationService.getDetail(id);
+    }
+
     @PostMapping("/guest")
     @Operation(summary = "Nhân viên đặt bàn hộ khách")
     public ResponseEntity<CreateGuestReservationResponse> create(
             @AuthenticationPrincipal AuthenticatedUser user,
             @Valid @RequestBody CreateGuestReservationRequest request
     ) {
-        CreateGuestReservationResponse response =
-                staffReservationService.create(user.accountId(), request);
+        CreateGuestReservationResponse response = staffReservationService.create(user.accountId(), request);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(response);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 }

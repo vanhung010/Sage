@@ -169,4 +169,19 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
             @Param("startTime") Instant startTime,
             @Param("occupiedEnd") Instant occupiedEnd
     );
+
+    @EntityGraph(attributePaths = {
+            "customer",
+            "table",
+            "table.area",
+            "requestedArea"
+    })
+    @Query("""
+        select r
+        from Reservation r
+        where r.id = :id
+        """)
+    Optional<Reservation> findStaffDetailById(
+            @Param("id") Long id
+    );
 }

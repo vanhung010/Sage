@@ -3,13 +3,12 @@ package com.sagares.saga_res_api.reservation.service;
 import com.sagares.saga_res_api.account.entity.Account;
 import com.sagares.saga_res_api.common.dto.PageResponse;
 import com.sagares.saga_res_api.common.exception.BusinessException;
-import com.sagares.saga_res_api.reservation.dto.CreateGuestReservationRequest;
-import com.sagares.saga_res_api.reservation.dto.CreateGuestReservationResponse;
-import com.sagares.saga_res_api.reservation.dto.StaffReservationStatisticsResponse;
-import com.sagares.saga_res_api.reservation.dto.StaffReservationSummaryResponse;
+import com.sagares.saga_res_api.reservation.dto.*;
 import com.sagares.saga_res_api.reservation.entity.Reservation;
 import com.sagares.saga_res_api.reservation.entity.ReservationStatus;
+import com.sagares.saga_res_api.reservation.entity.ReservationStatusLog;
 import com.sagares.saga_res_api.reservation.repository.ReservationRepository;
+import com.sagares.saga_res_api.reservation.repository.ReservationStatusLogRepository;
 import com.sagares.saga_res_api.reservation.specification.ReservationSpecifications;
 import com.sagares.saga_res_api.table.entity.Area;
 import com.sagares.saga_res_api.table.entity.RestaurantTable;
@@ -26,10 +25,14 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.temporal.ChronoUnit;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.Comparator;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +42,8 @@ public class StaffReservationService {
             ZoneId.of("Asia/Ho_Chi_Minh");
 
     private final ReservationRepository reservationRepository;
+    private final ReservationStatusLogRepository statusLogRepository;
+    private final ReservationSettingsService settingsService;
 
     private static final int MAX_ATTEMPTS = 3;
 
@@ -189,6 +194,149 @@ public class StaffReservationService {
                 "RESERVATION_RETRY_REQUIRED",
                 "Có cập nhật đồng thời, vui lòng thử lại"
         );
+    }
+
+    @Transactional(readOnly = true)
+    public StaffReservationDetailResponse getDetail(Long id) {
+        if (id == null || id <= 0) {
+            throw new BusinessException(
+                    HttpStatus.BAD_REQUEST,
+                    "INVALID_RESERVATION_ID",
+                    "ID đơn đặt bàn phải lớn hơn 0"
+            );
+        }
+
+        Reservation reservation = reservationRepository.findById(id)
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.NOT_FOUND,
+                        "RESERVATION_NOT_FOUND",
+                        "Không tìm thấy đơn đặt bàn"
+                ));
+
+        var settings = settingsService.loadStaffOperationSettings();
+
+        OffsetDateTime approvalDeadline = null;
+        OffsetDateTime noShowAllowedAt = null;
+
+        if (reservation.getStatus() == ReservationStatus.PENDING) {
+            approvalDeadline = toDetailTime(
+                    reservation.getStartTime().minus(
+                            settings.pendingAutoCancelHours(),
+                            ChronoUnit.HOURS
+                    )
+            );
+        }
+
+        if (reservation.getStatus() == ReservationStatus.CONFIRMED) {
+            noShowAllowedAt = toDetailTime(
+                    reservation.getStartTime().plus(
+                            settings.noShowGraceMinutes(),
+                            ChronoUnit.MINUTES
+                    )
+            );
+        }
+
+        Account customer = reservation.getCustomer();
+        RestaurantTable table = reservation.getTable();
+        Area tableArea = table.getArea();
+        Area requestedArea = reservation.getRequestedArea();
+
+        // Dùng cùng field cho khách có tài khoản và khách vãng lai.
+        String customerName = customer != null
+                ? customer.getFullName()
+                : reservation.getGuestName();
+
+        String customerPhone = customer != null
+                ? customer.getPhone()
+                : reservation.getGuestPhone();
+
+        List<StaffReservationDetailResponse.LogResponse> logs = statusLogRepository
+                .findByReservationIdOrderByChangedAtAsc(id)
+                .stream()
+                // Timeline hiển thị mới nhất trước.
+                .sorted(
+                        Comparator.comparing(
+                                ReservationStatusLog::getChangedAt
+                        ).thenComparing(
+                                ReservationStatusLog::getId
+                        ).reversed()
+                )
+                .map(log -> {
+                    Account actor = log.getChangedBy();
+
+                    return new StaffReservationDetailResponse.LogResponse(
+                            log.getId(),
+                            log.getEventType(),
+                            toDetailTime(log.getChangedAt()),
+
+                            actor == null
+                                    ? "Hệ thống"
+                                    : actor.getFullName(),
+
+                            actor == null
+                                    ? null
+                                    : actor.getRole(),
+
+                            log.getOldValue(),
+                            log.getNewValue(),
+                            log.getReason()
+                    );
+                })
+                .toList();
+
+        return new StaffReservationDetailResponse(
+                reservation.getId(),
+                reservation.getCode(),
+                reservation.getStatus(),
+
+                customer == null
+                        ? StaffReservationDetailResponse.BookingSource.STAFF_GUEST
+                        : StaffReservationDetailResponse.BookingSource.ONLINE,
+
+                customerName,
+                customerPhone,
+
+                reservation.getPartySize().intValue(),
+                toDetailTime(reservation.getStartTime()),
+                toDetailTime(reservation.getEndTime()),
+
+                new StaffReservationDetailResponse.TableSummary(
+                        table.getId(),
+                        table.getCode(),
+                        new StaffReservationDetailResponse.AreaSummary(
+                                tableArea.getId(),
+                                tableArea.getName()
+                        )
+                ),
+
+                requestedArea == null
+                        ? null
+                        : new StaffReservationDetailResponse.AreaSummary(
+                        requestedArea.getId(),
+                        requestedArea.getName()
+                ),
+
+                reservation.getSpecialNote(),
+                reservation.getBufferMinutes().intValue(),
+                reservation.getRescheduleCount(),
+
+                reservation.getCancellationReason(),
+                reservation.getRejectionReason(),
+
+                toDetailTime(reservation.getCreatedAt()),
+                toDetailTime(reservation.getUpdatedAt()),
+
+                approvalDeadline,
+                noShowAllowedAt,
+
+                logs
+        );
+    }
+
+    private OffsetDateTime toDetailTime(Instant value) {
+        return value == null
+                ? null
+                : value.atZone(RESTAURANT_ZONE).toOffsetDateTime();
     }
 
     private String findConstraintName(Throwable exception) {
