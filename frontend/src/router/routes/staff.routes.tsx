@@ -11,6 +11,7 @@ import {
 } from "../../components/layout/StaffLayout";
 
 import { StaffReservationsPage } from "../../pages/staff/Reservations/StaffReservationsPage";
+import { StaffReservationDetailPage } from "../../pages/staff/ReservationDetail/StaffReservationDetailPage";
 
 export const staffRoutes: RouteObject[] = [
   {
@@ -31,6 +32,13 @@ export const staffRoutes: RouteObject[] = [
           {
             path: "reservations",
             element: <StaffReservationsPage />,
+            handle: {
+              breadcrumb: "Đặt bàn",
+            } satisfies StaffRouteHandle,
+          },
+          {
+            path: "reservations/:id",
+            element: <StaffReservationDetailPage />,
             handle: {
               breadcrumb: "Đặt bàn",
             } satisfies StaffRouteHandle,

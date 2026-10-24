@@ -1,4 +1,5 @@
 import { Eye, MoreHorizontal } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 import {
   DataTable,
@@ -36,6 +37,21 @@ interface ReservationsTableProps {
 
   selectedKeys: ReadonlySet<DataTableRowKey>;
   onSelectionChange: (keys: Set<DataTableRowKey>) => void;
+}
+
+function ReservationDetailButton({ row }: { row: StaffReservationItem }) {
+  const navigate = useNavigate();
+
+  return (
+    <IconButton
+      size="sm"
+      variant="ghost"
+      icon={<Eye />}
+      aria-label={`Chi tiết đơn ${row.code}`}
+      title="Xem chi tiết đặt bàn"
+      onClick={() => void navigate(`/staff/reservations/${row.id}`)}
+    />
+  );
 }
 
 const columns: DataTableColumn<StaffReservationItem>[] = [
@@ -112,14 +128,7 @@ const columns: DataTableColumn<StaffReservationItem>[] = [
     align: "center",
     render: (row) => (
       <div className="sage-data-table__actions">
-        <IconButton
-          size="sm"
-          variant="ghost"
-          icon={<Eye />}
-          aria-label={`Chi tiết đơn ${row.code} chưa khả dụng`}
-          title="Chi tiết đặt bàn staff chưa khả dụng"
-          disabled
-        />
+        <ReservationDetailButton row={row} />
 
         <IconButton
           size="sm"

@@ -1,4 +1,55 @@
 import type { ReservationStatus } from "./reservation";
+import type { AccountRole } from "./auth";
+
+export interface StaffReservationArea {
+  id: number;
+  name: string;
+}
+
+export interface StaffReservationLog {
+  id: number;
+  eventType:
+    | "CREATED"
+    | "STATUS_CHANGED"
+    | "TABLE_CHANGED"
+    | "TIME_CHANGED"
+    | "RESCHEDULED";
+  changedAt: string;
+  actorName: string | null;
+  actorRole: AccountRole | null;
+  oldValue: Record<string, unknown> | null;
+  newValue: Record<string, unknown> | null;
+  reason: string | null;
+}
+
+/** Contract của StaffReservationDetailResponse ở backend. */
+export interface StaffReservationDetail {
+  id: number;
+  code: string;
+  status: ReservationStatus;
+  source: "ONLINE" | "STAFF_GUEST";
+  customerName: string | null;
+  customerPhone: string | null;
+  partySize: number;
+  startTime: string;
+  endTime: string;
+  table: {
+    id: number;
+    code: string;
+    area: StaffReservationArea;
+  };
+  requestedArea: StaffReservationArea | null;
+  specialNote: string | null;
+  bufferMinutes: number;
+  rescheduleCount: number;
+  cancellationReason: string | null;
+  rejectionReason: string | null;
+  createdAt: string;
+  updatedAt: string;
+  approvalDeadline: string | null;
+  noShowAllowedAt: string | null;
+  logs: StaffReservationLog[];
+}
 
 export interface StaffReservationItem {
   id: number;

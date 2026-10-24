@@ -3,6 +3,7 @@ import { apiClient } from "./client";
 import type { PageResponse } from "../types/api";
 import type {
   StaffReservationFilterForm,
+  StaffReservationDetail,
   StaffReservationItem,
   StaffReservationStatistics,
 } from "../types/staff-reservation";
@@ -26,6 +27,18 @@ function toParams(filters: StaffReservationFilterForm) {
 }
 
 export const staffReservationApi = {
+  async getDetail(
+    id: number,
+    signal?: AbortSignal,
+  ): Promise<StaffReservationDetail> {
+    const response = await apiClient.get<StaffReservationDetail>(
+      `/api/staff/reservations/${id}`,
+      { signal },
+    );
+
+    return response.data;
+  },
+
   async list(
     filters: StaffReservationFilterForm,
     page: number,

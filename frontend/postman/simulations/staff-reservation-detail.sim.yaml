@@ -1,0 +1,5 @@
+simulation: staff-reservation-detail
+routing: path
+mocks:
+  - routeKey: sage
+    path: ../mocks/staff-reservation-detail/config.yaml
