@@ -1,5 +1,8 @@
-import type { BadgeVariant } from "../../../components/ui/Badge";
-import type { ReservationStatus } from "../../../types/reservation";
+import type { BadgeVariant } from
+  "../../../components/ui/Badge";
+
+import type { ReservationStatus } from
+  "../../../types/reservation";
 
 export const RESERVATION_STATUS_META: Record<
   ReservationStatus,
@@ -10,30 +13,30 @@ export const RESERVATION_STATUS_META: Record<
 > = {
   PENDING: {
     label: "Chờ duyệt",
-    variant: "warning",
+    variant: "pending",
   },
   CONFIRMED: {
     label: "Đã xác nhận",
-    variant: "success",
+    variant: "confirmed",
   },
   ARRIVED: {
     label: "Khách đã đến",
-    variant: "info",
+    variant: "arrived",
   },
   COMPLETED: {
     label: "Hoàn thành",
-    variant: "neutral",
+    variant: "completed",
   },
   CANCELLED: {
     label: "Đã hủy",
-    variant: "error",
+    variant: "cancelled",
   },
   REJECTED: {
     label: "Bị từ chối",
-    variant: "error",
+    variant: "rejected",
   },
   NO_SHOW: {
     label: "Không đến",
-    variant: "warning",
+    variant: "no-show",
   },
 };

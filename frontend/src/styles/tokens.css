@@ -162,4 +162,31 @@
 
   --size-header-mobile: 56px;
   --size-header-desktop: 64px;
+
+  /* Loading */
+--color-skeleton: #efe7db;
+
+/* Link */
+--color-link-hover: var(--color-primary-hover);
+
+/* Focus ring offset */
+--color-focus-ring-offset-surface: var(--color-surface);
+--color-focus-ring-offset-bg: var(--color-bg);
+
+/* Reservation: pending */
+--color-status-pending: var(--color-warning);
+--color-status-pending-icon: var(--color-warning-icon);
+--color-status-pending-bg: var(--color-warning-bg);
+
+/* Reservation: confirmed */
+--color-status-confirmed: var(--color-success);
+--color-status-confirmed-bg: var(--color-success-bg);
+
+/* Reservation: arrived */
+--color-status-arrived: var(--color-info);
+--color-status-arrived-bg: var(--color-info-bg);
+
+/* Reservation: cancelled */
+--color-status-cancelled: var(--color-error);
+--color-status-cancelled-bg: var(--color-error-bg);
 }

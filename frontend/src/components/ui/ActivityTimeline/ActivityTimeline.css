@@ -1,0 +1,195 @@
+.activity-timeline {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-6);
+
+  border: var(--border-default) solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+}
+
+/* Scoped để tránh kiểu heading của trang ghi đè. */
+.activity-timeline .activity-timeline__title {
+  margin: 0;
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+  overflow-wrap: anywhere;
+}
+
+.activity-timeline__description {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+  overflow-wrap: anywhere;
+}
+
+.activity-timeline__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.activity-timeline__item {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: stretch;
+  gap: var(--space-4);
+
+  min-width: 0;
+  min-height: 116px;
+}
+
+/* Giữ nguyên kích thước SVG gốc. */
+.activity-timeline__rail {
+  position: relative;
+  width: 16px;
+  overflow: hidden;
+}
+
+.activity-timeline__rail > img {
+  display: block;
+  max-width: none;
+}
+
+/* Nối dài khi nội dung xuống nhiều dòng trên màn hình nhỏ. */
+.activity-timeline__rail::after {
+  position: absolute;
+  top: 116px;
+  bottom: 0;
+  left: 0;
+
+  width: 1px;
+  background: var(--color-border);
+  content: "";
+}
+
+/* Phần tử cuối chỉ hiện dấu tròn, không hiện đường nối. */
+.activity-timeline__item--last {
+  min-height: 0;
+}
+
+.activity-timeline__item--last .activity-timeline__rail {
+  align-self: start;
+  height: 16px;
+}
+
+.activity-timeline__item--last .activity-timeline__rail::after {
+  display: none;
+}
+
+.activity-timeline__event {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-2);
+
+  min-width: 0;
+}
+
+.activity-timeline__event-title,
+.activity-timeline__event-description,
+.activity-timeline__reason {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  overflow-wrap: anywhere;
+}
+
+.activity-timeline__event-title {
+  font-weight: 500;
+}
+
+.activity-timeline__metadata {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 16px;
+  overflow-wrap: anywhere;
+}
+
+.activity-timeline__event-description,
+.activity-timeline__reason {
+  white-space: pre-line;
+}
+
+.activity-timeline__reason {
+  color: var(--color-text-secondary);
+}
+
+.activity-timeline__timezone {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.activity-timeline__state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+
+  min-width: 0;
+  padding: var(--space-6);
+  border-radius: var(--radius-card);
+
+  background: var(--color-surface-alt);
+}
+
+.activity-timeline__state-title,
+.activity-timeline__state-description {
+  margin: 0;
+  font-size: 14px;
+  line-height: 20px;
+  overflow-wrap: anywhere;
+}
+
+.activity-timeline__state-title {
+  font-weight: 500;
+}
+
+.activity-timeline__state-description {
+  color: var(--color-text-secondary);
+}
+
+.activity-timeline__skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.activity-timeline__skeleton > span {
+  display: block;
+  height: 16px;
+  border-radius: var(--radius-control);
+  background: var(
+    --color-skeleton,
+    var(--color-status-completed-bg)
+  );
+}
+
+.activity-timeline__skeleton > span:nth-child(2) {
+  width: max(0px, calc(100% - 48px));
+}
+
+.activity-timeline__skeleton > span:nth-child(3) {
+  width: max(0px, calc(100% - 96px));
+}

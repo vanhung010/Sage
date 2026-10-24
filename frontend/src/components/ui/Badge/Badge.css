@@ -1,12 +1,12 @@
 .sage-badge {
-  height: 24px;
+  box-sizing: border-box;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
-
   gap: var(--space-2);
 
+  height: 24px;
   padding-inline: var(--space-2);
 
   border-radius: var(--radius-full);
@@ -16,70 +16,119 @@
   font-weight: 500;
   line-height: 16px;
 
+  vertical-align: middle;
   white-space: nowrap;
 }
 
-/* =========================
-   NEUTRAL
-   ========================= */
-
-.sage-badge--neutral {
+/* Neutral / Completed / Hidden / Inactive */
+.sage-badge--neutral,
+.sage-badge--completed,
+.sage-badge--hidden,
+.sage-badge--inactive {
   background-color: var(
-    --color-status-completed-bg
+    --color-status-completed-bg,
+    #efe7db
   );
 
-  color: var(--color-status-completed);
+  color: var(
+    --color-status-completed,
+    var(--color-text-secondary)
+  );
 }
 
-/* =========================
-   SUCCESS
-   ========================= */
-
-.sage-badge--success {
+/* Success / Available / Active */
+.sage-badge--success,
+.sage-badge--available,
+.sage-badge--active {
   background-color: var(--color-success-bg);
   color: var(--color-success);
 }
 
-/* =========================
-   WARNING
-   ========================= */
-
-.sage-badge--warning {
+/* Warning / NoShow / SoldOut */
+.sage-badge--warning,
+.sage-badge--no-show,
+.sage-badge--sold-out {
   background-color: var(--color-warning-bg);
   color: var(--color-warning);
 }
 
-/* =========================
-   INFO
-   ========================= */
-
-.sage-badge--info {
+/* Info / Placed */
+.sage-badge--info,
+.sage-badge--placed {
   background-color: var(--color-info-bg);
   color: var(--color-info);
 }
 
-/* =========================
-   ERROR
-   ========================= */
-
-.sage-badge--error {
+/* Error / Locked */
+.sage-badge--error,
+.sage-badge--locked {
   background-color: var(--color-error-bg);
   color: var(--color-error);
 }
 
-/* =========================
-   ICON
-   ========================= */
+/* Pending */
+.sage-badge--pending {
+  background-color: var(
+    --color-status-pending-bg,
+    var(--color-warning-bg)
+  );
 
+  color: var(
+    --color-status-pending,
+    var(--color-warning)
+  );
+}
+
+/* Confirmed */
+.sage-badge--confirmed {
+  background-color: var(
+    --color-status-confirmed-bg,
+    var(--color-success-bg)
+  );
+
+  color: var(
+    --color-status-confirmed,
+    var(--color-success)
+  );
+}
+
+/* Arrived */
+.sage-badge--arrived {
+  background-color: var(
+    --color-status-arrived-bg,
+    var(--color-info-bg)
+  );
+
+  color: var(
+    --color-status-arrived,
+    var(--color-info)
+  );
+}
+
+/* Cancelled / Rejected */
+.sage-badge--cancelled,
+.sage-badge--rejected {
+  background-color: var(
+    --color-status-cancelled-bg,
+    var(--color-error-bg)
+  );
+
+  color: var(
+    --color-status-cancelled,
+    var(--color-error)
+  );
+}
+
+/* Icon */
 .sage-badge__icon {
-  width: 14px;
-  height: 14px;
-
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
   flex-shrink: 0;
+  width: 14px;
+  height: 14px;
+  color: inherit;
 }
 
 .sage-badge__icon > svg {
@@ -87,11 +136,9 @@
   height: 14px;
 }
 
-/* =========================
-   LABEL
-   ========================= */
-
+/* Label */
 .sage-badge__label {
   display: inline-flex;
   align-items: center;
+  color: inherit;
 }
