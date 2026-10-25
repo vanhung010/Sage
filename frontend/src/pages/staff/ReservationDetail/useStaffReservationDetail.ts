@@ -42,12 +42,32 @@ export function useStaffReservationDetail(routeId: string | undefined) {
   // Không hiển thị đơn cũ khi URL đổi hoặc đang thử tải lại.
   const current = snapshot?.key === key ? snapshot : null;
 
+  function updateReservation(updated: StaffReservationDetail) {
+  if (updated.id !== id) return;
+
+  setSnapshot((current) => {
+    // Không ghi response của đơn cũ lên một lần tải khác.
+    if (!current || current.key !== key) return current;
+
+    return {
+      key,
+      reservation: updated,
+      error: null,
+    };
+  });
+}
+
   return {
-    reservation: current?.reservation ?? null,
-    loading: valid && !current,
-    error: valid
-      ? current?.error ?? null
-      : { status: 400, code: "INVALID_RESERVATION_ID", message: "ID đơn đặt bàn không hợp lệ." },
-    reload: () => setAttempt((value) => value + 1),
-  };
+  reservation: current?.reservation ?? null,
+  loading: valid && !current,
+  error: valid
+    ? current?.error ?? null
+    : {
+        status: 400,
+        code: "INVALID_RESERVATION_ID",
+        message: "ID đơn đặt bàn không hợp lệ.",
+      },
+  reload: () => setAttempt((value) => value + 1),
+  updateReservation,
+};
 }

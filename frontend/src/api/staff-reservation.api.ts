@@ -14,6 +14,9 @@ import type {
   CreateGuestReservationResponse,
 } from "../types/staff-reservation";
 
+import type {
+  StaffReservationCommand,
+} from "../types/staff-reservation";
 
 function toParams(filters: StaffReservationFilterForm) {
   return {
@@ -85,4 +88,21 @@ export const staffReservationApi = {
 
   return response.data;
 },
+
+  async changeStatus(
+    id: number,
+    command: StaffReservationCommand,
+  ): Promise<StaffReservationDetail> {
+    const body =
+      "reason" in command
+        ? { reason: command.reason.trim() }
+        : undefined;
+
+    const response = await apiClient.post<StaffReservationDetail>(
+      `/api/staff/reservations/${id}/${command.action}`,
+      body,
+    );
+
+    return response.data;
+  },
 };

@@ -4,6 +4,9 @@ import type { ReservationStatus } from "../../../types/reservation";
 import type { StaffReservationDetail, StaffReservationLog } from "../../../types/staff-reservation";
 import { dateInputValue, displayDate, displayTime } from "../../../utils/reservation";
 import { RESERVATION_STATUS_META } from "../Reservations/reservationPresentation";
+import type {
+  StaffReservationAction,
+} from "../../../types/staff-reservation";
 
 export function detailDate(value: string) {
   return Number.isFinite(Date.parse(value)) ? displayDate(dateInputValue(value)) : "—";
@@ -25,24 +28,28 @@ export function cleanupEndsAt(reservation: StaffReservationDetail) {
 interface DetailAction {
   label: string;
   variant: ButtonVariant;
+  action?: StaffReservationAction;
 }
 
-export const DETAIL_ACTIONS: Record<ReservationStatus, readonly DetailAction[]> = {
+export const DETAIL_ACTIONS: Record<
+  ReservationStatus,
+  readonly DetailAction[]
+> = {
   PENDING: [
-    { label: "Từ chối", variant: "destructive" },
+    { label: "Từ chối", variant: "destructive", action: "reject" },
     { label: "Chuyển bàn", variant: "outline" },
-    { label: "Hủy thay khách", variant: "ghost" },
-    { label: "Duyệt đơn", variant: "primary" },
+    { label: "Hủy thay khách", variant: "ghost", action: "cancel" },
+    { label: "Duyệt đơn", variant: "primary", action: "approve" },
   ],
   CONFIRMED: [
     { label: "Chuyển bàn", variant: "outline" },
     { label: "Đổi thời lượng", variant: "outline" },
-    { label: "Hủy thay khách", variant: "ghost" },
-    { label: "Khách đã đến", variant: "primary" },
+    { label: "Hủy thay khách", variant: "ghost", action: "cancel" },
+    { label: "Khách đã đến", variant: "primary", action: "arrive" },
   ],
   ARRIVED: [
     { label: "Đổi thời lượng", variant: "outline" },
-    { label: "Hoàn thành", variant: "primary" },
+    { label: "Hoàn thành", variant: "primary", action: "complete" },
   ],
   COMPLETED: [],
   CANCELLED: [],

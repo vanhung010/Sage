@@ -110,3 +110,20 @@ export interface CreateGuestReservationResponse {
 export interface StaffReservationNavigationState {
   guestCreated?: CreateGuestReservationResponse;
 }
+export type StaffReservationAction =
+  | "approve"
+  | "reject"
+  | "cancel"
+  | "arrive"
+  | "no-show"
+  | "complete";
+
+// TypeScript bắt buộc có reason khi từ chối hoặc hủy.
+export type StaffReservationCommand =
+  | {
+      action: "reject" | "cancel";
+      reason: string;
+    }
+  | {
+      action: "approve" | "arrive" | "no-show" | "complete";
+    };

@@ -18,6 +18,8 @@ import {
 import { useStaffReservationDetail } from "./useStaffReservationDetail";
 
 import "./StaffReservationDetailPage.css";
+import { AppFeedbackModal } from "../../../components/ui/AppFeedbackModal";
+import { useStaffReservationStatusActions } from "./useStaffReservationStatusActions";
 
 const UNAVAILABLE_ACTION = "Thao tác này hiện chưa khả dụng.";
 
@@ -89,7 +91,7 @@ function ReservationInformation({ reservation }: { reservation: StaffReservation
 
 export function StaffReservationDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const { reservation, loading, error, reload } = useStaffReservationDetail(id);
+  const { reservation, loading, error, reload, updateReservation } = useStaffReservationDetail(id);
 
   if (!reservation) {
     const title = loading
@@ -115,10 +117,27 @@ export function StaffReservationDetailPage() {
     );
   }
 
-  return <StaffReservationDetailView reservation={reservation} />;
+  return (
+  <StaffReservationDetailView
+    key={reservation.id}
+    reservation={reservation}
+    onUpdated={updateReservation}
+  />
+);
 }
 
-export function StaffReservationDetailView({ reservation }: { reservation: StaffReservationDetail }) {
+interface StaffReservationDetailViewProps {
+  reservation: StaffReservationDetail;
+  onUpdated: (updated: StaffReservationDetail) => void;
+}
+
+export function StaffReservationDetailView({ reservation, onUpdated }: StaffReservationDetailViewProps) {
+
+    const mutation = useStaffReservationStatusActions(
+    reservation,
+    onUpdated,
+  );
+
   const status = RESERVATION_STATUS_META[reservation.status];
   const notice = reservationNotice(reservation);
   const actions = DETAIL_ACTIONS[reservation.status];
@@ -133,18 +152,62 @@ export function StaffReservationDetailView({ reservation }: { reservation: Staff
         </div>
 
         {actions.length > 0 && (
-          <div className="staff-reservation-detail__actions" role="group" aria-label="Xử lý đơn đặt bàn">
-            {/* Chỉ GET detail đã có contract; không giả lập thay đổi trạng thái. */}
-            {actions.map((action) => (
-              <span key={action.label} title={UNAVAILABLE_ACTION}>
-                <Button type="button" variant={action.variant} disabled aria-description={UNAVAILABLE_ACTION}>
-                  {action.label}
-                </Button>
-              </span>
-            ))}
-          </div>
-        )}
+  <div
+    className="staff-reservation-detail__actions"
+    role="group"
+    aria-label="Xử lý đơn đặt bàn"
+  >
+    {actions.map((item) => {
+      const action = item.action;
+      const disabledMessage = action
+        ? mutation.disabledReason(action)
+        : UNAVAILABLE_ACTION;
+
+      return (
+        <span
+          key={item.label}
+          title={disabledMessage || undefined}
+        >
+          <Button
+            type="button"
+            variant={item.variant}
+            disabled={Boolean(disabledMessage)}
+            loading={
+              action === "arrive" &&
+              mutation.pending === "arrive"
+            }
+            aria-description={disabledMessage || undefined}
+            onClick={() => {
+              if (!action) return;
+
+              if (action === "arrive") {
+                void mutation.execute(action);
+              } else {
+                mutation.openDialog(action);
+              }
+            }}
+          >
+            {item.label}
+          </Button>
+        </span>
+      );
+    })}
+  </div>
+)}
       </header>
+
+      {mutation.error && !mutation.dialog && (
+  <section
+    className={
+      "staff-reservation-detail__notice " +
+      "staff-reservation-detail__notice--warning"
+    }
+    role="alert"
+  >
+    <h2>Chưa thể hoàn tất thao tác</h2>
+    <p>{mutation.error.message}</p>
+  </section>
+)}
 
       <div className="staff-reservation-detail__status">
         <Badge variant={status.variant}>{status.label}</Badge>
@@ -162,23 +225,50 @@ export function StaffReservationDetailView({ reservation }: { reservation: Staff
       <ReservationInformation reservation={reservation} />
 
       {reservation.status === "CONFIRMED" && (
-        <div className="staff-reservation-detail__no-show">
-          <span title={UNAVAILABLE_ACTION}>
-            <Button type="button" variant="outline" disabled aria-description={UNAVAILABLE_ACTION}>
-              Đánh dấu không đến
-            </Button>
-          </span>
-          <p>{reservation.noShowAllowedAt
-            ? `Có thể thực hiện từ ${detailDateTime(reservation.noShowAllowedAt)}.`
-            : "Chưa có thời điểm cho phép ghi nhận không đến."}</p>
-        </div>
-      )}
+  <div className="staff-reservation-detail__no-show">
+    <span
+      title={mutation.disabledReason("no-show") || undefined}
+    >
+      <Button
+        type="button"
+        variant="outline"
+        disabled={Boolean(mutation.disabledReason("no-show"))}
+        aria-description={
+          mutation.disabledReason("no-show") || undefined
+        }
+        onClick={() => mutation.openDialog("no-show")}
+      >
+        Đánh dấu không đến
+      </Button>
+    </span>
+
+    <p>
+      {mutation.disabledReason("no-show") ||
+        "Đã đủ thời gian chờ để ghi nhận khách không đến."}
+    </p>
+  </div>
+)}
 
       <ActivityTimeline
         title="Nhật ký thay đổi"
         description={`${reservation.code} • Mới nhất trước`}
         events={reservationTimeline(reservation)}
       />
+
+      {mutation.dialogProps && (
+  <AppFeedbackModal
+    key={`${reservation.id}:${mutation.dialog}`}
+    {...mutation.dialogProps}
+  >
+    {mutation.modalError && (
+      <p role="alert">{mutation.modalError.message}</p>
+    )}
+
+    {mutation.blocked && (
+      <p role="status">{mutation.blocked}</p>
+    )}
+  </AppFeedbackModal>
+)}
     </div>
   );
 }
