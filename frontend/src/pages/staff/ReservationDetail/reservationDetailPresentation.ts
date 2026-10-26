@@ -29,6 +29,7 @@ interface DetailAction {
   label: string;
   variant: ButtonVariant;
   action?: StaffReservationAction;
+   navigation?: "change-duration";
 }
 
 export const DETAIL_ACTIONS: Record<
@@ -43,12 +44,20 @@ export const DETAIL_ACTIONS: Record<
   ],
   CONFIRMED: [
     { label: "Chuyển bàn", variant: "outline" },
-    { label: "Đổi thời lượng", variant: "outline" },
+    {
+  label: "Đổi thời lượng",
+  variant: "outline",
+  navigation: "change-duration",
+},
     { label: "Hủy thay khách", variant: "ghost", action: "cancel" },
     { label: "Khách đã đến", variant: "primary", action: "arrive" },
   ],
   ARRIVED: [
-    { label: "Đổi thời lượng", variant: "outline" },
+    {
+  label: "Đổi thời lượng",
+  variant: "outline",
+  navigation: "change-duration",
+},
     { label: "Hoàn thành", variant: "primary", action: "complete" },
   ],
   COMPLETED: [],

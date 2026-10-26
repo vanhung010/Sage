@@ -15,6 +15,12 @@ import type {
 } from "../types/staff-reservation";
 
 import type {
+  StaffDurationChanged,
+  StaffDurationChangeRequest,
+  StaffDurationPreview,
+} from "../types/staff-reservation-duration";
+
+import type {
   StaffReservationCommand,
 } from "../types/staff-reservation";
 
@@ -105,4 +111,30 @@ export const staffReservationApi = {
 
     return response.data;
   },
+  async previewDuration(
+  id: number,
+  endTime: string,
+  signal?: AbortSignal,
+): Promise<StaffDurationPreview> {
+  const response = await apiClient.post<StaffDurationPreview>(
+    `/api/staff/reservations/${id}/change-duration/preview`,
+    { endTime },
+    { signal },
+  );
+
+  return response.data;
+},
+
+async changeDuration(
+  id: number,
+  request: StaffDurationChangeRequest,
+): Promise<StaffDurationChanged> {
+  const response = await apiClient.post<StaffDurationChanged>(
+    `/api/staff/reservations/${id}/change-duration`,
+    request,
+  );
+
+  return response.data;
+},
+
 };

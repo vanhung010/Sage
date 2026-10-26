@@ -1,4 +1,3 @@
-import { Link, useParams } from "react-router-dom";
 
 import { ActivityTimeline } from "../../../components/ui/ActivityTimeline";
 import { Badge } from "../../../components/ui/Badge";
@@ -16,7 +15,16 @@ import {
   reservationTimeline,
 } from "./reservationDetailPresentation";
 import { useStaffReservationDetail } from "./useStaffReservationDetail";
+import {
+  Link,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
 
+import type {
+  StaffDurationNavigationState,
+} from "../../../types/staff-reservation-duration";
 import "./StaffReservationDetailPage.css";
 import { AppFeedbackModal } from "../../../components/ui/AppFeedbackModal";
 import { useStaffReservationStatusActions } from "./useStaffReservationStatusActions";
@@ -137,7 +145,17 @@ export function StaffReservationDetailView({ reservation, onUpdated }: StaffRese
     reservation,
     onUpdated,
   );
+  const navigate = useNavigate();
+  const location = useLocation();
 
+  const durationChanged = (
+    location.state as StaffDurationNavigationState | null
+  )?.durationChanged;
+
+  const showDurationSuccess =
+    durationChanged?.reservationId === reservation.id &&
+    Date.parse(durationChanged.endTime) ===
+      Date.parse(reservation.endTime);
   const status = RESERVATION_STATUS_META[reservation.status];
   const notice = reservationNotice(reservation);
   const actions = DETAIL_ACTIONS[reservation.status];
@@ -157,41 +175,54 @@ export function StaffReservationDetailView({ reservation, onUpdated }: StaffRese
     role="group"
     aria-label="Xử lý đơn đặt bàn"
   >
-    {actions.map((item) => {
-      const action = item.action;
-      const disabledMessage = action
-        ? mutation.disabledReason(action)
-        : UNAVAILABLE_ACTION;
+  {actions.map((item) => {
+  const action = item.action;
+  const isDuration = item.navigation === "change-duration";
 
-      return (
-        <span
-          key={item.label}
-          title={disabledMessage || undefined}
-        >
-          <Button
-            type="button"
-            variant={item.variant}
-            disabled={Boolean(disabledMessage)}
-            loading={
-              action === "arrive" &&
-              mutation.pending === "arrive"
-            }
-            aria-description={disabledMessage || undefined}
-            onClick={() => {
-              if (!action) return;
+  const disabledMessage = isDuration
+    ? mutation.pending
+      ? "Đang xử lý thao tác trước."
+      : ""
+    : action
+      ? mutation.disabledReason(action)
+      : UNAVAILABLE_ACTION;
 
-              if (action === "arrive") {
-                void mutation.execute(action);
-              } else {
-                mutation.openDialog(action);
-              }
-            }}
-          >
-            {item.label}
-          </Button>
-        </span>
-      );
-    })}
+  return (
+    <span
+      key={item.label}
+      title={disabledMessage || undefined}
+    >
+      <Button
+        type="button"
+        variant={item.variant}
+        disabled={Boolean(disabledMessage)}
+        loading={
+          action === "arrive" &&
+          mutation.pending === "arrive"
+        }
+        aria-description={disabledMessage || undefined}
+        onClick={() => {
+          if (isDuration) {
+            void navigate(
+              `/staff/reservations/${reservation.id}/change-duration`,
+            );
+            return;
+          }
+
+          if (!action) return;
+
+          if (action === "arrive") {
+            void mutation.execute(action);
+          } else {
+            mutation.openDialog(action);
+          }
+        }}
+      >
+        {item.label}
+      </Button>
+    </span>
+  );
+})}
   </div>
 )}
       </header>
@@ -216,6 +247,24 @@ export function StaffReservationDetailView({ reservation, onUpdated }: StaffRese
           {" • "}Tạo ngày {detailDate(reservation.createdAt)}
         </p>
       </div>
+
+      {showDurationSuccess && durationChanged && (
+        <section
+          className={
+            "staff-reservation-detail__notice " +
+            "staff-reservation-detail__notice--success"
+          }
+          role="status"
+        >
+          <h2>Đã đổi thời lượng</h2>
+
+          <p>
+            Dùng bữa đến {detailTime(durationChanged.endTime)}, dọn bàn
+            đến {detailTime(durationChanged.occupiedUntil)}.
+            Thay đổi đã được lưu vào nhật ký.
+          </p>
+        </section>
+      )}
 
       <section className={`staff-reservation-detail__notice staff-reservation-detail__notice--${notice.tone}`} aria-labelledby="reservation-status-title">
         <h2 id="reservation-status-title">{notice.title}</h2>
