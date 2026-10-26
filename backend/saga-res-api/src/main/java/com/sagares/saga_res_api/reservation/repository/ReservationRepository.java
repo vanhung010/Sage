@@ -2,6 +2,7 @@ package  com.sagares.saga_res_api.reservation.repository;
 
 
 import com.sagares.saga_res_api.reservation.entity.Reservation;
+import com.sagares.saga_res_api.reservation.entity.ReservationStatus;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -237,4 +238,15 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
             @Param("endTime") Instant endTime,
             @Param("occupiedEnd") Instant occupiedEnd
     );
+    @Query("""
+    select r.id
+    from Reservation r
+    where r.status = :status
+      and r.startTime <= :threshold
+    order by r.startTime, r.id
+    """)
+    List<Long> findIdsByStatusAndStartTimeAtOrBefore(
+            @Param("status") ReservationStatus status,
+            @Param("threshold") Instant threshold,
+            Pageable pageable);
 }
