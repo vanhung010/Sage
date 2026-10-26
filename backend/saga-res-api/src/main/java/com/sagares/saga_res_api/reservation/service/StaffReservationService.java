@@ -14,6 +14,8 @@ import com.sagares.saga_res_api.reservation.specification.ReservationSpecificati
 import com.sagares.saga_res_api.table.entity.Area;
 import com.sagares.saga_res_api.table.entity.RestaurantTable;
 
+import com.sagares.saga_res_api.table.repository.AreaRepository;
+import com.sagares.saga_res_api.table.repository.RestaurantTableRepository;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -33,13 +35,37 @@ import com.sagares.saga_res_api.account.repository.AccountRepository;
 import com.sagares.saga_res_api.reservation.entity.ReservationLogEventType;
 import com.sagares.saga_res_api.reservation.event.ReservationConfirmedEvent;
 import com.sagares.saga_res_api.security.AuthenticatedUser;
+import com.sagares.saga_res_api.reservation.dto
+        .StaffMoveTableOptionsResponse.*;
 
+import com.sagares.saga_res_api.reservation.dto
+        .StaffReservationDetailResponse.AreaSummary;
+import com.sagares.saga_res_api.reservation.dto
+        .StaffReservationDetailResponse.TableSummary;
+
+import com.sagares.saga_res_api.table.repository.AreaRepository;
+import com.sagares.saga_res_api.table.repository.RestaurantTableRepository;
+import com.sagares.saga_res_api.table.repository
+        .RestaurantTableRepository.MoveTableOptionRow;
+
+import org.springframework.transaction.annotation.Isolation;
+
+import java.util.Objects;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.time.Clock;
 import java.util.Map;
+import com.sagares.saga_res_api.account.entity.AccountRole;
+import com.sagares.saga_res_api.table.repository.RestaurantTableRepository;
+import com.sagares.saga_res_api.table.repository.TableSuspensionRepository;
 
+import jakarta.persistence.EntityManager;
+
+import org.springframework.transaction.annotation.Isolation;
+
+import java.util.LinkedHashMap;
+import java.util.Objects;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -60,11 +86,13 @@ public class StaffReservationService {
     private final ReservationStatusLogRepository statusLogRepository;
     private final ReservationSettingsService settingsService;
     private final StaffReservationDurationTransaction durationTransaction;
-
+    private final RestaurantTableRepository restaurantTableRepository;
+    private final AreaRepository areaRepository;
+    private final TableSuspensionRepository tableSuspensionRepository;
     private final AccountRepository accountRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final Clock clock;
-
+    private final EntityManager entityManager;
     private static final int MAX_ATTEMPTS = 3;
 
 
@@ -992,7 +1020,442 @@ public class StaffReservationService {
         }
     }
 
+    @Transactional(
+            readOnly = true,
+            isolation = Isolation.REPEATABLE_READ
+    )
+    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+    public StaffMoveTableOptionsResponse getMoveTableOptions(
+            Long id,
+            Long areaId
+    ) {
+        if (id == null || id <= 0) {
+            throw new BusinessException(
+                    HttpStatus.BAD_REQUEST,
+                    "INVALID_RESERVATION_ID",
+                    "ID đơn đặt bàn phải lớn hơn 0"
+            );
+        }
 
+        if (areaId != null && areaId <= 0) {
+            throw new BusinessException(
+                    HttpStatus.BAD_REQUEST,
+                    "INVALID_AREA_ID",
+                    "areaId phải lớn hơn 0"
+            );
+        }
+
+        // Method hiện có dùng EntityGraph để tải customer,
+        // table, table.area và requestedArea trong cùng truy vấn.
+        Reservation reservation = reservationRepository
+                .findStaffDetailById(id)
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.NOT_FOUND,
+                        "RESERVATION_NOT_FOUND",
+                        "Không tìm thấy đơn đặt bàn"
+                ));
+
+        ReservationStatus status = reservation.getStatus();
+
+        if (status != ReservationStatus.PENDING
+                && status != ReservationStatus.CONFIRMED
+                && status != ReservationStatus.ARRIVED) {
+            throw new BusinessException(
+                    HttpStatus.CONFLICT,
+                    "MOVE_TABLE_NOT_ALLOWED",
+                    "Trạng thái hiện tại không cho phép chuyển bàn"
+            );
+        }
+
+        // Danh sách bộ lọc không phụ thuộc areaId đang chọn.
+        List<Area> areas = areaRepository.findAllByOrderByNameAsc();
+
+        if (areaId != null && areas.stream().noneMatch(
+                area -> Objects.equals(area.getId(), areaId)
+        )) {
+            throw new BusinessException(
+                    HttpStatus.NOT_FOUND,
+                    "AREA_NOT_FOUND",
+                    "Không tìm thấy khu vực"
+            );
+        }
+
+        RestaurantTable currentTable = reservation.getTable();
+        Area requestedArea = reservation.getRequestedArea();
+
+        Long requestedAreaId = requestedArea == null
+                ? null
+                : requestedArea.getId();
+
+        // Giữ đúng buffer đã được lưu trên đơn.
+        Instant occupiedStart = reservation.getStartTime();
+        Instant occupiedEnd = reservation.getEndTime().plus(
+                reservation.getBufferMinutes(),
+                ChronoUnit.MINUTES
+        );
+
+        List<TableOption> tables = restaurantTableRepository
+                .findMoveTableOptions(
+                        reservation.getId(),
+                        currentTable.getId(),
+                        reservation.getPartySize().intValue(),
+                        areaId,
+                        requestedAreaId,
+                        occupiedStart,
+                        occupiedEnd
+                )
+                .stream()
+                .map(row -> toMoveTableOption(
+                        row,
+                        reservation.getPartySize().intValue(),
+                        requestedAreaId
+                ))
+                .toList();
+
+        int suitableTableCount = (int) tables.stream()
+                .filter(TableOption::selectable)
+                .count();
+
+        Account customer = reservation.getCustomer();
+
+        ReservationContext context = new ReservationContext(
+                reservation.getId(),
+                reservation.getCode(),
+                reservation.getVersion(),
+                reservation.getStatus(),
+
+                customer == null
+                        ? reservation.getGuestName()
+                        : customer.getFullName(),
+
+                reservation.getPartySize().intValue(),
+                toDetailTime(reservation.getStartTime()),
+                toDetailTime(reservation.getEndTime()),
+                reservation.getBufferMinutes().intValue(),
+                toDetailTime(occupiedEnd),
+
+                new TableSummary(
+                        currentTable.getId(),
+                        currentTable.getCode(),
+                        toMoveAreaSummary(currentTable.getArea())
+                ),
+
+                toMoveAreaSummary(requestedArea)
+        );
+
+        return new StaffMoveTableOptionsResponse(
+                context,
+                areas.stream()
+                        .map(this::toMoveAreaSummary)
+                        .toList(),
+                areaId,
+                suitableTableCount,
+                tables.size(),
+                tables
+        );
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+    public StaffReservationDetailResponse moveTable(
+            AuthenticatedUser currentUser,
+            Long id,
+            MoveTableRequest request
+    ) {
+        if (id == null || id <= 0) {
+            throw new BusinessException(
+                    HttpStatus.BAD_REQUEST,
+                    "INVALID_RESERVATION_ID",
+                    "ID đơn đặt bàn phải lớn hơn 0"
+            );
+        }
+
+        // Khóa đơn trước để tránh chuyển bàn, đổi thời lượng
+        // hoặc thay đổi trạng thái đồng thời trên cùng một đơn.
+        Reservation reservation = reservationRepository
+                .findByIdForUpdate(id)
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.NOT_FOUND,
+                        "RESERVATION_NOT_FOUND",
+                        "Không tìm thấy đơn đặt bàn"
+                ));
+
+        // Đọc lại sau khi lấy được khóa, tránh dùng entity
+        // đã nằm trong persistence context với dữ liệu cũ.
+        entityManager.refresh(reservation);
+
+        if (!Objects.equals(
+                request.expectedVersion(),
+                reservation.getVersion()
+        )) {
+            throw new BusinessException(
+                    "RESERVATION_VERSION_CONFLICT",
+                    "Đơn đặt bàn đã được cập nhật, vui lòng tải lại"
+            );
+        }
+
+        ReservationStatus status = reservation.getStatus();
+
+        if (status != ReservationStatus.PENDING
+                && status != ReservationStatus.CONFIRMED
+                && status != ReservationStatus.ARRIVED) {
+            throw new BusinessException(
+                    "MOVE_TABLE_NOT_ALLOWED",
+                    "Chỉ được chuyển bàn cho đơn đang chờ duyệt, "
+                            + "đã xác nhận hoặc khách đã đến"
+            );
+        }
+
+        // Không thay đổi dữ liệu hoặc tạo thêm log khi chọn bàn hiện tại.
+        if (Objects.equals(
+                reservation.getTable().getId(),
+                request.tableId()
+        )) {
+            return getDetail(id);
+        }
+
+        // Cùng khóa bàn đích với luồng đặt bàn và tạo lịch tạm ngưng.
+        RestaurantTable targetTable = restaurantTableRepository
+                .findByIdForUpdate(request.tableId())
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.NOT_FOUND,
+                        "TABLE_NOT_FOUND",
+                        "Không tìm thấy bàn cần chuyển đến"
+                ));
+
+        entityManager.refresh(targetTable);
+
+        if (!targetTable.isActive()) {
+            throw new BusinessException(
+                    "TABLE_INACTIVE",
+                    "Bàn đã ngừng hoạt động, vui lòng chọn bàn khác"
+            );
+        }
+
+        int partySize = reservation.getPartySize();
+
+        if (partySize < targetTable.getMinCapacity()
+                || partySize > targetTable.getMaxCapacity()) {
+            throw new BusinessException(
+                    "TABLE_CAPACITY_MISMATCH",
+                    "Bàn " + targetTable.getCode()
+                            + " nhận từ " + targetTable.getMinCapacity()
+                            + " đến " + targetTable.getMaxCapacity()
+                            + " khách; đơn hiện có " + partySize + " khách"
+            );
+        }
+
+        // Giữ nguyên toàn bộ thời gian dùng bữa và buffer của đơn.
+        Instant occupiedStart = reservation.getStartTime();
+        Instant occupiedEnd = reservation.getEndTime().plus(
+                reservation.getBufferMinutes(),
+                ChronoUnit.MINUTES
+        );
+
+        // Danh sách bàn ở màn hình trước chỉ là kết quả tham khảo.
+        // Luôn kiểm tra lại sau khi đã khóa bàn đích.
+        boolean overlapping = reservationRepository
+                .existsTableOverlapExcludingReservation(
+                        reservation.getId(),
+                        targetTable.getId(),
+                        occupiedStart,
+                        occupiedEnd
+                );
+
+        if (overlapping) {
+            throw new BusinessException(
+                    "TABLE_TIME_CONFLICT",
+                    "Bàn " + targetTable.getCode()
+                            + " đã có lịch trùng, vui lòng chọn lại"
+            );
+        }
+
+        boolean suspended = !tableSuspensionRepository
+                .findOverlapping(
+                        targetTable.getId(),
+                        occupiedStart,
+                        occupiedEnd
+                )
+                .isEmpty();
+
+        if (suspended) {
+            throw new BusinessException(
+                    "TABLE_SUSPENDED",
+                    "Bàn " + targetTable.getCode()
+                            + " bị tạm ngưng trong khoảng thời gian này"
+            );
+        }
+
+        // Người thực hiện lấy từ principal đã xác thực.
+        Account actor = accountRepository
+                .findById(currentUser.accountId())
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.UNAUTHORIZED,
+                        "ACCOUNT_NOT_FOUND",
+                        "Tài khoản không còn tồn tại"
+                ));
+
+        entityManager.refresh(actor);
+
+        if (actor.isLocked()) {
+            throw new BusinessException(
+                    HttpStatus.UNAUTHORIZED,
+                    "ACCOUNT_LOCKED",
+                    "Tài khoản đã bị khóa"
+            );
+        }
+
+        if (actor.getRole() != AccountRole.STAFF
+                && actor.getRole() != AccountRole.ADMIN) {
+            throw new BusinessException(
+                    HttpStatus.FORBIDDEN,
+                    "ACCESS_DENIED",
+                    "Bạn không có quyền chuyển bàn"
+            );
+        }
+
+        Map<String, Object> oldValue = moveTableSnapshot(reservation);
+
+        // Chỉ đổi bàn được gán.
+        // requestedArea, thời gian, số khách và trạng thái giữ nguyên.
+        reservation.setTable(targetTable);
+
+        // Flush để kiểm tra constraint database, cập nhật version/updatedAt.
+        reservationRepository.saveAndFlush(reservation);
+
+        ReservationStatusLog log = new ReservationStatusLog();
+        log.setReservation(reservation);
+        log.setEventType(ReservationLogEventType.TABLE_CHANGED);
+        log.setOldValue(oldValue);
+        log.setNewValue(moveTableSnapshot(reservation));
+        log.setChangedBy(actor);
+        log.setChangedAt(clock.instant());
+
+        String reason = request.reason();
+
+        log.setReason(
+                reason == null || reason.isBlank()
+                        ? null
+                        : reason.strip()
+        );
+
+        // Nếu ghi log thất bại, việc đổi bàn cũng rollback.
+        statusLogRepository.saveAndFlush(log);
+
+        // Tái sử dụng response chi tiết và danh sách log hiện có.
+        return getDetail(id);
+    }
+
+    private Map<String, Object> moveTableSnapshot(
+            Reservation reservation
+    ) {
+        RestaurantTable table = reservation.getTable();
+        Area tableArea = table.getArea();
+        Area requestedArea = reservation.getRequestedArea();
+
+        // Cho phép requestedAreaId là null.
+        Map<String, Object> value = new LinkedHashMap<>();
+
+        value.put("tableId", table.getId());
+        value.put("tableCode", table.getCode());
+        value.put("tableAreaId", tableArea.getId());
+        value.put("tableAreaName", tableArea.getName());
+
+        value.put("startTime", reservation.getStartTime().toString());
+        value.put("endTime", reservation.getEndTime().toString());
+        value.put("bufferMinutes", reservation.getBufferMinutes());
+        value.put("partySize", reservation.getPartySize());
+        value.put("status", reservation.getStatus().name());
+        value.put("rescheduleCount", reservation.getRescheduleCount());
+        value.put("version", reservation.getVersion());
+
+        value.put(
+                "requestedAreaId",
+                requestedArea == null ? null : requestedArea.getId()
+        );
+
+        return value;
+    }
+
+    private AreaSummary toMoveAreaSummary(Area area) {
+        return area == null
+                ? null
+                : new AreaSummary(area.getId(), area.getName());
+    }
+
+    private TableOption toMoveTableOption(
+            MoveTableOptionRow row,
+            int partySize,
+            Long requestedAreaId
+    ) {
+        Availability availability;
+        String unavailableReason = null;
+        BlockingPeriod blockingPeriod = null;
+
+        // Ưu tiên một lý do chính khi bàn có nhiều điều kiện không phù hợp.
+        if (!row.getActive()) {
+            availability = Availability.INACTIVE;
+            unavailableReason = "Bàn đã ngừng hoạt động";
+
+        } else if (partySize < row.getMinCapacity()
+                || partySize > row.getMaxCapacity()) {
+            availability = Availability.CAPACITY_MISMATCH;
+
+            unavailableReason = partySize > row.getMaxCapacity()
+                    ? "Không đủ chỗ cho " + partySize + " khách"
+                    : "Bàn nhận tối thiểu " + row.getMinCapacity() + " khách";
+
+        } else if (row.getSuspendedStart() != null) {
+            availability = Availability.SUSPENDED;
+
+            String reason = row.getSuspensionReason();
+
+            unavailableReason = reason == null || reason.isBlank()
+                    ? "Bàn tạm ngưng trong khoảng thời gian này"
+                    : "Bàn tạm ngưng: " + reason.strip();
+
+            blockingPeriod = new BlockingPeriod(
+                    toDetailTime(row.getSuspendedStart()),
+                    toDetailTime(row.getSuspendedEnd())
+            );
+
+        } else if (row.getBusyStart() != null) {
+            availability = Availability.BUSY;
+            unavailableReason = "Bàn đã được giữ chỗ trong khoảng thời gian này";
+
+            // busyEnd là upper(occupied_range), đã tính cả buffer.
+            blockingPeriod = new BlockingPeriod(
+                    toDetailTime(row.getBusyStart()),
+                    toDetailTime(row.getBusyEnd())
+            );
+
+        } else {
+            availability = Availability.AVAILABLE;
+        }
+
+        boolean outsideRequestedArea =
+                requestedAreaId != null
+                        && !Objects.equals(
+                        requestedAreaId,
+                        row.getAreaId()
+                );
+
+        return new TableOption(
+                row.getId(),
+                row.getCode(),
+                new AreaSummary(
+                        row.getAreaId(),
+                        row.getAreaName()
+                ),
+                row.getMinCapacity(),
+                row.getMaxCapacity(),
+                availability,
+                availability == Availability.AVAILABLE,
+                outsideRequestedArea,
+                blockingPeriod,
+                unavailableReason
+        );
+    }
 
     private OffsetDateTime toDetailTime(Instant value) {
         return value == null

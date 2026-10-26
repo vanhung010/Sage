@@ -1,0 +1,232 @@
+.sage-table-picker {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-card-padding-desktop);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  border: var(--border-default) solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.sage-table-picker p,
+.sage-table-picker h2 {
+  margin: 0;
+}
+
+.sage-table-picker__title {
+  font-family: var(--font-body);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+}
+
+.sage-table-picker__description,
+.sage-table-picker__state p,
+.sage-table-picker__message p {
+  color: var(--color-text-secondary);
+}
+
+.sage-table-picker__context {
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-alt);
+}
+
+.sage-table-picker__context-time,
+.sage-table-picker__count,
+.sage-table-picker strong {
+  font-weight: 500;
+}
+
+.sage-table-picker__caption {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.sage-table-picker__grid {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: start;
+  gap: var(--space-4);
+  border: 0;
+}
+
+.sage-table-picker__state,
+.sage-table-picker__message {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  border-radius: var(--radius-card);
+  background: var(--color-surface-alt);
+  overflow-wrap: anywhere;
+}
+
+.sage-table-picker__message {
+  padding: var(--space-4);
+  gap: var(--space-2);
+  color: var(--color-info);
+  background: var(--color-info-bg);
+}
+
+.sage-table-picker__message--warning {
+  color: var(--color-warning);
+  background: var(--color-warning-bg);
+}
+
+.sage-table-picker__skeleton {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.sage-table-picker__skeleton span {
+  height: 16px;
+  border-radius: var(--radius-control);
+  background: var(--color-skeleton);
+}
+
+.sage-table-picker__skeleton span:nth-child(2) {
+  width: 95%;
+}
+
+.sage-table-picker__skeleton span:nth-child(3) {
+  width: 90%;
+}
+
+.sage-table-picker__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.sage-table-picker .sage-select__dropdown {
+  max-height: min(320px, 50vh);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.sage-table-picker__sr-only,
+.sage-table-option__radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sage-table-option {
+  position: relative;
+  min-width: 0;
+  display: block;
+}
+
+.sage-table-option__card {
+  box-sizing: border-box;
+  min-width: 0;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-4);
+  border: var(--border-default) solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+
+.sage-table-option__identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.sage-table-option__code {
+  width: 92px;
+  max-width: 100%;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+}
+
+.sage-table-option__capacity {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.sage-table-option__reason,
+.sage-table-option__unavailable {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.sage-table-option__unavailable {
+  color: var(--color-text-disabled);
+}
+
+.sage-table-option__radio:checked + .sage-table-option__card {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
+}
+
+.sage-table-option__radio:focus-visible + .sage-table-option__card {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 3px;
+}
+
+.sage-table-option:hover
+.sage-table-option__radio:not(:disabled):not(:checked)
++ .sage-table-option__card {
+  border-color: var(--color-border-strong);
+}
+
+.sage-table-option--disabled .sage-table-option__card {
+  cursor: not-allowed;
+}
+
+@media (max-width: 1023px) {
+  .sage-table-picker__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 767px) {
+  .sage-table-picker__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sage-table-picker__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sage-table-picker__actions > .sage-button {
+    width: 100%;
+  }
+}

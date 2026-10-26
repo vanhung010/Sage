@@ -245,4 +245,53 @@ public class StaffReservationController {
                 request
         );
     }
+    @GetMapping("/{id}/move-table/options")
+    @Operation(
+            summary = "List table options for moving a reservation",
+            description = """
+            Returns the reservation context, area filters and table options.
+            Optional areaId filters the displayed tables.
+
+            Only PENDING, CONFIRMED and ARRIVED reservations are supported.
+            Availability includes the reservation's stored cleanup buffer.
+            Unavailable tables include a reason and cannot be selected.
+
+            This endpoint does not hold a table.
+            Availability must be checked again when confirming the move.
+            """
+    )
+    public StaffMoveTableOptionsResponse getMoveTableOptions(
+            @PathVariable("id") Long id,
+            @RequestParam(name = "areaId", required = false) Long areaId
+    ) {
+        return staffReservationService.getMoveTableOptions(id, areaId);
+    }
+
+    @PostMapping("/{id}/move-table")
+    @Operation(
+            summary = "Move a reservation to another table",
+            description = """
+            Available to STAFF and ADMIN.
+            Supports PENDING, CONFIRMED and ARRIVED reservations.
+
+            Rechecks table activity, capacity, reservation overlap
+            and suspension inside the transaction.
+
+            Preserves reservation times, status, requested area,
+            cleanup buffer and customer reschedule count.
+
+            Returns the updated reservation detail and audit history.
+            """
+    )
+    public StaffReservationDetailResponse moveTable(
+            @AuthenticationPrincipal AuthenticatedUser currentUser,
+            @PathVariable("id") Long id,
+            @Valid @RequestBody MoveTableRequest request
+    ) {
+        return staffReservationService.moveTable(
+                currentUser,
+                id,
+                request
+        );
+    }
 }

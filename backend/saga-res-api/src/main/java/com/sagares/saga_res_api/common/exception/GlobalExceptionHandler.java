@@ -9,6 +9,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
+import org.springframework.dao.PessimisticLockingFailureException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -71,17 +74,71 @@ public class GlobalExceptionHandler {
         );
     }
 
+
     @ExceptionHandler(DataIntegrityViolationException.class)
-    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(DataIntegrityViolationException exception) {
-        ErrorResponse response = new ErrorResponse(
-                HttpStatus.CONFLICT.value(),
+    public ResponseEntity<ErrorResponse> handleDataIntegrityViolation(
+            DataIntegrityViolationException exception
+    ) {
+        String constraint = findConstraintName(exception);
+
+        if ("reservation_table_no_overlap".equals(constraint)) {
+            return conflictResponse(
+                    "TABLE_TIME_CONFLICT",
+                    "Khoảng chiếm bàn bị trùng với một đơn đặt bàn khác"
+            );
+        }
+
+        // Giữ cách xử lý hiện có cho các constraint khác.
+        return conflictResponse(
                 "DATA_INTEGRITY_CONFLICT",
                 "Request conflicts with existing data."
         );
+    }
 
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(response);
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ResponseEntity<ErrorResponse> handleOptimisticLock(
+            OptimisticLockingFailureException exception
+    ) {
+        return conflictResponse(
+                "CONCURRENT_MODIFICATION",
+                "Dữ liệu đã được cập nhật, vui lòng tải lại"
+        );
+    }
+
+    @ExceptionHandler(PessimisticLockingFailureException.class)
+    public ResponseEntity<ErrorResponse> handlePessimisticLock(
+            PessimisticLockingFailureException exception
+    ) {
+        return conflictResponse(
+                "RESOURCE_BUSY",
+                "Dữ liệu đang được cập nhật, vui lòng kiểm tra lại"
+        );
+    }
+
+    private ResponseEntity<ErrorResponse> conflictResponse(
+            String code,
+            String message
+    ) {
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(
+                new ErrorResponse(
+                        HttpStatus.CONFLICT.value(),
+                        code,
+                        message
+                )
+        );
+    }
+
+    private String findConstraintName(Throwable exception) {
+        for (Throwable cause = exception;
+             cause != null;
+             cause = cause.getCause()) {
+
+            if (cause instanceof ConstraintViolationException violation) {
+                return violation.getConstraintName();
+            }
+        }
+
+        return null;
     }
 
     @ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentTypeMismatchException.class})
