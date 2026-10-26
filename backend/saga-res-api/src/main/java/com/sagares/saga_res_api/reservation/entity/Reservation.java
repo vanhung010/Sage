@@ -61,6 +61,9 @@ public class Reservation {
     @Column(name = "buffer_minutes", nullable = false)
     private Short bufferMinutes;
 
+    @Version
+    @Column(name = "version", nullable = false)
+    private Long version = 0L;
     // PostgreSQL-generated columns reservation_range and occupied_range
     // are intentionally not mapped.
 

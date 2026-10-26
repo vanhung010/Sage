@@ -14,7 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
+import com.sagares.saga_res_api.reservation.dto.StaffReservationDurationDto.*;
 import java.time.LocalDate;
 
 @RestController
@@ -221,5 +221,28 @@ public class StaffReservationController {
             @PathVariable("id") Long id
     ) {
         return staffReservationService.markCompleted(user, id);
+    }
+
+    @PostMapping("/{id}/change-duration/preview")
+    @Operation(summary = "Xem trước thay đổi thời lượng đặt bàn")
+    public PreviewResponse previewDuration(
+            @PathVariable Long id,
+            @Valid @RequestBody PreviewRequest request
+    ) {
+        return staffReservationService.previewDuration(id, request);
+    }
+
+    @PostMapping("/{id}/change-duration")
+    @Operation(summary = "Nhân viên thay đổi thời lượng đặt bàn")
+    public ChangeResponse changeDuration(
+            @AuthenticationPrincipal AuthenticatedUser currentUser,
+            @PathVariable Long id,
+            @Valid @RequestBody ChangeRequest request
+    ) {
+        return staffReservationService.changeDuration(
+                currentUser,
+                id,
+                request
+        );
     }
 }

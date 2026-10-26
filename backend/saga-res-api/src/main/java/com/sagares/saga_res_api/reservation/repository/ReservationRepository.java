@@ -184,4 +184,57 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
     Optional<Reservation> findStaffDetailById(
             @Param("id") Long id
     );
+
+    interface DurationConflictRow {
+
+        Long getId();
+
+        String getCode();
+
+        Long getTableId();
+
+        Instant getStartTime();
+
+        Instant getEndTime();
+
+        Integer getBufferMinutes();
+    }
+
+    @Query(value = """
+    SELECT
+        r.id AS "id",
+        r.code AS "code",
+        r.table_id AS "tableId",
+        r.start_time AS "startTime",
+        r.end_time AS "endTime",
+        CAST(r.buffer_minutes AS integer) AS "bufferMinutes"
+    FROM reservation r
+    WHERE r.id <> :reservationId
+      AND (
+          (
+              r.table_id = :tableId
+              AND r.status IN (
+                  'PENDING', 'CONFIRMED', 'ARRIVED', 'COMPLETED'
+              )
+              AND r.occupied_range
+                  && tstzrange(:startTime, :occupiedEnd, '[)')
+          )
+          OR
+          (
+              r.customer_id = :customerId
+              AND r.status IN ('PENDING', 'CONFIRMED', 'ARRIVED')
+              AND r.reservation_range
+                  && tstzrange(:startTime, :endTime, '[)')
+          )
+      )
+    ORDER BY r.start_time, r.id
+    """, nativeQuery = true)
+    List<DurationConflictRow> findDurationConflicts(
+            @Param("reservationId") Long reservationId,
+            @Param("tableId") Long tableId,
+            @Param("customerId") Long customerId,
+            @Param("startTime") Instant startTime,
+            @Param("endTime") Instant endTime,
+            @Param("occupiedEnd") Instant occupiedEnd
+    );
 }

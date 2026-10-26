@@ -46,6 +46,8 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Comparator;
 import java.util.List;
+import com.sagares.saga_res_api.reservation.dto.StaffReservationDurationDto.*;
+import org.springframework.dao.OptimisticLockingFailureException;
 
 @Service
 @RequiredArgsConstructor
@@ -57,6 +59,7 @@ public class StaffReservationService {
     private final ReservationRepository reservationRepository;
     private final ReservationStatusLogRepository statusLogRepository;
     private final ReservationSettingsService settingsService;
+    private final StaffReservationDurationTransaction durationTransaction;
 
     private final AccountRepository accountRepository;
     private final ApplicationEventPublisher eventPublisher;
@@ -930,6 +933,65 @@ public class StaffReservationService {
         // 7. Response bao gồm trạng thái và log vừa tạo.
         return getDetail(id);
     }
+
+    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+    public PreviewResponse previewDuration(
+            Long id,
+            PreviewRequest request
+    ) {
+        return durationTransaction.preview(id, request);
+    }
+
+    @PreAuthorize("hasAnyRole('STAFF', 'ADMIN')")
+    public ChangeResponse changeDuration(
+            AuthenticatedUser currentUser,
+            Long id,
+            ChangeRequest request
+    ) {
+        try {
+            return durationTransaction.change(
+                    currentUser.accountId(),
+                    id,
+                    request
+            );
+
+        } catch (DataIntegrityViolationException exception) {
+            String constraint = findConstraintName(exception);
+
+            if ("reservation_table_no_overlap".equals(constraint)) {
+                throw new BusinessException(
+                        HttpStatus.CONFLICT,
+                        "TABLE_TIME_CONFLICT",
+                        "Bàn vừa có lịch trùng, vui lòng kiểm tra lại thời lượng"
+                );
+            }
+
+            if ("reservation_customer_no_overlap".equals(constraint)) {
+                throw new BusinessException(
+                        HttpStatus.CONFLICT,
+                        "CUSTOMER_TIME_CONFLICT",
+                        "Khách vừa có lịch đặt bàn trùng giờ"
+                );
+            }
+
+            throw exception;
+
+        } catch (OptimisticLockingFailureException exception) {
+            throw new BusinessException(
+                    HttpStatus.CONFLICT,
+                    "RESERVATION_VERSION_CONFLICT",
+                    "Đơn đặt bàn đã được cập nhật, vui lòng tải lại"
+            );
+
+        } catch (PessimisticLockingFailureException exception) {
+            throw new BusinessException(
+                    HttpStatus.CONFLICT,
+                    "RESERVATION_RETRY_REQUIRED",
+                    "Có cập nhật đồng thời, vui lòng thử lại"
+            );
+        }
+    }
+
 
 
     private OffsetDateTime toDetailTime(Instant value) {
