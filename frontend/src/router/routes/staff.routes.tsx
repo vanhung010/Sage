@@ -13,6 +13,7 @@ import {
 import { StaffReservationsPage } from "../../pages/staff/Reservations/StaffReservationsPage";
 import { StaffReservationDetailPage } from "../../pages/staff/ReservationDetail/StaffReservationDetailPage";
 import { StaffReservationDurationPage } from "../../pages/staff/ChangeDuration/StaffReservationDurationPage";
+import { StaffMoveTablePage,} from "../../pages/staff/MoveTable/StaffMoveTablePage";
 export const staffRoutes: RouteObject[] = [
   {
     path: "/staff",
@@ -57,6 +58,13 @@ export const staffRoutes: RouteObject[] = [
           breadcrumb: "Đổi thời lượng",
         } satisfies StaffRouteHandle,
       },
+      {
+      path: "reservations/:id/move-table",
+      element: <StaffMoveTablePage />,
+      handle: {
+        breadcrumb: "Đặt bàn",
+      } satisfies StaffRouteHandle,
+    },
         ],
       },
     ],

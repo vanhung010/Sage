@@ -21,7 +21,13 @@ import {
   useNavigate,
   useParams,
 } from "react-router-dom";
+import type {
+  MoveTableNavigationState,
+} from "../../../types/staff-move-table";
 
+import {
+  pickerRange,
+} from "../../../components/common/TablePicker/tablePickerPresentation";
 import type {
   StaffDurationNavigationState,
 } from "../../../types/staff-reservation-duration";
@@ -152,6 +158,21 @@ export function StaffReservationDetailView({ reservation, onUpdated }: StaffRese
     location.state as StaffDurationNavigationState | null
   )?.durationChanged;
 
+  const tableMoved = (
+  location.state as MoveTableNavigationState | null
+)?.tableMoved;
+
+  const showTableSuccess = Boolean(
+  tableMoved &&
+    tableMoved.reservationId === reservation.id &&
+    tableMoved.toTableId === reservation.table.id &&
+    Date.parse(tableMoved.updatedAt) ===
+      Date.parse(reservation.updatedAt) &&
+    Date.parse(tableMoved.startTime) ===
+      Date.parse(reservation.startTime) &&
+    Date.parse(tableMoved.endTime) ===
+      Date.parse(reservation.endTime),);
+
   const showDurationSuccess =
     durationChanged?.reservationId === reservation.id &&
     Date.parse(durationChanged.endTime) ===
@@ -175,11 +196,11 @@ export function StaffReservationDetailView({ reservation, onUpdated }: StaffRese
     role="group"
     aria-label="Xử lý đơn đặt bàn"
   >
-  {actions.map((item) => {
+    {actions.map((item) => {
   const action = item.action;
-  const isDuration = item.navigation === "change-duration";
+  const destination = item.navigation;
 
-  const disabledMessage = isDuration
+  const disabledMessage = destination
     ? mutation.pending
       ? "Đang xử lý thao tác trước."
       : ""
@@ -202,9 +223,9 @@ export function StaffReservationDetailView({ reservation, onUpdated }: StaffRese
         }
         aria-description={disabledMessage || undefined}
         onClick={() => {
-          if (isDuration) {
+          if (destination) {
             void navigate(
-              `/staff/reservations/${reservation.id}/change-duration`,
+              `/staff/reservations/${reservation.id}/${destination}`,
             );
             return;
           }
@@ -266,10 +287,45 @@ export function StaffReservationDetailView({ reservation, onUpdated }: StaffRese
         </section>
       )}
 
-      <section className={`staff-reservation-detail__notice staff-reservation-detail__notice--${notice.tone}`} aria-labelledby="reservation-status-title">
-        <h2 id="reservation-status-title">{notice.title}</h2>
-        <p>{notice.description}</p>
-      </section>
+    {!showTableSuccess && (
+  <section
+    className={
+      "staff-reservation-detail__notice " +
+      `staff-reservation-detail__notice--${notice.tone}`
+    }
+    aria-labelledby="reservation-status-title"
+  >
+    <h2 id="reservation-status-title">
+      {notice.title}
+    </h2>
+
+    <p>{notice.description}</p>
+  </section>
+)}
+
+      {showTableSuccess && tableMoved && (
+  <section
+    className={
+      "staff-reservation-detail__notice " +
+      "staff-reservation-detail__notice--success"
+    }
+    role="status"
+  >
+    <h2>
+      Đã chuyển từ {tableMoved.fromTableCode} sang{" "}
+      {tableMoved.toTableCode}
+    </h2>
+
+    <p>
+      {tableMoved.toTableCode} · {tableMoved.toAreaName} ·
+      Giữ nguyên{" "}
+      {pickerRange(tableMoved.startTime, tableMoved.endTime)}.{" "}
+      {tableMoved.requestedAreaName
+        ? `Khu vực khách yêu cầu vẫn là ${tableMoved.requestedAreaName}.`
+        : "Khách không yêu cầu khu vực."}
+    </p>
+  </section>
+)}
 
       <ReservationInformation reservation={reservation} />
 

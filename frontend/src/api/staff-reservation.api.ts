@@ -8,6 +8,10 @@ import type {
   StaffReservationStatistics,
 } from "../types/staff-reservation";
 
+import type {
+  MoveTableOptionsResponse,
+  MoveTableRequest,
+} from "../types/staff-move-table";
 
 import type {
   CreateGuestReservationRequest,
@@ -136,5 +140,33 @@ async changeDuration(
 
   return response.data;
 },
+async getMoveTableOptions(
+  id: number,
+  areaId: number | null,
+  signal?: AbortSignal,
+): Promise<MoveTableOptionsResponse> {
+  const response = await apiClient.get<MoveTableOptionsResponse>(
+    `/api/staff/reservations/${id}/move-table/options`,
+    {
+      params: {
+        areaId: areaId ?? undefined,
+      },
+      signal,
+    },
+  );
 
+  return response.data;
+},
+
+async moveTable(
+  id: number,
+  request: MoveTableRequest,
+): Promise<StaffReservationDetail> {
+  const response = await apiClient.post<StaffReservationDetail>(
+    `/api/staff/reservations/${id}/move-table`,
+    request,
+  );
+
+  return response.data;
+},
 };

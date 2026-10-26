@@ -7,7 +7,9 @@ import { RESERVATION_STATUS_META } from "../Reservations/reservationPresentation
 import type {
   StaffReservationAction,
 } from "../../../types/staff-reservation";
-
+import {
+  pickerRange,
+} from "../../../components/common/TablePicker/tablePickerPresentation";
 export function detailDate(value: string) {
   return Number.isFinite(Date.parse(value)) ? displayDate(dateInputValue(value)) : "—";
 }
@@ -29,7 +31,7 @@ interface DetailAction {
   label: string;
   variant: ButtonVariant;
   action?: StaffReservationAction;
-   navigation?: "change-duration";
+   navigation?: "change-duration" | "move-table";
 }
 
 export const DETAIL_ACTIONS: Record<
@@ -38,12 +40,20 @@ export const DETAIL_ACTIONS: Record<
 > = {
   PENDING: [
     { label: "Từ chối", variant: "destructive", action: "reject" },
-    { label: "Chuyển bàn", variant: "outline" },
+    {
+  label: "Chuyển bàn",
+  variant: "outline",
+  navigation: "move-table",
+},
     { label: "Hủy thay khách", variant: "ghost", action: "cancel" },
     { label: "Duyệt đơn", variant: "primary", action: "approve" },
   ],
   CONFIRMED: [
-    { label: "Chuyển bàn", variant: "outline" },
+    {
+  label: "Chuyển bàn",
+  variant: "outline",
+  navigation: "move-table",
+},
     {
   label: "Đổi thời lượng",
   variant: "outline",
@@ -217,6 +227,65 @@ function createdSummary(log: StaffReservationLog, reservation: StaffReservationD
 
 export function reservationTimeline(reservation: StaffReservationDetail): ActivityTimelineEvent[] {
   return newestLogs(reservation.logs).map((log) => {
+    if (log.eventType === "TABLE_CHANGED") {
+  const before = log.oldValue;
+  const after = log.newValue;
+
+  const tableLabel = (
+    value: Record<string, unknown> | null,
+  ) =>
+    typeof value?.tableCode === "string"
+      ? value.tableCode
+      : typeof value?.tableId === "number"
+        ? `#${value.tableId}`
+        : "—";
+
+  const time =
+    typeof after?.startTime === "string" &&
+    typeof after?.endTime === "string"
+      ? pickerRange(after.startTime, after.endTime)
+      : null;
+
+  const sameTime =
+    before?.startTime === after?.startTime &&
+    before?.endTime === after?.endTime;
+
+  const area =
+    typeof after?.tableAreaName === "string"
+      ? after.tableAreaName
+      : null;
+
+  const sameArea =
+    before &&
+    after &&
+    Object.hasOwn(before, "requestedAreaId") &&
+    Object.hasOwn(after, "requestedAreaId") &&
+    before.requestedAreaId === after.requestedAreaId;
+
+  return {
+    id: log.id,
+    title:
+      `Đã chuyển từ ${tableLabel(before)} ` +
+      `sang ${tableLabel(after)}`,
+    occurredAt: log.changedAt,
+    actorName: log.actorName?.trim() || "Hệ thống",
+    actorRole: log.actorRole,
+    description: [
+      tableLabel(after),
+      area,
+      time
+        ? `${sameTime ? "Giữ nguyên" : "Khung giờ"} ${time}`
+        : null,
+      sameArea
+        ? "Khu vực khách yêu cầu được giữ nguyên."
+        : null,
+    ]
+      .filter(Boolean)
+      .join(" · "),
+    reason: log.reason,
+    tone: "info" as const,
+  };
+}
     const status = log.newValue?.status;
     let title = EVENT_TITLES[log.eventType] ?? "Đã cập nhật đơn đặt bàn";
 

@@ -55,3 +55,25 @@ export interface MoveTableOptionsResponse {
   totalTableCount: number;
   tables: MoveTableOption[];
 }
+
+export interface MoveTableRequest {
+  tableId: number;
+  expectedVersion: number;
+  reason?: string | null;
+}
+
+export interface TableMovedNotice {
+  reservationId: number;
+  fromTableCode: string;
+  toTableId: number;
+  toTableCode: string;
+  toAreaName: string;
+  startTime: string;
+  endTime: string;
+  requestedAreaName: string | null;
+  updatedAt: string;
+}
+
+export interface MoveTableNavigationState {
+  tableMoved?: TableMovedNotice;
+}
