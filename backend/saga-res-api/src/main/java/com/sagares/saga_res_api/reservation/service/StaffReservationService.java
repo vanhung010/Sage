@@ -11,9 +11,14 @@ import com.sagares.saga_res_api.reservation.event.ReservationRejectedEvent;
 import com.sagares.saga_res_api.reservation.repository.ReservationRepository;
 import com.sagares.saga_res_api.reservation.repository.ReservationStatusLogRepository;
 import com.sagares.saga_res_api.reservation.specification.ReservationSpecifications;
+import com.sagares.saga_res_api.restaurant.entity.OpeningHour;
+import com.sagares.saga_res_api.restaurant.entity.SpecialClosedDay;
+import com.sagares.saga_res_api.restaurant.repository.OpeningHourRepository;
+import com.sagares.saga_res_api.restaurant.repository.SpecialClosedDayRepository;
 import com.sagares.saga_res_api.table.entity.Area;
 import com.sagares.saga_res_api.table.entity.RestaurantTable;
 
+import com.sagares.saga_res_api.table.entity.TableSuspension;
 import com.sagares.saga_res_api.table.repository.AreaRepository;
 import com.sagares.saga_res_api.table.repository.RestaurantTableRepository;
 import lombok.RequiredArgsConstructor;
@@ -50,12 +55,13 @@ import com.sagares.saga_res_api.table.repository
 
 import org.springframework.transaction.annotation.Isolation;
 
-import java.util.Objects;
+import java.util.*;
+
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.time.Clock;
-import java.util.Map;
+
 import com.sagares.saga_res_api.account.entity.AccountRole;
 import com.sagares.saga_res_api.table.repository.RestaurantTableRepository;
 import com.sagares.saga_res_api.table.repository.TableSuspensionRepository;
@@ -64,14 +70,12 @@ import jakarta.persistence.EntityManager;
 
 import org.springframework.transaction.annotation.Isolation;
 
-import java.util.LinkedHashMap;
-import java.util.Objects;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.Comparator;
-import java.util.List;
+import java.util.stream.Collectors;
+
 import com.sagares.saga_res_api.reservation.dto.StaffReservationDurationDto.*;
 import org.springframework.dao.OptimisticLockingFailureException;
 
@@ -93,6 +97,10 @@ public class StaffReservationService {
     private final ApplicationEventPublisher eventPublisher;
     private final Clock clock;
     private final EntityManager entityManager;
+    private final RestaurantTableRepository tableRepository;
+    private final OpeningHourRepository openingHourRepository;
+    private final SpecialClosedDayRepository specialClosedDayRepository;
+    private final TableSuspensionRepository suspensionRepository;
     private static final int MAX_ATTEMPTS = 3;
 
 
@@ -1375,6 +1383,291 @@ public class StaffReservationService {
         );
 
         return value;
+    }
+
+    @Transactional(
+            readOnly = true,
+            isolation = Isolation.REPEATABLE_READ
+    )
+    public StaffReservationTimelineResponse getTimeline(
+            LocalDate date,
+            Long areaId
+    ) {
+        validateRequest(date, areaId);
+
+        StaffReservationTimelineResponse.OpeningHours openingHours = loadOpeningHours(date);
+
+        int gridStepMinutes = settingsService
+                .load()
+                .slotStepMinutes();
+
+        // Biên ngày được tính theo giờ Việt Nam, không theo timezone server.
+        Instant dayStart = date
+                .atStartOfDay(RESTAURANT_ZONE)
+                .toInstant();
+
+        Instant dayEnd = date
+                .plusDays(1)
+                .atStartOfDay(RESTAURANT_ZONE)
+                .toInstant();
+
+        // Lấy bàn làm gốc để giữ cả những bàn chưa có đơn.
+        List<RestaurantTable> tables = tableRepository
+                .findForTimeline(areaId);
+
+        Set<Long> tableIds = tables.stream()
+                .map(RestaurantTable::getId)
+                .collect(Collectors.toSet());
+
+        Map<Long, List<StaffReservationTimelineResponse.ReservationItem>> reservationsByTable =
+                loadReservations(tableIds, dayStart, dayEnd);
+
+        Map<Long, List<StaffReservationTimelineResponse.SuspensionItem>> suspensionsByTable =
+                loadSuspensions(tableIds, dayStart, dayEnd);
+
+        List<StaffReservationTimelineResponse.TableItem> tableItems = tables.stream()
+                .map(table -> toTableItem(
+                        table,
+                        reservationsByTable.getOrDefault(
+                                table.getId(),
+                                List.of()
+                        ),
+                        suspensionsByTable.getOrDefault(
+                                table.getId(),
+                                List.of()
+                        )
+                ))
+                .toList();
+
+        return new StaffReservationTimelineResponse(
+                date,
+                RESTAURANT_ZONE.getId(),
+                openingHours,
+                gridStepMinutes,
+                tableItems
+        );
+    }
+
+    private void validateRequest(LocalDate date, Long areaId) {
+        if (date == null) {
+            throw new BusinessException(
+                    HttpStatus.BAD_REQUEST,
+                    "DATE_REQUIRED",
+                    "Ngày xem lịch là bắt buộc"
+            );
+        }
+
+        if (areaId == null) {
+            return;
+        }
+
+        if (areaId <= 0) {
+            throw new BusinessException(
+                    HttpStatus.BAD_REQUEST,
+                    "INVALID_AREA_ID",
+                    "Mã khu vực phải lớn hơn 0"
+            );
+        }
+
+        // Cho phép xem cả khu vực ngừng hoạt động để tra cứu lịch.
+        if (!areaRepository.existsById(areaId)) {
+            throw new BusinessException(
+                    HttpStatus.NOT_FOUND,
+                    "AREA_NOT_FOUND",
+                    "Khu vực không tồn tại"
+            );
+        }
+    }
+
+    private StaffReservationTimelineResponse.OpeningHours loadOpeningHours(LocalDate date) {
+        Optional<SpecialClosedDay> specialClosedDay =
+                specialClosedDayRepository.findByClosedDate(date);
+
+        if (specialClosedDay.isPresent()) {
+            String reason = specialClosedDay.get().getReason();
+
+            return new StaffReservationTimelineResponse.OpeningHours(
+                    true,
+                    null,
+                    null,
+                    reason == null || reason.isBlank()
+                            ? "Nhà hàng đóng cửa vào ngày đã chọn"
+                            : reason
+            );
+        }
+
+        // Database: Chủ nhật = 0, thứ hai = 1, ..., thứ bảy = 6.
+        short dayOfWeek =
+                (short) (date.getDayOfWeek().getValue() % 7);
+
+        OpeningHour hour = openingHourRepository
+                .findById(dayOfWeek)
+                .orElseThrow(() -> new BusinessException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "OPENING_HOUR_NOT_CONFIGURED",
+                        "Chưa cấu hình giờ mở cửa cho ngày này"
+                ));
+
+        if (hour.isClosed()) {
+            return new StaffReservationTimelineResponse.OpeningHours(
+                    true,
+                    null,
+                    null,
+                    "Nhà hàng nghỉ theo lịch hằng tuần"
+            );
+        }
+
+        if (hour.getOpenTime() == null
+                || hour.getCloseTime() == null
+                || !hour.getOpenTime().isBefore(hour.getCloseTime())) {
+            throw new BusinessException(
+                    HttpStatus.INTERNAL_SERVER_ERROR,
+                    "INVALID_OPENING_HOUR_CONFIG",
+                    "Cấu hình giờ mở cửa không hợp lệ"
+            );
+        }
+
+        return new StaffReservationTimelineResponse.OpeningHours(
+                false,
+                hour.getOpenTime(),
+                hour.getCloseTime(),
+                null
+        );
+    }
+
+    private Map<Long, List<StaffReservationTimelineResponse.ReservationItem>> loadReservations(
+            Set<Long> tableIds,
+            Instant dayStart,
+            Instant dayEnd
+    ) {
+        if (tableIds.isEmpty()) {
+            return Map.of();
+        }
+
+        // Truy vấn có sẵn xét occupied_range, bao gồm buffer.
+        // Các trạng thái: PENDING, CONFIRMED, ARRIVED, COMPLETED.
+        List<Long> reservationIds = reservationRepository
+                .findTableOccupancyInRange(dayStart, dayEnd)
+                .stream()
+                .filter(reservation -> tableIds.contains(
+                        reservation.getTable().getId()
+                ))
+                .map(Reservation::getId)
+                .toList();
+
+        // Không gửi IN () rỗng xuống database.
+        if (reservationIds.isEmpty()) {
+            return Map.of();
+        }
+
+        List<Reservation> reservations = reservationRepository
+                .findTimelineDetailsByIds(reservationIds);
+
+        Map<Long, List<StaffReservationTimelineResponse.ReservationItem>> result = new HashMap<>();
+
+        for (Reservation reservation : reservations) {
+            Long tableId = reservation.getTable().getId();
+
+            result.computeIfAbsent(
+                    tableId,
+                    ignored -> new ArrayList<>()
+            ).add(toReservationItem(reservation));
+        }
+
+        return result;
+    }
+
+    private Map<Long, List<StaffReservationTimelineResponse.SuspensionItem>> loadSuspensions(
+            Set<Long> tableIds,
+            Instant dayStart,
+            Instant dayEnd
+    ) {
+        if (tableIds.isEmpty()) {
+            return Map.of();
+        }
+
+        List<TableSuspension> suspensions = suspensionRepository
+                .findAllOverlapping(dayStart, dayEnd)
+                .stream()
+                .filter(suspension -> tableIds.contains(
+                        suspension.getTable().getId()
+                ))
+                .sorted(
+                        Comparator.comparing(TableSuspension::getStartTime)
+                                .thenComparing(TableSuspension::getId)
+                )
+                .toList();
+
+        Map<Long, List<StaffReservationTimelineResponse.SuspensionItem>> result = new HashMap<>();
+
+        for (TableSuspension suspension : suspensions) {
+            Long tableId = suspension.getTable().getId();
+
+            StaffReservationTimelineResponse.SuspensionItem item = new StaffReservationTimelineResponse.SuspensionItem(
+                    suspension.getId(),
+                    suspension.getStartTime(),
+                    suspension.getEndTime(),
+                    suspension.getReason()
+            );
+
+            result.computeIfAbsent(
+                    tableId,
+                    ignored -> new ArrayList<>()
+            ).add(item);
+        }
+
+        return result;
+    }
+
+    private StaffReservationTimelineResponse.ReservationItem toReservationItem(
+            Reservation reservation
+    ) {
+        String customerName = reservation.getCustomer() == null
+                ? reservation.getGuestName()
+                : reservation.getCustomer().getFullName();
+
+        // Dùng buffer đã lưu trên đơn, không dùng cấu hình hiện tại.
+        Instant occupiedUntil = reservation
+                .getEndTime()
+                .plus(
+                        reservation.getBufferMinutes(),
+                        ChronoUnit.MINUTES
+                );
+
+        return new StaffReservationTimelineResponse.ReservationItem(
+                reservation.getId(),
+                reservation.getCode(),
+                customerName,
+                reservation.getPartySize(),
+                reservation.getStatus(),
+                reservation.getStartTime(),
+                reservation.getEndTime(),
+                reservation.getBufferMinutes(),
+                occupiedUntil
+        );
+    }
+
+    private StaffReservationTimelineResponse.TableItem toTableItem(
+            RestaurantTable table,
+            List<StaffReservationTimelineResponse.ReservationItem> reservations,
+            List<StaffReservationTimelineResponse.SuspensionItem> suspensions
+    ) {
+        Area area = table.getArea();
+
+        return new StaffReservationTimelineResponse.TableItem(
+                table.getId(),
+                table.getCode(),
+                table.isActive(),
+                new StaffReservationTimelineResponse.AreaItem(
+                        area.getId(),
+                        area.getName(),
+                        area.isActive()
+                ),
+                table.getMinCapacity(),
+                table.getMaxCapacity(),
+                List.copyOf(reservations),
+                List.copyOf(suspensions)
+        );
     }
 
     private AreaSummary toMoveAreaSummary(Area area) {

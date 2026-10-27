@@ -1,0 +1,478 @@
+.reservation-timeline {
+  --timeline-label-width: 152px;
+
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  width: 100%;
+  min-width: 0;
+  padding: var(--space-6);
+
+  border: var(--border-default) solid var(--color-border);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+}
+
+.reservation-timeline *,
+.reservation-timeline *::before,
+.reservation-timeline *::after {
+  box-sizing: border-box;
+}
+
+.reservation-timeline p,
+.reservation-timeline h2 {
+  margin: 0;
+}
+
+.reservation-timeline__title {
+  font-family: var(--font-body);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+}
+
+.reservation-timeline__description {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+/* Toolbar tái sử dụng các control hiện có. */
+.reservation-timeline__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.reservation-timeline__date {
+  flex: 0 1 224px;
+  min-width: 180px;
+}
+
+.reservation-timeline__area {
+  flex: 0 1 220px;
+  min-width: 180px;
+}
+
+.reservation-timeline__area--all .sage-select__value {
+  color: var(--color-text-muted);
+}
+
+.reservation-timeline__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+/* Loading / Empty / Error */
+.reservation-timeline__state {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-6);
+
+  border-radius: var(--radius-card);
+  background: var(--color-surface-alt);
+
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.reservation-timeline__state-title {
+  color: var(--color-text-primary);
+  font-weight: 500;
+}
+
+.reservation-timeline__skeletons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  width: 100%;
+}
+
+.reservation-timeline__skeletons > span {
+  height: 16px;
+  border-radius: var(--radius-control);
+  background: var(
+    --color-skeleton,
+    var(--color-status-completed-bg)
+  );
+}
+
+.reservation-timeline__skeletons > span:nth-child(2) {
+  width: 95.4%;
+}
+
+.reservation-timeline__skeletons > span:nth-child(3) {
+  width: 90.8%;
+}
+
+.reservation-timeline__closed {
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-control);
+  background: var(--color-warning-bg);
+  color: var(--color-warning);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+/* Một vùng cuộn chung giữ trục giờ và các hàng luôn đồng bộ. */
+.reservation-timeline__scroll {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+
+  overflow-x: scroll;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+
+  padding-bottom: var(--space-2);
+  isolation: isolate;
+
+  scrollbar-width: auto;
+  scrollbar-color:
+    var(--color-border-strong)
+    var(--color-surface-alt);
+}
+
+
+.reservation-timeline__scroll:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.reservation-timeline__canvas {
+  width: max(100%, var(--timeline-min-width));
+  min-width: var(--timeline-min-width);
+}
+.reservation-timeline__axis,
+.reservation-timeline__row {
+  display: grid;
+  grid-template-columns:
+    var(--timeline-label-width)
+    minmax(0, 1fr);
+}
+
+.reservation-timeline__axis {
+  height: 40px;
+  background: var(--color-surface-alt);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.reservation-timeline__corner {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+
+  display: flex;
+  align-items: center;
+  padding-inline: var(--space-2);
+
+  background: var(--color-surface-alt);
+  font-weight: 500;
+}
+
+.reservation-timeline__axis-track {
+  position: relative;
+  min-width: 0;
+}
+
+.reservation-timeline__axis-label {
+  position: absolute;
+  top: 50%;
+
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  transform: translate(-50%, -50%);
+}
+
+.reservation-timeline__axis-label[data-edge="start"] {
+  transform: translate(0, -50%);
+}
+
+.reservation-timeline__axis-label[data-edge="end"] {
+  transform: translate(-100%, -50%);
+}
+
+/* Cột nhãn bàn đứng yên khi cuộn ngang. */
+.reservation-timeline__row {
+  padding-block: var(--space-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.reservation-timeline__table-label {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--space-1);
+  min-width: 0;
+  padding-inline: var(--space-2);
+
+  background: var(--color-surface);
+}
+
+.reservation-timeline__table-code {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.reservation-timeline__table-meta {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 16px;
+  overflow-wrap: anywhere;
+}
+
+/* Track có thể cao thêm khi reservation và suspension chồng nhau. */
+.reservation-timeline__track {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.reservation-timeline__grid-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.reservation-timeline__grid-line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: var(--color-border);
+}
+
+.reservation-timeline__grid-line--hour {
+  background: var(--color-border-strong);
+}
+
+.reservation-timeline__grid-line:last-child {
+  transform: translateX(-1px);
+}
+
+.reservation-timeline__available {
+  position: absolute;
+  top: 50%;
+  left: var(--space-4);
+
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+  transform: translateY(-50%);
+}
+
+/* Block độc lập cao 54px như bộ variant trong Figma. */
+.reservation-timeline__block {
+  box-sizing: border-box;
+  display: block;
+  width: 280px;
+  min-width: 0;
+  height: 54px;
+  padding: 0;
+  overflow: hidden;
+
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: 16px;
+  text-align: left;
+}
+
+/* Block trong timeline dùng chiều cao của instance trong lưới. */
+.reservation-timeline__track > .reservation-timeline__block {
+  position: absolute;
+  height: 68px;
+}
+
+.reservation-timeline__block-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+}
+
+.reservation-timeline__block-label,
+.reservation-timeline__block-description {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reservation-timeline__block-label {
+  font-weight: 500;
+}
+
+.reservation-timeline__block-description {
+  color: var(--color-text-secondary);
+  font-weight: 400;
+}
+
+.reservation-timeline__block--pending {
+  background: var(
+    --color-status-pending-bg,
+    var(--color-warning-bg)
+  );
+}
+
+.reservation-timeline__block--confirmed {
+  background: var(
+    --color-status-confirmed-bg,
+    var(--color-success-bg)
+  );
+}
+
+.reservation-timeline__block--arrived {
+  background: var(
+    --color-status-arrived-bg,
+    var(--color-info-bg)
+  );
+}
+
+.reservation-timeline__block--completed {
+  background: var(--color-status-completed-bg);
+}
+
+.reservation-timeline__block--cleaning {
+  background: var(--color-surface-alt);
+}
+
+.reservation-timeline__block--suspended {
+  background: var(--color-warning-bg);
+}
+
+.reservation-timeline__block--selected {
+  border-color: var(--color-focus-ring);
+}
+
+button.reservation-timeline__block {
+  cursor: pointer;
+}
+
+button.reservation-timeline__block:hover {
+  border-color: var(--color-focus-ring);
+}
+
+button.reservation-timeline__block:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: -3px;
+}
+
+.reservation-timeline__footnote {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+/* Giữ kích thước lưới, cho cuộn thay vì bóp nhỏ block. */
+@media (max-width: 640px) {
+  .reservation-timeline {
+    padding: var(--space-4);
+  }
+
+  .reservation-timeline__date,
+  .reservation-timeline__area {
+    flex: 1 1 180px;
+    min-width: 0;
+  }
+
+  .reservation-timeline__state {
+    padding: var(--space-4);
+  }
+}
+
+.reservation-timeline__scroll::-webkit-scrollbar {
+  height: 12px;
+}
+
+.reservation-timeline__scroll::-webkit-scrollbar-track {
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-full);
+}
+
+.reservation-timeline__scroll::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border: 3px solid var(--color-surface-alt);
+  border-radius: var(--radius-full);
+}
+
+.reservation-timeline__scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* Thanh cuộn phía trên lưới. */
+.reservation-timeline__top-scroll {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  height: 20px;
+  flex-shrink: 0;
+
+  overflow-x: scroll;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+
+  scrollbar-width: auto;
+  scrollbar-color:
+    var(--color-border-strong)
+    var(--color-surface-alt);
+}
+
+.reservation-timeline__top-scroll-content {
+  height: 1px;
+}
+
+.reservation-timeline__top-scroll:focus-visible {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: 2px;
+}
+
+.reservation-timeline__top-scroll::-webkit-scrollbar {
+  height: 12px;
+}
+
+.reservation-timeline__top-scroll::-webkit-scrollbar-track {
+  background: var(--color-surface-alt);
+  border-radius: var(--radius-full);
+}
+
+.reservation-timeline__top-scroll::-webkit-scrollbar-thumb {
+  background: var(--color-border-strong);
+  border: 3px solid var(--color-surface-alt);
+  border-radius: var(--radius-full);
+}
+
+.reservation-timeline__top-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* Lưới vẫn cuộn bằng chuột, bàn phím hoặc cảm ứng. */
+.reservation-timeline__scroll {
+  overflow-x: auto;
+  padding-bottom: 0;
+  scrollbar-width: none;
+}
+
+.reservation-timeline__scroll::-webkit-scrollbar {
+  display: none;
+}

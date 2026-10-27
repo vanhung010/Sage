@@ -14,6 +14,7 @@ import { StaffReservationsPage } from "../../pages/staff/Reservations/StaffReser
 import { StaffReservationDetailPage } from "../../pages/staff/ReservationDetail/StaffReservationDetailPage";
 import { StaffReservationDurationPage } from "../../pages/staff/ChangeDuration/StaffReservationDurationPage";
 import { StaffMoveTablePage,} from "../../pages/staff/MoveTable/StaffMoveTablePage";
+import { StaffReservationTimelinePage, } from "../../pages/staff/ReservationTimeline/StaffReservationTimelinePage";
 export const staffRoutes: RouteObject[] = [
   {
     path: "/staff",
@@ -37,6 +38,13 @@ export const staffRoutes: RouteObject[] = [
               breadcrumb: "Đặt bàn",
             } satisfies StaffRouteHandle,
           },
+          {
+          path: "reservations/timeline",
+          element: <StaffReservationTimelinePage />,
+          handle: {
+            breadcrumb: "Đặt bàn",
+          } satisfies StaffRouteHandle,
+        },
           {
             path: "reservations/:id",
             element: <StaffReservationDetailPage />,

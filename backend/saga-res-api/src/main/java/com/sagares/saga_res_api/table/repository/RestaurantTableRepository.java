@@ -153,4 +153,16 @@ public interface RestaurantTableRepository extends JpaRepository<RestaurantTable
             @Param("occupiedStart") Instant occupiedStart,
             @Param("occupiedEnd") Instant occupiedEnd
     );
+    // Lấy cả bàn hoạt động và ngừng hoạt động.
+// JOIN FETCH tải khu vực cùng bàn, tránh truy vấn riêng từng khu vực.
+    @Query("""
+        select t
+        from RestaurantTable t
+        join fetch t.area a
+        where (:areaId is null or a.id = :areaId)
+        order by a.name asc, t.code asc, t.id asc
+        """)
+    List<RestaurantTable> findForTimeline(
+            @Param("areaId") Long areaId
+    );
 }

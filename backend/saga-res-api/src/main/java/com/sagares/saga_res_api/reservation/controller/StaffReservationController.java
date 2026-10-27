@@ -294,4 +294,26 @@ public class StaffReservationController {
                 request
         );
     }
+
+    @GetMapping("/timeline")
+    @Operation(
+            summary = "Lấy lịch đặt bàn theo ngày",
+            description = """
+                    Dành cho STAFF và ADMIN.
+                    Ngày được hiểu theo Asia/Ho_Chi_Minh.
+                    Bỏ areaId để xem tất cả khu vực.
+                    Trả dữ liệu theo bàn, gồm đơn chiếm bàn và thời gian tạm ngưng.
+                    Ngày đóng cửa vẫn trả dữ liệu đã tồn tại.
+                    """
+    )
+    public StaffReservationTimelineResponse getTimeline(
+            @RequestParam(name = "date")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate date,
+
+            @RequestParam(name = "areaId", required = false)
+            Long areaId
+    ) {
+        return staffReservationService.getTimeline(date, areaId);
+    }
 }

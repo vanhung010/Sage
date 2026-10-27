@@ -24,9 +24,9 @@ import type {
   StaffDurationPreview,
 } from "../types/staff-reservation-duration";
 
-import type {
-  StaffReservationCommand,
-} from "../types/staff-reservation";
+import type { StaffReservationCommand, } from "../types/staff-reservation";
+
+import type { ReservationTimelineData, } from "../components/ui/ReservationTimeline";
 
 function toParams(filters: StaffReservationFilterForm) {
   return {
@@ -165,6 +165,24 @@ async moveTable(
   const response = await apiClient.post<StaffReservationDetail>(
     `/api/staff/reservations/${id}/move-table`,
     request,
+  );
+
+  return response.data;
+},
+async timeline(
+  date: string,
+  areaId: number | null,
+  signal?: AbortSignal,
+): Promise<ReservationTimelineData> {
+  const response = await apiClient.get<ReservationTimelineData>(
+    "/api/staff/reservations/timeline",
+    {
+      params: {
+        date,
+        areaId: areaId ?? undefined,
+      },
+      signal,
+    },
   );
 
   return response.data;

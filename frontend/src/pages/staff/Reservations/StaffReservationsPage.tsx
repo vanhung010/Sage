@@ -221,8 +221,10 @@ export function StaffReservationsPage() {
           type="button"
           variant="ghost"
           size="md"
-        
-          title="Lịch theo bàn chưa được triển khai"
+          aria-pressed={false}
+          onClick={() =>
+            void navigate("/staff/reservations/timeline")
+          }
         >
           Lịch theo bàn
         </Button>

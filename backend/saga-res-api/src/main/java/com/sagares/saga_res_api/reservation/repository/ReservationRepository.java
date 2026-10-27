@@ -249,4 +249,20 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long>,
             @Param("status") ReservationStatus status,
             @Param("threshold") Instant threshold,
             Pageable pageable);
+
+
+    // Tải thông tin khách và bàn cho một nhóm reservation.
+// LEFT JOIN giữ lại đơn đặt hộ có customer = null.
+    @Query("""
+        select r
+        from Reservation r
+        left join fetch r.customer
+        join fetch r.table
+        where r.id in :ids
+        order by r.startTime asc, r.id asc
+        """)
+    List<Reservation> findTimelineDetailsByIds(
+            @Param("ids") List<Long> ids
+    );
+
 }
