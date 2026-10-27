@@ -1,0 +1,81 @@
+.staff-orders {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+
+  width: 100%;
+  min-width: 0;
+}
+
+.staff-orders__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-6);
+}
+
+.staff-orders__header > div {
+  min-width: 0;
+}
+
+.staff-orders__header > .sage-button {
+  flex-shrink: 0;
+}
+
+.staff-orders__header h1 {
+  margin: 0;
+
+  color: var(--color-text-primary);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+}
+
+.staff-orders__description {
+  margin: var(--space-2) 0 0;
+
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.staff-orders__count {
+  margin: 0;
+
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+.staff-orders__amount {
+  display: block;
+
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.staff-orders__footnote {
+  margin: 0;
+
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.staff-orders .sage-data-table__state {
+  min-height: 440px;
+}
+
+@media (max-width: 767px) {
+  .staff-orders__header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-4);
+  }
+
+  .staff-orders .sage-data-table__state {
+    min-height: 320px;
+  }
+}

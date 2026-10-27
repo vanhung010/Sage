@@ -1,0 +1,241 @@
+.food-order-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  min-width: 0;
+  padding: var(--space-card-padding-desktop);
+
+  border: var(--border-default) solid var(--color-border);
+  border-radius: var(--radius-card);
+
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
+}
+
+.food-order-card,
+.food-order-card * {
+  box-sizing: border-box;
+}
+
+.food-order-card__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.food-order-card__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.food-order-card h2 {
+  min-width: 0;
+  margin: 0;
+
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 32px;
+}
+
+.food-order-card__title-row > .sage-badge {
+  flex-shrink: 0;
+}
+
+.food-order-card__description,
+.food-order-card__note {
+  margin: 0;
+
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.food-order-card__body {
+  margin: 0;
+
+  color: var(--color-text-secondary);
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.food-order-card--divided .food-order-card__header {
+  padding-bottom: var(--space-4);
+  border-bottom: var(--border-default) solid var(--color-border);
+}
+
+/* Bảng món trong card chi tiết. */
+.food-order-items .sage-data-table {
+  border: 0;
+  border-radius: 0;
+}
+
+.food-order-items .sage-data-table__header-cell {
+  height: 40px;
+  padding: var(--space-3);
+
+  border-bottom: 0;
+
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.food-order-items .sage-data-table__cell {
+  height: 56px;
+  padding: var(--space-4) var(--space-3);
+
+  border-bottom: var(--border-default) solid var(--color-border);
+
+  font-size: 16px;
+  line-height: 24px;
+}
+
+.food-order-items
+  .sage-data-table__table tbody tr + tr > td {
+  border-top: 0;
+}
+
+.food-order-items
+  .sage-data-table__cell:not(:first-child) {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Thông tin nhận hàng. */
+.food-order-fields,
+.food-order-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  min-width: 0;
+  margin: 0;
+}
+
+.food-order-fields > div {
+  display: grid;
+  grid-template-columns: 176px minmax(0, 1fr);
+  align-items: start;
+  gap: var(--space-4);
+}
+
+.food-order-fields dt {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 24px;
+}
+
+.food-order-fields dt > svg {
+  flex-shrink: 0;
+  color: var(--color-text-primary);
+}
+
+.food-order-fields dd {
+  min-width: 0;
+  margin: 0;
+
+  font-size: 16px;
+  line-height: 24px;
+  text-align: right;
+
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+
+/* Thời điểm đặt/hủy đơn. */
+.food-order-status__event {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+
+  padding-top: var(--space-4);
+  border-top: var(--border-default) solid var(--color-border);
+}
+
+.food-order-status__event > svg {
+  flex-shrink: 0;
+}
+
+.food-order-status__event > div {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.food-order-status__event span {
+  color: var(--color-text-secondary);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.food-order-status__event strong {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+}
+
+/* Tóm tắt đơn. */
+.food-order-summary > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.food-order-summary dt {
+  color: var(--color-text-secondary);
+}
+
+.food-order-summary dd {
+  margin: 0;
+
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.food-order-summary > .food-order-summary__total {
+  padding-top: var(--space-4);
+  border-top: var(--border-default) solid var(--color-border);
+
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 24px;
+}
+
+.food-order-summary__total dt {
+  color: var(--color-text-primary);
+}
+
+.food-order-summary__total dd {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+@media (max-width: 767px) {
+  .food-order-card {
+    padding: var(--space-card-padding-mobile);
+  }
+
+  .food-order-card h2 {
+    font-size: 20px;
+    line-height: 28px;
+  }
+
+  .food-order-fields > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-1);
+  }
+
+  .food-order-fields dd {
+    text-align: left;
+  }
+}

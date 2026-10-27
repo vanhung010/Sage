@@ -24,15 +24,12 @@ export interface FilterToolbarProps {
   activeFilters?: readonly FilterToolbarActiveFilter[];
 
   onApply: () => void;
-  onClear: () => void;
+  onClear?: () => void;
 
   loading?: boolean;
   disabled?: boolean;
 
-  /**
-   * Có thể bật khi người dùng đã nhập điều kiện
-   * nhưng chưa bấm Áp dụng.
-   */
+  showClear?: boolean;
   canClear?: boolean;
 
   applyLabel?: string;
@@ -50,6 +47,7 @@ export function FilterToolbar({
   onClear,
   loading = false,
   disabled = false,
+  showClear = true,
   canClear = activeFilters.length > 0,
   applyLabel = "Áp dụng",
   clearLabel = "Xóa bộ lọc",
@@ -127,16 +125,18 @@ export function FilterToolbar({
           </p>
         )}
 
-        <Button
-          type="button"
-          variant="ghost"
-          size="md"
-          className="sage-filter-toolbar__clear"
-          disabled={blocked || !canClear}
-          onClick={onClear}
-        >
-          {clearLabel}
-        </Button>
+        {showClear && onClear && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="md"
+            className="sage-filter-toolbar__clear"
+            disabled={blocked || !canClear}
+            onClick={onClear}
+          >
+            {clearLabel}
+          </Button>
+        )}
       </div>
 
       {loading && (

@@ -1,6 +1,6 @@
 import {
   Navigate,
-  type RouteObject,
+  type RouteObject, useNavigate
 } from "react-router-dom";
 
 import { RoleRoute } from "../guards/RoleRoute";
@@ -15,6 +15,10 @@ import { StaffReservationDetailPage } from "../../pages/staff/ReservationDetail/
 import { StaffReservationDurationPage } from "../../pages/staff/ChangeDuration/StaffReservationDurationPage";
 import { StaffMoveTablePage,} from "../../pages/staff/MoveTable/StaffMoveTablePage";
 import { StaffReservationTimelinePage, } from "../../pages/staff/ReservationTimeline/StaffReservationTimelinePage";
+import { StaffOrdersPage } from
+  "../../pages/staff/Orders/StaffOrdersPage";
+  import { StaffOrderDetailPage } from
+  "../../pages/staff/OrderDetail/StaffOrderDetailPage";
 export const staffRoutes: RouteObject[] = [
   {
     path: "/staff",
@@ -23,7 +27,7 @@ export const staffRoutes: RouteObject[] = [
     ),
     children: [
       {
-        element: <StaffLayout />,
+        element: <StaffLayout ordersEnabled/>,
         children: [
           {
             index: true,
@@ -73,6 +77,21 @@ export const staffRoutes: RouteObject[] = [
         breadcrumb: "Đặt bàn",
       } satisfies StaffRouteHandle,
     },
+    {
+  path: "orders",
+  element: <StaffOrdersPage />,
+  handle: {
+    breadcrumb: "Đơn đặt món",
+  } satisfies StaffRouteHandle,
+},
+
+{
+  path: "orders/:id",
+  element: <StaffOrderDetailPage />,
+  handle: {
+    breadcrumb: "Đơn đặt món",
+  } satisfies StaffRouteHandle,
+},
         ],
       },
     ],
