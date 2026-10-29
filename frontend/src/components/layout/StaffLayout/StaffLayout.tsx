@@ -71,16 +71,22 @@ export function StaffLayout({
       </a>
 
       <StaffSidebar
+        role={user.role}
         onLogout={handleLogout}
         ordersEnabled={ordersEnabled}
       />
 
       <div className="staff-layout__workspace">
         <StaffHeader
-          breadcrumbs={breadcrumbs}
-          userName={user.fullName.trim() || "Nhân viên"}
-          role={user.role}
-          onLogout={handleLogout}
+         breadcrumbs={breadcrumbs}
+  userName={
+    user.fullName.trim() ||
+    (user.role === "ADMIN"
+      ? "Quản trị viên"
+      : "Nhân viên")
+  }
+  role={user.role}
+  onLogout={handleLogout}
         />
 
         <main

@@ -1,10 +1,7 @@
 package com.sagares.saga_res_api.menu.controller;
 
 import com.sagares.saga_res_api.common.dto.PageResponse;
-import com.sagares.saga_res_api.menu.dto.admin.AdminDishResponse;
-import com.sagares.saga_res_api.menu.dto.admin.CreateDishRequest;
-import com.sagares.saga_res_api.menu.dto.admin.UpdateDishRequest;
-import com.sagares.saga_res_api.menu.dto.admin.UpdateDishStatusRequest;
+import com.sagares.saga_res_api.menu.dto.admin.*;
 import com.sagares.saga_res_api.menu.entity.DishStatus;
 import com.sagares.saga_res_api.menu.service.AdminMenuDishService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,14 +32,35 @@ public class AdminMenuDishController {
     private final AdminMenuDishService adminMenuDishService;
 
     @GetMapping
-    @Operation(summary = "Liệt kê món ăn cho quản trị viên")
-    public PageResponse<AdminDishResponse> listDishes(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size,
-            @RequestParam(required = false) Long categoryId,
-            @RequestParam(required = false) DishStatus status
+    @Operation(
+            summary = "Lấy danh sách món ăn cho quản trị viên",
+            description = """
+                Phân trang và lọc theo danh mục, trạng thái.
+                Không truyền categoryId hoặc status thì bỏ bộ lọc tương ứng.
+                Mỗi món chỉ trả một nhãn đầu tiên theo name, sau đó id.
+                Bao gồm món HIDDEN khi không lọc trạng thái.
+                Quyền truy cập: ADMIN.
+                """
+    )
+    public PageResponse<AdminDishListItemResponse> listDishes(
+            @RequestParam(name = "page", defaultValue = "0")
+            int page,
+
+            @RequestParam(name = "size", defaultValue = "20")
+            int size,
+
+            @RequestParam(name = "categoryId", required = false)
+            Long categoryId,
+
+            @RequestParam(name = "status", required = false)
+            DishStatus status
     ) {
-        return adminMenuDishService.listDishes(page, size, categoryId, status);
+        return adminMenuDishService.listDishes(
+                page,
+                size,
+                categoryId,
+                status
+        );
     }
 
     @GetMapping("/{id}")

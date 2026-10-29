@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
+import com.sagares.saga_res_api.menu.dto.admin.AdminDishListItemResponse;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -43,7 +43,8 @@ public class AdminMenuDishService {
     private static final int MAX_PAGE_SIZE = 100;
     private static final Sort ADMIN_DISH_SORT = Sort.by(
             Sort.Order.asc("displayOrder"),
-            Sort.Order.asc("name")
+            Sort.Order.asc("name"),
+            Sort.Order.asc("id")
     );
 
     private final DishRepository dishRepository;
@@ -51,13 +52,15 @@ public class AdminMenuDishService {
     private final TagRepository tagRepository;
     private final CloudinaryService cloudinaryService;
 
-    public PageResponse<AdminDishResponse> listDishes(
+    public PageResponse<AdminDishListItemResponse> listDishes(
             int page,
             int size,
             Long categoryId,
             DishStatus status
     ) {
         validatePage(page, size);
+
+        // Phân trang và lọc trên database trước khi tải các quan hệ.
         Page<Long> dishIds = dishRepository.findAdminDishIds(
                 categoryId,
                 status,
@@ -76,11 +79,23 @@ public class AdminMenuDishService {
             );
         }
 
-        Map<Long, Dish> dishesById = dishRepository.findAllAdminDetailsByIdIn(dishIds.getContent())
-                .stream()
-                .collect(Collectors.toMap(Dish::getId, Function.identity()));
+        // Query hiện có tải category và tags cho các món trong trang.
+        Map<Long, Dish> dishesById =
+                dishRepository.findAllAdminDetailsByIdIn(
+                                dishIds.getContent()
+                        )
+                        .stream()
+                        .collect(Collectors.toMap(
+                                Dish::getId,
+                                Function.identity()
+                        ));
 
-        return PageResponse.from(dishIds.map(id -> toResponse(dishesById.get(id))));
+        // Giữ thứ tự của trang ID, vì truy vấn IN không bảo đảm thứ tự.
+        return PageResponse.from(
+                dishIds.map(id ->
+                        toListItemResponse(dishesById.get(id))
+                )
+        );
     }
 
     public AdminDishResponse getDish(Long id) {
@@ -312,6 +327,37 @@ public class AdminMenuDishService {
                 tags,
                 dish.getCreatedAt(),
                 dish.getUpdatedAt()
+        );
+    }
+
+
+    private AdminDishListItemResponse toListItemResponse(Dish dish) {
+        Category category = dish.getCategory();
+
+        // tags là Set nên không dùng findFirst() trực tiếp.
+        AdminDishTagResponse firstTag = dish.getTags()
+                .stream()
+                .min(
+                        Comparator.comparing(Tag::getName)
+                                .thenComparing(Tag::getId)
+                )
+                .map(tag -> new AdminDishTagResponse(
+                        tag.getId(),
+                        tag.getName()
+                ))
+                .orElse(null);
+
+        return new AdminDishListItemResponse(
+                dish.getId(),
+                dish.getName(),
+                dish.getPrice(),
+                dish.getImageUrl(),
+                dish.getStatus(),
+                new AdminDishCategoryResponse(
+                        category.getId(),
+                        category.getName()
+                ),
+                firstTag
         );
     }
 }

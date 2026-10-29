@@ -157,3 +157,20 @@
     margin-inline: var(--space-2);
   }
 }
+
+/* Khoảng cách giữa Thống kê, Vận hành và Quản trị. */
+.staff-sidebar__group + .staff-sidebar__group {
+  margin-top: var(--space-6);
+}
+
+/* Nhóm Thống kê không có tiêu đề nhóm phía trên. */
+.staff-sidebar__group--overview .staff-sidebar__list {
+  margin-top: 0;
+}
+
+/* Giữ cách thu gọn sidebar thành icon đang có. */
+@media (max-width: 767px) {
+  .staff-sidebar__group + .staff-sidebar__group {
+    margin-top: var(--space-3);
+  }
+}
