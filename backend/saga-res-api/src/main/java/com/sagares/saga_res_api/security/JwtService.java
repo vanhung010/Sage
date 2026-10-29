@@ -66,6 +66,7 @@ public class JwtService {
 
         String subject = claims.getSubject();
         String roleClaim = claims.get("role", String.class);
+        Date expiration = claims.getExpiration();
 
         if (subject == null || roleClaim == null) {
             throw new JwtException("Missing required JWT claims");
@@ -74,7 +75,8 @@ public class JwtService {
         try {
             return new JwtClaims(
                     Long.valueOf(subject),
-                    AccountRole.valueOf(roleClaim)
+                    AccountRole.valueOf(roleClaim),
+                    expiration.toInstant()
             );
         } catch (IllegalArgumentException e) {
             throw new JwtException("Invalid JWT claims", e);
@@ -87,7 +89,8 @@ public class JwtService {
 
     public record JwtClaims(
             Long accountId,
-            AccountRole role
+            AccountRole role,
+            Instant expiresAt
     ) {
     }
 }

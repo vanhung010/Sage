@@ -49,6 +49,8 @@ public class SecurityConfig {
                                 .accessDeniedHandler(accessDeniedHandler))
                 .authorizeHttpRequests(auth -> auth
                         .dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/ws")
+                        .permitAll()
                         .requestMatchers(
                                         "/swagger-ui/**",
                                         "/swagger-ui.html",
