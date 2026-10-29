@@ -3,6 +3,8 @@ package com.sagares.saga_res_api.order.service;
 import com.sagares.saga_res_api.account.entity.Account;
 import com.sagares.saga_res_api.account.repository.AccountRepository;
 import com.sagares.saga_res_api.common.exception.BusinessException;
+import com.sagares.saga_res_api.common.realtime.RealtimeChange;
+import com.sagares.saga_res_api.common.realtime.RealtimeEvent;
 import com.sagares.saga_res_api.menu.entity.Dish;
 import com.sagares.saga_res_api.menu.repository.DishRepository;
 import com.sagares.saga_res_api.order.dto.*;
@@ -12,6 +14,7 @@ import com.sagares.saga_res_api.order.entity.FoodOrderStatus;
 import com.sagares.saga_res_api.order.repository.FoodOrderItemRepository;
 import com.sagares.saga_res_api.order.repository.FoodOrderRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,6 +44,7 @@ public class OrderDishService {
     private final FoodOrderItemRepository foodOrderItemRepository;
     private final AccountRepository accountRepository;
     private final DishRepository dishRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public OrderDishResponse create(long id, CreateOrderDishRequest request){
@@ -83,6 +87,11 @@ public class OrderDishService {
             orderDishItemResponseList.add(orderDishItemResponse);
 
         }
+        eventPublisher.publishEvent(new RealtimeChange(
+                RealtimeChange.Kind.FOOD_ORDER,
+                account.getId(),
+                RealtimeEvent.of("FOOD_ORDER_CREATED", foodOrderSave.getId())
+        ));
         return toDTO(foodOrderSave, orderDishItemResponseList, totalAmountPrice);
     }
 
@@ -114,6 +123,11 @@ public class OrderDishService {
         foodOrder.setStatus(FoodOrderStatus.CANCELLED);
         foodOrder.setCancelledAt(Instant.now());
         FoodOrder foodOrderSave = foodOrderRepository.save(foodOrder);
+        eventPublisher.publishEvent(new RealtimeChange(
+                RealtimeChange.Kind.FOOD_ORDER,
+                foodOrder.getCustomer().getId(),
+                RealtimeEvent.of("FOOD_ORDER_UPDATED", foodOrder.getId())
+        ));
         return OrderDetailDishResponse.toDTO(foodOrder);
     }
 
@@ -149,6 +163,7 @@ public class OrderDishService {
                 .findOwnedDetailsByIds(customerId, ids.getContent())
                 .stream()
                 .collect(Collectors.toMap(FoodOrder::getId, Function.identity()));
+
 
         return PageResponse.from(ids.map(id ->
                 OrderDetailDishResponse.toDTO(byId.get(id))

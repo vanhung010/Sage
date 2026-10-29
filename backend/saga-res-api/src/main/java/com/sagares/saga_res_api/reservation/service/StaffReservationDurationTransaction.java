@@ -4,6 +4,8 @@ import com.sagares.saga_res_api.account.entity.Account;
 import com.sagares.saga_res_api.account.entity.AccountRole;
 import com.sagares.saga_res_api.account.repository.AccountRepository;
 import com.sagares.saga_res_api.common.exception.BusinessException;
+import com.sagares.saga_res_api.common.realtime.RealtimeChange;
+import com.sagares.saga_res_api.common.realtime.RealtimeEvent;
 import com.sagares.saga_res_api.reservation.dto.StaffReservationDurationDto.*;
 import com.sagares.saga_res_api.reservation.entity.Reservation;
 import com.sagares.saga_res_api.reservation.entity.ReservationLogEventType;
@@ -18,6 +20,7 @@ import com.sagares.saga_res_api.table.repository.TableSuspensionRepository;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -53,6 +56,7 @@ public class StaffReservationDurationTransaction {
     private final OpeningHourRepository openingHourRepository;
     private final SpecialClosedDayRepository closedDayRepository;
     private final ReservationSettingsService settingsService;
+    private final ApplicationEventPublisher eventPublisher;
     private final EntityManager entityManager;
     private final Clock clock;
 
@@ -167,6 +171,15 @@ public class StaffReservationDurationTransaction {
 
         // Log và reservation cùng commit hoặc cùng rollback.
         statusLogRepository.saveAndFlush(log);
+
+        eventPublisher.publishEvent(new RealtimeChange(
+                RealtimeChange.Kind.RESERVATION,
+                customerId(reservation),
+                RealtimeEvent.of(
+                        "RESERVATION_UPDATED",
+                        reservation.getId()
+                )
+        ));
 
         return toChangeResponse(reservation);
     }

@@ -3,6 +3,8 @@ package com.sagares.saga_res_api.reservation.service;
 import com.sagares.saga_res_api.account.entity.Account;
 import com.sagares.saga_res_api.account.repository.AccountRepository;
 import com.sagares.saga_res_api.common.exception.BusinessException;
+import com.sagares.saga_res_api.common.realtime.RealtimeChange;
+import com.sagares.saga_res_api.common.realtime.RealtimeEvent;
 import com.sagares.saga_res_api.reservation.dto.CreateReservationRequest;
 import com.sagares.saga_res_api.reservation.dto.ReservationResponse;
 import com.sagares.saga_res_api.reservation.entity.Reservation;
@@ -15,6 +17,7 @@ import com.sagares.saga_res_api.security.AuthenticatedUser;
 import com.sagares.saga_res_api.table.entity.Area;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.exception.ConstraintViolationException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.PessimisticLockingFailureException;
 import org.springframework.http.HttpStatus;
@@ -43,6 +46,8 @@ public class ReservationService {
     private final AccountRepository accountRepository;
 
     private final ReservationStatusLogRepository reservationStatusLogRepository;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     private static final ZoneId TIME_ZONE = ZoneId.of("Asia/Ho_Chi_Minh");
     // Không đặt @Transactional ở đây.
@@ -152,6 +157,15 @@ public class ReservationService {
 // Lưu đơn và nhật ký.
         reservationRepository.save(reservation);
         reservationStatusLogRepository.save(log);
+
+        eventPublisher.publishEvent(new RealtimeChange(
+                RealtimeChange.Kind.RESERVATION,
+                reservation.getCustomer().getId(),
+                RealtimeEvent.of(
+                        "RESERVATION_UPDATED",
+                        reservation.getId()
+                )
+        ));
 
         return toDTO(reservation);
     }

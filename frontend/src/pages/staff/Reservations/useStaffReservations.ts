@@ -7,7 +7,7 @@ import {
 import { staffReservationApi } from "../../../api/staff-reservation.api";
 import { areaApi } from "../../../api/area.api";
 import { getApiError } from "../../../api/error";
-
+import { useRealtimeRefresh } from "../../../realtime/useRealtimeRefresh";
 import type {
   StaffReservationFilterForm,
 } from "../../../types/staff-reservation";
@@ -67,6 +67,8 @@ function useResource<T>(loader: Loader<T>) {
       },
     );
 
+    
+
     return () => controller.abort();
   }, [loader, attempt]);
 
@@ -121,7 +123,14 @@ export function useStaffReservations(
   const list = useResource(loadList);
   const summary = useResource(loadSummary);
   const areas = useResource(loadAreas);
-
+useRealtimeRefresh(
+  (signal) => signal.type === "SYNC"
+    || signal.type.startsWith("RESERVATION_"),
+  () => {
+    list.retry();
+    summary.retry();
+  },
+);
   return {
     list,
     summary,

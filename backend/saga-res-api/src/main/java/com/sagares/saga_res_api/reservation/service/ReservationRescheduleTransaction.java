@@ -4,6 +4,8 @@ import com.sagares.saga_res_api.account.entity.Account;
 import com.sagares.saga_res_api.account.entity.AccountRole;
 import com.sagares.saga_res_api.account.repository.AccountRepository;
 import com.sagares.saga_res_api.common.exception.BusinessException;
+import com.sagares.saga_res_api.common.realtime.RealtimeChange;
+import com.sagares.saga_res_api.common.realtime.RealtimeEvent;
 import com.sagares.saga_res_api.reservation.dto.RescheduleReservationRequest;
 import com.sagares.saga_res_api.reservation.dto.ReservationResponse;
 import com.sagares.saga_res_api.reservation.entity.Reservation;
@@ -255,6 +257,15 @@ public class ReservationRescheduleTransaction {
             events.publishEvent(new ReservationRescheduledEvent(
                     customer.getEmail(),
                     response
+            ));
+
+            events.publishEvent(new RealtimeChange(
+                    RealtimeChange.Kind.RESERVATION,
+                    customer.getId(),
+                    RealtimeEvent.of(
+                            "RESERVATION_UPDATED",
+                            reservation.getId()
+                    )
             ));
 
             return response;

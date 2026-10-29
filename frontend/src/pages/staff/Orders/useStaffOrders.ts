@@ -4,7 +4,7 @@ import {
   useMemo,
   useState,
 } from "react";
-
+import { useRealtimeRefresh } from "../../../realtime/useRealtimeRefresh";
 import { staffOrderApi } from "../../../api/staff-order.api";
 import { getApiError } from "../../../api/error";
 
@@ -83,6 +83,12 @@ export function useStaffOrders(
   const retry = useCallback(() => {
     setAttempt((current) => current + 1);
   }, []);
+
+  useRealtimeRefresh(
+  (signal) => signal.type === "SYNC"
+    || signal.type.startsWith("FOOD_ORDER_"),
+  retry,
+);
 
   const current =
     snapshot?.request === request ? snapshot : null;

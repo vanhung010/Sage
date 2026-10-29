@@ -4,6 +4,8 @@ import com.sagares.saga_res_api.account.entity.Account;
 import com.sagares.saga_res_api.account.entity.AccountRole;
 import com.sagares.saga_res_api.account.repository.AccountRepository;
 import com.sagares.saga_res_api.common.exception.BusinessException;
+import com.sagares.saga_res_api.common.realtime.RealtimeChange;
+import com.sagares.saga_res_api.common.realtime.RealtimeEvent;
 import com.sagares.saga_res_api.reservation.dto.CreateGuestReservationRequest;
 import com.sagares.saga_res_api.reservation.dto.CreateGuestReservationResponse;
 import com.sagares.saga_res_api.reservation.entity.Reservation;
@@ -21,6 +23,7 @@ import com.sagares.saga_res_api.table.repository.RestaurantTableRepository;
 import com.sagares.saga_res_api.table.repository.TableSuspensionRepository;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -52,7 +55,7 @@ public class StaffReservationCreationTransaction {
     private final RestaurantTableRepository tableRepository;
     private final TableSuspensionRepository suspensionRepository;
     private final AreaRepository areaRepository;
-
+    private final ApplicationEventPublisher eventPublisher;
     private final OpeningHourRepository openingHourRepository;
     private final SpecialClosedDayRepository closedDayRepository;
 
@@ -132,6 +135,15 @@ public class StaffReservationCreationTransaction {
             reservation = reservationRepository.saveAndFlush(reservation);
 
             saveCreatedLog(reservation, staff);
+
+            eventPublisher.publishEvent(new RealtimeChange(
+                    RealtimeChange.Kind.RESERVATION,
+                    null,
+                    RealtimeEvent.of(
+                            "RESERVATION_CREATED",
+                            reservation.getId()
+                    )
+            ));
 
             return new CreateGuestReservationResponse(
                     reservation.getCode(),

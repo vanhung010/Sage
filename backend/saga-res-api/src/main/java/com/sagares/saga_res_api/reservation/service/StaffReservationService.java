@@ -3,6 +3,8 @@ package com.sagares.saga_res_api.reservation.service;
 import com.sagares.saga_res_api.account.entity.Account;
 import com.sagares.saga_res_api.common.dto.PageResponse;
 import com.sagares.saga_res_api.common.exception.BusinessException;
+import com.sagares.saga_res_api.common.realtime.RealtimeChange;
+import com.sagares.saga_res_api.common.realtime.RealtimeEvent;
 import com.sagares.saga_res_api.reservation.dto.*;
 import com.sagares.saga_res_api.reservation.entity.Reservation;
 import com.sagares.saga_res_api.reservation.entity.ReservationStatus;
@@ -493,6 +495,12 @@ public class StaffReservationService {
                     )
             );
         }
+
+        eventPublisher.publishEvent(new RealtimeChange(
+                RealtimeChange.Kind.RESERVATION,
+                customer == null ? null : customer.getId(),
+                RealtimeEvent.of("RESERVATION_UPDATED", reservation.getId())
+        ));
 
         return response;
     }
@@ -1349,6 +1357,19 @@ public class StaffReservationService {
 
         // Nếu ghi log thất bại, việc đổi bàn cũng rollback.
         statusLogRepository.saveAndFlush(log);
+
+        Long customerId = reservation.getCustomer() == null
+                ? null
+                : reservation.getCustomer().getId();
+
+        eventPublisher.publishEvent(new RealtimeChange(
+                RealtimeChange.Kind.RESERVATION,
+                customerId,
+                RealtimeEvent.of(
+                        "RESERVATION_UPDATED",
+                        reservation.getId()
+                )
+        ));
 
         // Tái sử dụng response chi tiết và danh sách log hiện có.
         return getDetail(id);

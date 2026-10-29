@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState,useCallback } from "react";
 
 import { getApiError } from "../api/error";
 import { reservationApi } from "../api/reservation.api";
 import type { ReservationResponse } from "../types/reservation";
-
+import { useRealtimeRefresh } from "../realtime/useRealtimeRefresh";
 interface DetailResult {
   key: string;
   reservation: ReservationResponse | null;
@@ -13,6 +13,17 @@ interface DetailResult {
 export function useReservationDetail(id: number) {
   const [result, setResult] = useState<DetailResult | null>(null);
   const [attempt, setAttempt] = useState(0);
+  const reload = useCallback(() => {
+  setAttempt((value) => value + 1);
+}, []);
+
+useRealtimeRefresh(
+  (signal) => valid && (
+    signal.type === "SYNC"
+    || (signal.type.startsWith("RESERVATION_") && signal.resourceId === id)
+  ),
+  reload,
+);
 
   const valid = Number.isSafeInteger(id) && id > 0;
   const key = `${id}:${attempt}`;
@@ -56,6 +67,6 @@ export function useReservationDetail(id: number) {
       ? current?.error ?? ""
       : "ID đơn đặt bàn không hợp lệ.",
 
-    reload: () => setAttempt((value) => value + 1),
+    reload,
   };
 }
