@@ -11,6 +11,7 @@ import { CustomerOrdersLayout } from "./CustomerOrdersLayout";
 import { EmptyOrderList, HelpfulInformation, ListPagination, ListState } from "./OrderListShared";
 import { formatDate, readPage } from "./listFormatting";
 import { useOrderList, type OrderListState } from "./useOrderList";
+import { useRealtimeRefresh } from "../../../realtime/useRealtimeRefresh";
 
 const statuses: Record<ReservationStatus, { label: string; variant: BadgeVariant }> = {
   PENDING: { label: "Chờ xác nhận", variant: "warning" },
@@ -59,6 +60,12 @@ function ReservationPageContent({ scope, status, page, onPageChange, onScopeChan
 }) {
   const load = useCallback((signal: AbortSignal) => reservationApi.listMine({ scope, status, page, size: 4 }, signal), [scope, status, page]);
   const list = useOrderList(load);
+  useRealtimeRefresh(
+  (signal) =>
+    signal.type === "SYNC" ||
+    signal.type.startsWith("RESERVATION_"),
+  list.retry,
+);
   const empty = !list.loading && !list.error && list.data?.totalElements === 0 && !status;
   useEffect(() => {
     if (list.data && page > 0 && list.data.content.length === 0) onPageChange(Math.max(0, list.data.totalPages - 1));

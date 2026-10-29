@@ -1,6 +1,8 @@
 package com.sagares.saga_res_api.reservation.service;
 
 import com.sagares.saga_res_api.account.entity.Account;
+import com.sagares.saga_res_api.common.realtime.RealtimeChange;
+import com.sagares.saga_res_api.common.realtime.RealtimeEvent;
 import com.sagares.saga_res_api.reservation.entity.Reservation;
 import com.sagares.saga_res_api.reservation.entity.ReservationLogEventType;
 import com.sagares.saga_res_api.reservation.entity.ReservationStatus;
@@ -63,6 +65,15 @@ public class ReservationAutoStatusTransaction {
                 ReservationStatus.REJECTED, AUTO_REJECT_REASON, now);
 
         Account customer = reservation.getCustomer();
+
+        eventPublisher.publishEvent(new RealtimeChange(
+                RealtimeChange.Kind.RESERVATION,
+                customer == null ? null : customer.getId(),
+                RealtimeEvent.of(
+                        "RESERVATION_UPDATED",
+                        reservation.getId()
+                )
+        ));
         if (customer != null) {
             eventPublisher.publishEvent(new ReservationRejectedEvent(
                     customer.getEmail(),
@@ -93,8 +104,21 @@ public class ReservationAutoStatusTransaction {
         reservation.setStatus(ReservationStatus.NO_SHOW);
         reservationRepository.saveAndFlush(reservation);
 
-        writeLog(reservation, ReservationStatus.CONFIRMED,
-                ReservationStatus.NO_SHOW, null, now);
+        writeLog(reservation, ReservationStatus.CONFIRMED, ReservationStatus.NO_SHOW, null, now);
+
+        Long customerId = reservation.getCustomer() == null
+                ? null
+                : reservation.getCustomer().getId();
+
+        eventPublisher.publishEvent(new RealtimeChange(
+                RealtimeChange.Kind.RESERVATION,
+                customerId,
+                RealtimeEvent.of(
+                        "RESERVATION_UPDATED",
+                        reservation.getId()
+                )
+        ));
+        
     }
 
     private void writeLog(Reservation reservation,

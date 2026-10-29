@@ -3,7 +3,7 @@ import {
   useEffect,
   useState,
 } from "react";
-
+import { useRealtimeRefresh } from "../../../realtime/useRealtimeRefresh";
 import { areaApi } from "../../../api/area.api";
 import { getApiError } from "../../../api/error";
 import { staffReservationApi } from "../../../api/staff-reservation.api";
@@ -167,6 +167,17 @@ export function useStaffReservationTimeline(
   const retryAreas = useCallback(() => {
     setAreasAttempt((value) => value + 1);
   }, []);
+
+  const reloadTimeline = useCallback(() => {
+  setAttempt((value) => value + 1);
+}, []);
+
+useRealtimeRefresh(
+  (signal) =>
+    signal.type === "SYNC" ||
+    signal.type.startsWith("RESERVATION_"),
+  reloadTimeline,
+);
 
   return {
     data: current?.data ?? null,

@@ -4,6 +4,7 @@ import { orderApi } from "../../../api/order.api";
 import { getApiError } from "../../../api/error";
 import type { OrderDetailResponse } from "../../../types/order";
 import { OrderDetailView } from "./OrderDetailView";
+import { useRealtimeRefresh } from "../../../realtime/useRealtimeRefresh";
 export function OrderDetailPage() {
   const { id } = useParams();
 
@@ -142,6 +143,19 @@ function OrderDetailContent({ rawId }: { rawId: string }) {
     setFeedback(null);
     setAttempt((value) => value + 1);
   }
+
+  useRealtimeRefresh(
+  (signal) =>
+    validId &&
+    (
+      signal.type === "SYNC" ||
+      (
+        signal.type.startsWith("FOOD_ORDER_") &&
+        signal.resourceId === id
+      )
+    ),
+  reload,
+);
 
   return (
     <OrderDetailView

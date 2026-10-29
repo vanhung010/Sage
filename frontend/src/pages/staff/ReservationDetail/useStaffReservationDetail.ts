@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-
+import { useEffect, useState, useCallback } from "react";
+import { useRealtimeRefresh } from "../../../realtime/useRealtimeRefresh";
 import { getApiError } from "../../../api/error";
 import { staffReservationApi } from "../../../api/staff-reservation.api";
 import type { ApiErrorResponse } from "../../../types/api";
@@ -17,6 +17,22 @@ export function useStaffReservationDetail(routeId: string | undefined) {
   const [attempt, setAttempt] = useState(0);
   const [snapshot, setSnapshot] = useState<DetailSnapshot | null>(null);
   const key = `${routeId}:${attempt}`;
+  const reload = useCallback(() => {
+    setAttempt((value) => value + 1);
+  }, []);
+
+  useRealtimeRefresh(
+    (signal) =>
+      valid &&
+      (
+        signal.type === "SYNC" ||
+        (
+          signal.type.startsWith("RESERVATION_") &&
+          signal.resourceId === id
+        )
+      ),
+    reload,
+  );
 
   useEffect(() => {
     if (!valid) return;
@@ -67,7 +83,7 @@ export function useStaffReservationDetail(routeId: string | undefined) {
         code: "INVALID_RESERVATION_ID",
         message: "ID đơn đặt bàn không hợp lệ.",
       },
-  reload: () => setAttempt((value) => value + 1),
+  reload,
   updateReservation,
 };
 }

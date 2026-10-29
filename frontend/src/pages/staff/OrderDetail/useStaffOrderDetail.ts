@@ -5,7 +5,7 @@ import {
 } from "react";
 
 import axios from "axios";
-
+import { useRealtimeRefresh } from "../../../realtime/useRealtimeRefresh";
 import { getApiError } from "../../../api/error";
 import { staffOrderApi } from "../../../api/staff-order.api";
 
@@ -86,6 +86,19 @@ export function useStaffOrderDetail(
   const reload = useCallback(() => {
     setAttempt((current) => current + 1);
   }, []);
+
+  useRealtimeRefresh(
+  (signal) =>
+    valid &&
+    (
+      signal.type === "SYNC" ||
+      (
+        signal.type.startsWith("FOOD_ORDER_") &&
+        signal.resourceId === id
+      )
+    ),
+  reload,
+);
 
   // Không hiển thị đơn cũ khi URL đổi hoặc đang tải lại.
   const current =

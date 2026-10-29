@@ -7,6 +7,7 @@ import { CustomerOrdersLayout } from "./CustomerOrdersLayout";
 import { EmptyOrderList, HelpfulInformation, ListPagination, ListState } from "./OrderListShared";
 import { formatDate, readPage } from "./listFormatting";
 import { useOrderList, type OrderListState } from "./useOrderList";
+import { useRealtimeRefresh } from "../../../realtime/useRealtimeRefresh";
 
 type OrderStatus = OrderDetailResponse["foodOrderStatus"];
 const money = new Intl.NumberFormat("vi-VN", { maximumFractionDigits: 0 });
@@ -35,6 +36,12 @@ function FoodOrdersPageContent({ status, page, onPageChange, onStatusChange }: {
 }) {
   const load = useCallback((signal: AbortSignal) => orderApi.listMine({ status, page, size: 4 }, signal), [status, page]);
   const list = useOrderList(load);
+ useRealtimeRefresh(
+  (signal) =>
+    signal.type === "SYNC" ||
+    signal.type.startsWith("FOOD_ORDER_"),
+  list.retry,
+);
   const empty = !list.loading && !list.error && list.data?.totalElements === 0 && !status;
   useEffect(() => {
     if (list.data && page > 0 && list.data.content.length === 0) onPageChange(Math.max(0, list.data.totalPages - 1));
