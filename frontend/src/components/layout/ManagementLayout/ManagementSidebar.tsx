@@ -1,42 +1,21 @@
 import { Link, NavLink } from "react-router-dom";
-import {
-  CalendarDays,
-  House,
-  LayoutDashboard,
-  LogOut,
-  Settings,
-  ShoppingCart,
-  Store,
-  Table2,
-  Users,
-  UtensilsCrossed,
-  type LucideIcon,
-} from "lucide-react";
+import { House, LogOut } from "lucide-react";
 
 import { getRoleHome } from "../../../auth/redirects";
-import type { AccountRole } from "../../../types/auth";
-
 import logo from "../../../assets/logo/sage-logo-light.svg";
+
+import {
+  getManagementNavigation,
+  MANAGEMENT_ROLE_LABELS,
+  type ManagementRole,
+} from "./managementNavigation";
 
 import "./StaffSidebar.css";
 
 interface StaffSidebarProps {
-  role: AccountRole;
+  role: ManagementRole;
   onLogout: () => void;
   ordersEnabled?: boolean;
-}
-
-interface SidebarItem {
-  to: string;
-  label: string;
-  icon: LucideIcon;
-  enabled: boolean;
-}
-
-interface SidebarGroup {
-  id: string;
-  label?: string;
-  items: SidebarItem[];
 }
 
 export function StaffSidebar({
@@ -44,95 +23,8 @@ export function StaffSidebar({
   onLogout,
   ordersEnabled = false,
 }: StaffSidebarProps) {
-  // Sidebar quản lý chỉ dành cho hai vai trò này.
-  if (role !== "STAFF" && role !== "ADMIN") {
-    return null;
-  }
-
-  const isAdmin = role === "ADMIN";
-
-  const roleLabel = isAdmin
-    ? "quản trị viên"
-    : "nhân viên";
-
-  // Dùng trang chủ theo vai trò đã được dự án cấu hình.
-  const homeTo = getRoleHome(role);
-
-  // STAFF và ADMIN cùng sử dụng các màn vận hành hiện có.
-  const operationsGroup: SidebarGroup = {
-    id: "operations",
-    label: "VẬN HÀNH",
-    items: [
-      {
-        to: "/staff/reservations",
-        label: "Đặt bàn",
-        icon: CalendarDays,
-        enabled: true,
-      },
-      {
-        to: "/staff/orders",
-        label: "Đơn đặt món",
-        icon: ShoppingCart,
-        enabled: ordersEnabled,
-      },
-    ],
-  };
-
-  const navigationGroups: SidebarGroup[] = isAdmin
-    ? [
-        // Thống kê nằm đầu sidebar Admin, trước nhóm Vận hành.
-        {
-          id: "overview",
-          items: [
-            {
-              to: "/admin/statistics",
-              label: "Thống kê",
-              icon: LayoutDashboard,
-              enabled: false,
-            },
-          ],
-        },
-
-        operationsGroup,
-
-        {
-          id: "administration",
-          label: "QUẢN TRỊ",
-          items: [
-            {
-              to: "/admin/menu",
-              label: "Thực đơn",
-              icon: UtensilsCrossed,
-              enabled: false,
-            },
-            {
-              to: "/admin/tables",
-              label: "Bàn và khu vực",
-              icon: Table2,
-              enabled: false,
-            },
-            {
-              to: "/admin/accounts",
-              label: "Tài khoản",
-              icon: Users,
-              enabled: false,
-            },
-            {
-              to: "/admin/restaurant",
-              label: "Nhà hàng",
-              icon: Store,
-              enabled: false,
-            },
-            {
-              to: "/admin/settings",
-              label: "Cấu hình",
-              icon: Settings,
-              enabled: false,
-            },
-          ],
-        },
-      ]
-    : [operationsGroup];
+  const roleLabel = MANAGEMENT_ROLE_LABELS[role];
+  const groups = getManagementNavigation(role, ordersEnabled);
 
   return (
     <aside
@@ -140,7 +32,7 @@ export function StaffSidebar({
       aria-label={`Thanh bên ${roleLabel}`}
     >
       <Link
-        to={homeTo}
+        to={getRoleHome(role)}
         className="staff-sidebar__brand"
         aria-label={`Sage - Khu vực ${roleLabel}`}
       >
@@ -161,7 +53,7 @@ export function StaffSidebar({
         className="staff-sidebar__navigation"
         aria-label={`Điều hướng ${roleLabel}`}
       >
-        {navigationGroups.map((group) => (
+        {groups.map((group) => (
           <div
             key={group.id}
             className={[
@@ -181,6 +73,7 @@ export function StaffSidebar({
 
             <ul className="staff-sidebar__list">
               {group.items.map((item) => {
+                // Icon là component lấy từ lucide-react.
                 const Icon = item.icon;
 
                 const content = (
@@ -198,12 +91,13 @@ export function StaffSidebar({
                 );
 
                 return (
-                  <li key={item.to}>
+                  <li key={item.id}>
                     {item.enabled ? (
                       <NavLink
                         to={item.to}
-                        aria-label={item.label}
+                        end={item.end ?? false}
                         title={item.label}
+                        aria-label={item.label}
                         className={({ isActive }) =>
                           [
                             "staff-sidebar__item",
@@ -218,6 +112,8 @@ export function StaffSidebar({
                         {content}
                       </NavLink>
                     ) : (
+                      // Không dùng Link cho mục chưa có route,
+                      // tránh đưa người dùng đến trang không tồn tại.
                       <span
                         className={
                           "staff-sidebar__item " +

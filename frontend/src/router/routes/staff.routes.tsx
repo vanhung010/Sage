@@ -8,7 +8,7 @@ import { GuestReservationPage } from "../../pages/staff/GuestReservation/GuestRe
 import {
   StaffLayout,
   type StaffRouteHandle,
-} from "../../components/layout/StaffLayout";
+} from "../../components/layout/ManagementLayout";
 
 import { StaffReservationsPage } from "../../pages/staff/Reservations/StaffReservationsPage";
 import { StaffReservationDetailPage } from "../../pages/staff/ReservationDetail/StaffReservationDetailPage";

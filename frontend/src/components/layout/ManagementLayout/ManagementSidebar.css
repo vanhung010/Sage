@@ -174,3 +174,26 @@
     margin-top: var(--space-3);
   }
 }
+
+
+/* Tính padding và border trong chiều rộng của sidebar/menu item. */
+.staff-sidebar,
+.staff-sidebar__item {
+  box-sizing: border-box;
+}
+
+/* Giữ kích thước logo và footer khi sidebar Admin có nhiều mục. */
+.staff-sidebar__brand,
+.staff-sidebar__footer {
+  flex-shrink: 0;
+}
+
+/* Khi sidebar phải cuộn, hạn chế cuộn lan sang nội dung trang. */
+.staff-sidebar {
+  overscroll-behavior-y: contain;
+}
+
+/* Button đăng xuất sử dụng cùng font với các mục điều hướng. */
+button.staff-sidebar__item {
+  font-family: inherit;
+}
