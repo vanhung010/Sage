@@ -12,7 +12,7 @@ import { StaffHeader } from "./ManagementHeader";
 import { StaffSidebar } from "./ManagementSidebar";
 import { MANAGEMENT_ROLE_LABELS } from "./managementNavigation";
 
-import "./StaffLayout.css";
+import "./ManagementLayout.css";
 
 export interface StaffRouteHandle {
   breadcrumb?: string;

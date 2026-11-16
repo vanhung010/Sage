@@ -10,7 +10,7 @@ import {
   type ManagementRole,
 } from "./managementNavigation";
 
-import "./StaffSidebar.css";
+import "./ManagementSidebar.css";
 
 interface StaffSidebarProps {
   role: ManagementRole;

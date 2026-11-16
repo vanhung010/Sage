@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 import { UserMenuTrigger } from "../../common/UserMenu/UserMenuTrigger";
 
-import "./StaffUserMenu.css";
+import "./ManagementUserMenu.css";
 
 interface StaffUserMenuProps {
   userName: string;

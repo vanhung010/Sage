@@ -29,6 +29,10 @@ export function getLoginDestination(
 
   if (publicPath) return returnTo;
 
+  if (role === "ADMIN" && ["/admin", "/admin/menu"].includes(pathname)) {
+  return returnTo;
+}
+
   if (role === "CUSTOMER") {
     const customerPath =
       [

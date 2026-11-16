@@ -1,0 +1,196 @@
+.admin-dishes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-6);
+}
+
+.admin-dishes h1, .admin-dishes h2 {
+  margin: 0;
+  font-size: 24px;
+  line-height: 32px;
+}
+
+.admin-dishes p { margin: 0; color: var(--color-text-secondary); }
+.admin-dishes small { color: var(--color-text-secondary); }
+.admin-dishes > .sage-button { justify-self: start; }
+.admin-dishes header p { margin-top: var(--space-2); }
+
+.admin-dishes__heading, .admin-dishes__footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.admin-dishes__tabs { display: flex; gap: var(--space-6); }
+.admin-dishes__tabs > * {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 136px;
+  min-height: 40px;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--color-text-secondary);
+}
+.admin-dishes__tabs [aria-current] { color: var(--color-primary); }
+.admin-dishes__tabs [aria-current]::after {
+  content: "";
+  position: absolute;
+  inset: auto 12% 0;
+  height: 2px;
+  background: currentColor;
+}
+
+.admin-dishes .sage-filter-toolbar__field { --filter-field-width: 38.6%; }
+.admin-dishes .sage-filter-toolbar__apply { flex: 0 0 90px; }
+.admin-dishes .sage-filter-toolbar .sage-form-field { gap: var(--space-1); }
+.admin-dishes .sage-data-table__cell { height: 80px; }
+.admin-dishes .sage-data-table__summary { font-size: 14px; }
+
+.admin-dishes__name, .admin-dishes__actions, .admin-dishes__pair {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.admin-dishes__name img, .admin-dishes__preview {
+  object-fit: cover;
+  border-radius: var(--radius-control);
+}
+.admin-dishes__pair > * { flex: 1; min-width: 0; align-self: start; }
+.admin-dishes__cards { display: none; }
+
+.admin-dishes__popover {
+  position: fixed;
+  inset: auto;
+  position-area: block-end span-inline-start;
+  position-try-fallbacks: flip-block, flip-inline;
+  margin: 0;
+  padding: var(--space-2);
+  min-width: 216px;
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: 0 8px 24px var(--color-shadow);
+}
+.admin-dishes__popover:popover-open { display: grid; }
+.admin-dishes__popover .sage-button { justify-content: flex-start; }
+.admin-dishes__popover small { padding-inline: var(--space-4); }
+
+.admin-dishes__form {
+  display: grid;
+  grid-template-columns: 1.96fr 1fr;
+  align-items: start;
+  gap: var(--space-6);
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+.admin-dishes__panel, .admin-dishes__side {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-4);
+  min-width: 0;
+}
+.admin-dishes__panel {
+  padding: var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+}
+.admin-dishes__panel hr {
+  width: 100%;
+  margin: 0;
+  border: 0;
+  border-top: 1px solid var(--color-border);
+}
+.admin-dishes__preview { width: 100%; aspect-ratio: 1.8; }
+.admin-dishes .sage-textarea { height: 96px; }
+.admin-dishes__image, .admin-dishes__image-empty {
+  display: grid;
+  gap: var(--space-3);
+}
+.admin-dishes__image-empty {
+  justify-items: center;
+  text-align: center;
+  padding: var(--space-6);
+  background: var(--color-surface-alt);
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-control);
+}
+.admin-dishes__tags {
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  background: var(--color-input-bg);
+}
+.admin-dishes__tags summary { cursor: pointer; }
+.admin-dishes__tags label { display: block; padding-top: var(--space-2); }
+.admin-dishes__footer {
+  align-items: center;
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+.admin-dishes__footer p { flex: 1; }
+.admin-dishes .admin-dishes__error {
+  color: var(--color-error);
+  margin-top: var(--space-4);
+}
+
+@media (max-width: 767px) {
+  .admin-dishes__heading, .admin-dishes__footer { flex-wrap: wrap; }
+  .admin-dishes__heading > button { width: 100%; }
+  .admin-dishes__tabs { gap: var(--space-1); }
+  .admin-dishes__tabs > * { flex: 1; min-width: 0; }
+  .admin-dishes .sage-filter-toolbar__field,
+  .admin-dishes .sage-filter-toolbar__apply { flex: 1 1 100%; }
+  .admin-dishes__desktop-table { display: none; }
+  .admin-dishes__cards { display: grid; gap: var(--space-4); }
+  .admin-dishes__cards .sage-badge { justify-self: start; }
+  .admin-dishes__form, .admin-dishes__pair {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .admin-dishes__footer p { flex-basis: 100%; }
+}
+
+.admin-dishes .sage-data-table__row,
+.admin-dishes__item {
+  position: relative;
+}
+
+.admin-dishes__item-button {
+  position: static;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* Mở rộng vùng bấm của nút tên món ra cả dòng hoặc thẻ. */
+.admin-dishes__item-button::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.admin-dishes__item-button:focus-visible::after {
+  outline: 2px solid var(--color-focus-ring);
+  outline-offset: -2px;
+}
+
+/* Đặt nút ba chấm trên vùng bấm mở form. */
+.admin-dishes__more {
+  position: relative;
+  z-index: 2;
+}

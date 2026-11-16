@@ -70,7 +70,7 @@ const administration: ManagementNavigationGroup = {
       label: "Thực đơn",
       to: "/admin/menu",
       icon: UtensilsCrossed,
-      enabled: false,
+      enabled: true,
     },
     {
       id: "tables",

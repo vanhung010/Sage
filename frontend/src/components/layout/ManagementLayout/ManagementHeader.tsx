@@ -11,7 +11,7 @@ import {
   type ManagementRole,
 } from "./managementNavigation";
 
-import "./StaffHeader.css";
+import "./ManagementHeader.css";
 
 interface StaffHeaderProps {
   breadcrumbs: BreadcrumbEntry[];
